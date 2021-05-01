@@ -22,11 +22,11 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    when (call.method) {
-      "getBrightness" -> _getScreenBrightness()
-      "setBrightness" -> _setSvreenBrightness()
-      else -> result.notImplemented()
-    }
+//    when (call.method) {
+//      "getBrightness" -> _getScreenBrightness()
+//      "setBrightness" -> _setScreenBrightness()
+//      else -> result.notImplemented()
+//    }
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
