@@ -41,7 +41,6 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
-        Settings.System.
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
