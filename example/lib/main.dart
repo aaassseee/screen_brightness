@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  double brightness = 0;
 
   @override
   void initState() {
@@ -24,14 +24,13 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
+    double _brightness;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion =
-          await ScreenBrightness.platformVersion ?? 'Unknown platform version';
+      _brightness = await ScreenBrightness.current;
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      throw 'Failed to get screen brightness';
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -40,7 +39,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      brightness = _brightness;
     });
   }
 
@@ -52,7 +51,31 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Current brightness: $brightness'),
+              Slider.adaptive(
+                value: brightness,
+                onChanged: (value) {
+                  ScreenBrightness.setScreenBrightness(value);
+                  setState(() {
+                    brightness = value;
+                  });
+                },
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  ScreenBrightness.resetScreenBrightness();
+                  final _brightness = await ScreenBrightness.current;
+                  setState(() {
+                    brightness = _brightness;
+                  });
+                },
+                child: Text('reset brightness'),
+              ),
+            ],
+          ),
         ),
       ),
     );

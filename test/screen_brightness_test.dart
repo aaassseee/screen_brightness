@@ -1,9 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:screen_brightness/screen_brightness.dart';
+import 'package:screen_brightness/src/constant/plugin.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('screen_brightness');
+  const MethodChannel channel = MethodChannel(pluginMethodChannelName);
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -17,7 +18,7 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('getPlatformVersion', () async {
-    expect(await ScreenBrightness.platformVersion, '42');
+  test('getScreenBrightness', () async {
+    expect(await ScreenBrightness.current, '42');
   });
 }
