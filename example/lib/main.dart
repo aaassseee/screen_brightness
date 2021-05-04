@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  ScreenBrightness.resetScreenBrightness();
+                  await ScreenBrightness.resetScreenBrightness();
                   final _brightness = await ScreenBrightness.current;
                   setState(() {
                     brightness = _brightness;
