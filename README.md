@@ -58,16 +58,15 @@ Future<void> resetBrightness() async {
 }
 ```
 
-###Usage
+### Usage
 
 * DON'T use didChangeAppLifecycleState to set or reset brightness because this plugin already implemented this function.
 
-##Maintainer
+## Maintainer
 
 [Jack Liu](https://github.com/aaassseee)
 
 ## LICENSE
-
 
     MIT License
 
