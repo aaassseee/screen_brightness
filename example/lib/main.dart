@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 void main() {
@@ -27,8 +26,9 @@ class _MyAppState extends State<MyApp> {
 
     try {
       _brightness = await ScreenBrightness.initial;
-    } on PlatformException {
-      throw 'Failed to get screen brightness';
+    } catch (e) {
+      print(e);
+      throw 'Failed to get initial brightness';
     }
 
     if (!mounted) return;
@@ -36,6 +36,24 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       brightness = _brightness;
     });
+  }
+
+  Future<void> setBrightness(double brightness) async {
+    try {
+      await ScreenBrightness.setScreenBrightness(brightness);
+    } catch (e) {
+      print(e);
+      throw 'Failed to set brightness';
+    }
+  }
+
+  Future<void> resetBrightness() async {
+    try {
+      await ScreenBrightness.resetScreenBrightness();
+    } catch (e) {
+      print(e);
+      throw 'Failed to reset brightness';
+    }
   }
 
   @override
@@ -52,8 +70,8 @@ class _MyAppState extends State<MyApp> {
               Text('Current brightness: $brightness'),
               Slider.adaptive(
                 value: brightness,
-                onChanged: (value) {
-                  ScreenBrightness.setScreenBrightness(value);
+                onChanged: (value) async {
+                  await setBrightness(value);
                   setState(() {
                     brightness = value;
                   });
@@ -61,11 +79,8 @@ class _MyAppState extends State<MyApp> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  await ScreenBrightness.resetScreenBrightness();
-                  final _brightness = await ScreenBrightness.initial;
-                  setState(() {
-                    brightness = _brightness;
-                  });
+                  await resetBrightness();
+                  await initScreenBrightness();
                 },
                 child: Text('reset brightness'),
               ),
