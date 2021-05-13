@@ -1,6 +1,6 @@
 # screen_brightness
 
-A Plugin for controlling screen brightness
+A Plugin for controlling screen brightness with application life cycle set and reset brightness implemented
 
 ## Getting Started
 ### Install
@@ -57,9 +57,13 @@ Future<void> resetBrightness() async {
   }
 }
 ```
+
 ###Usage
+
 * DON'T use didChangeAppLifecycleState to set or reset brightness because this plugin already implemented this function.
+
 ##Maintainer
+
 [Jack Liu](https://github.com/aaassseee)
 
 ## LICENSE
