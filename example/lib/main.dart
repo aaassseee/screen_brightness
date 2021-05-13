@@ -19,23 +19,18 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    initScreenBrightness();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
+  Future<void> initScreenBrightness() async {
     double _brightness;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
+
     try {
-      _brightness = await ScreenBrightness.current;
+      _brightness = await ScreenBrightness.initial;
     } on PlatformException {
       throw 'Failed to get screen brightness';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
     setState(() {
@@ -67,7 +62,7 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                 onPressed: () async {
                   await ScreenBrightness.resetScreenBrightness();
-                  final _brightness = await ScreenBrightness.current;
+                  final _brightness = await ScreenBrightness.initial;
                   setState(() {
                     brightness = _brightness;
                   });

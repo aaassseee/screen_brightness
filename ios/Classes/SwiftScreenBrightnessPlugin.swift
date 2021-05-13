@@ -2,7 +2,7 @@ import Flutter
 import UIKit
 
 public class SwiftScreenBrightnessPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
-    var originalBrightness: CGFloat?
+    var initialBrightness: CGFloat?
     var changedBrightness: CGFloat?
     
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -13,8 +13,17 @@ public class SwiftScreenBrightnessPlugin: NSObject, FlutterPlugin, FlutterApplic
         registrar.addApplicationDelegate(instance)
     }
     
+    override init() {
+        super.init()
+        initialBrightness = UIScreen.main.brightness
+    }
+    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
+        case "getInitialBrightness":
+            getInitialBrightness(result: result)
+            break;
+            
         case "getScreenBrightness":
             getScreenBrightness(result: result)
             break;
@@ -33,6 +42,10 @@ public class SwiftScreenBrightnessPlugin: NSObject, FlutterPlugin, FlutterApplic
         }
     }
     
+    func getInitialBrightness(result: FlutterResult) {
+        result(initialBrightness)
+    }
+    
     func getScreenBrightness(result: FlutterResult) {
         result(UIScreen.main.brightness)
     }
@@ -43,9 +56,6 @@ public class SwiftScreenBrightnessPlugin: NSObject, FlutterPlugin, FlutterApplic
             return
         }
         
-        if (originalBrightness == nil) {
-            originalBrightness = UIScreen.main.brightness
-        }
         changedBrightness = CGFloat(brightness.doubleValue)
         guard let changedBrightness = changedBrightness else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null brightness", details: nil))
@@ -57,7 +67,7 @@ public class SwiftScreenBrightnessPlugin: NSObject, FlutterPlugin, FlutterApplic
     }
     
     func resetScreenBrightness(result: FlutterResult) {
-        guard let originalBrightness = originalBrightness else {
+        guard let originalBrightness = initialBrightness else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null brightness", details: nil))
             return
         }
@@ -69,7 +79,7 @@ public class SwiftScreenBrightnessPlugin: NSObject, FlutterPlugin, FlutterApplic
     }
     
     func onApplicationPause() {
-        guard let originalBrightness = originalBrightness else {
+        guard let originalBrightness = initialBrightness else {
             return
         }
         UIScreen.main.brightness = originalBrightness

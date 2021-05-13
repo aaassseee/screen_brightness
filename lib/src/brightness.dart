@@ -8,6 +8,16 @@ class ScreenBrightness {
   static const MethodChannel _channel =
       const MethodChannel(pluginMethodChannelName);
 
+  static Future<double> get initial async {
+    final double initialBrightness =
+        await _channel.invokeMethod(methodNameGetInitialBrightness);
+    if (!initialBrightness.isInRange(minBrightness, maxBrightness)) {
+      throw RangeError.range(initialBrightness, minBrightness, maxBrightness);
+    }
+
+    return initialBrightness;
+  }
+
   static Future<double> get current async {
     final double currentBrightness =
         await _channel.invokeMethod(methodNameGetScreenBrightness);
