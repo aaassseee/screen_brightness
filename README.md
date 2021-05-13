@@ -57,7 +57,8 @@ Future<void> resetBrightness() async {
   }
 }
 ```
-
+###Usage
+* DON'T use WidgetsBindingObserver to set or reset brightness because this plugin already implemented this function.
 ##Maintainer
 [Jack Liu](https://github.com/aaassseee)
 
