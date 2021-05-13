@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 void main() {
@@ -14,34 +13,47 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  double brightness = 0;
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    initScreenBrightness();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
+  Future<void> initScreenBrightness() async {
+    double _brightness;
+
     try {
-      platformVersion =
-          await ScreenBrightness.platformVersion ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      _brightness = await ScreenBrightness.initial;
+    } catch (e) {
+      print(e);
+      throw 'Failed to get initial brightness';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      brightness = _brightness;
     });
+  }
+
+  Future<void> setBrightness(double brightness) async {
+    try {
+      await ScreenBrightness.setScreenBrightness(brightness);
+    } catch (e) {
+      print(e);
+      throw 'Failed to set brightness';
+    }
+  }
+
+  Future<void> resetBrightness() async {
+    try {
+      await ScreenBrightness.resetScreenBrightness();
+    } catch (e) {
+      print(e);
+      throw 'Failed to reset brightness';
+    }
   }
 
   @override
@@ -52,7 +64,28 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Current brightness: $brightness'),
+              Slider.adaptive(
+                value: brightness,
+                onChanged: (value) async {
+                  await setBrightness(value);
+                  setState(() {
+                    brightness = value;
+                  });
+                },
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await resetBrightness();
+                  await initScreenBrightness();
+                },
+                child: Text('reset brightness'),
+              ),
+            ],
+          ),
         ),
       ),
     );
