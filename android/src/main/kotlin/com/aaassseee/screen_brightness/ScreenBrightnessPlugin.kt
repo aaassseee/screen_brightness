@@ -29,7 +29,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     /// The value which will be init when this plugin is attached to the Flutter engine
     ///
     /// Should not be changed in the future
-    private var initialBrightness by Delegates.notNull<Float>()
+    private var initialBrightness: Float? = null
 
     /**
      *
@@ -40,7 +40,14 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 "github.com/aaassseee/screen_brightness"
         )
         channel.setMethodCallHandler(this)
-        initialBrightness = Settings.System.getInt(flutterPluginBinding.applicationContext.contentResolver, Settings.System.SCREEN_BRIGHTNESS) / 255.0f
+        try {
+            initialBrightness = Settings.System.getInt(
+                    flutterPluginBinding.applicationContext.contentResolver,
+                    Settings.System.SCREEN_BRIGHTNESS
+            ) / 255.0f
+        } catch (e: Settings.SettingNotFoundException) {
+            e.printStackTrace()
+        }
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {

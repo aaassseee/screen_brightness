@@ -7,15 +7,29 @@ import 'package:screen_brightness/src/constant/plugin.dart';
 import 'package:screen_brightness/src/extension/num_extension.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel(pluginMethodChannelName);
+  final double initialBrightness = 0.5;
 
+  const MethodChannel channel = MethodChannel(pluginMethodChannelName);
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
+    double changedBrightness = initialBrightness;
+
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       switch (methodCall.method) {
+        case methodNameGetInitialBrightness:
+          return initialBrightness;
+
         case methodNameGetScreenBrightness:
-          return 0.0;
+          return changedBrightness;
+
+        case methodNameSetScreenBrightness:
+          changedBrightness = methodCall.arguments['brightness'];
+          return null;
+
+        case methodNameResetScreenBrightness:
+          changedBrightness = initialBrightness;
+          return changedBrightness;
       }
     });
   });
@@ -35,12 +49,18 @@ void main() {
   });
 
   group('plugin test', () {
+    test('get initial brightess', () async {
+      expect(await ScreenBrightness.initial, initialBrightness);
+    });
+
     test('get screen brightess', () async {
-      expect(await ScreenBrightness.current, 0.0);
+      expect(await ScreenBrightness.current, initialBrightness);
     });
 
     test('set screen brightess with valid number', () async {
-      await ScreenBrightness.setScreenBrightness(0.1);
+      final targetBrightness = 0.1;
+      await ScreenBrightness.setScreenBrightness(targetBrightness);
+      expect(await ScreenBrightness.current, targetBrightness);
     });
 
     test('set screen brightess with invalid number', () async {
@@ -57,6 +77,7 @@ void main() {
 
     test('reset screen brightess', () async {
       await ScreenBrightness.resetScreenBrightness();
+      expect(await ScreenBrightness.initial, initialBrightness);
     });
   });
 }
