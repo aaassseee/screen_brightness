@@ -6,8 +6,7 @@ import 'package:screen_brightness/src/extension/num_extension.dart';
 
 /// Plugin for changing screen brightness
 class ScreenBrightness {
-  static const MethodChannel _channel =
-      const MethodChannel(pluginMethodChannelName);
+  static const MethodChannel _channel = MethodChannel(pluginMethodChannelName);
 
   /// Returns intial screen brightness which is set when application is started.
   ///

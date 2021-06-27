@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -27,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     try {
       _brightness = await ScreenBrightness.initial;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       throw 'Failed to get initial brightness';
     }
 
@@ -42,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     try {
       await ScreenBrightness.setScreenBrightness(brightness);
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       throw 'Failed to set brightness';
     }
   }
@@ -51,7 +53,7 @@ class _MyAppState extends State<MyApp> {
     try {
       await ScreenBrightness.resetScreenBrightness();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       throw 'Failed to reset brightness';
     }
   }
@@ -82,7 +84,7 @@ class _MyAppState extends State<MyApp> {
                   await resetBrightness();
                   await initScreenBrightness();
                 },
-                child: Text('reset brightness'),
+                child: const Text('reset brightness'),
               ),
             ],
           ),
