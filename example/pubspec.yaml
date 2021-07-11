@@ -6,7 +6,7 @@ description: Demonstrates how to use the screen_brightness plugin.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ">=2.12.4 <3.0.0"
+  sdk: ">=2.14.0-48.0.dev <3.0.0"
 
 dependencies:
   flutter:
@@ -27,6 +27,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_lints: ^1.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

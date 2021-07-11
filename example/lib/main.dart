@@ -1,93 +1,53 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:screen_brightness/screen_brightness.dart';
+import 'package:screen_brightness_example/view/blank_page.dart';
+import 'package:screen_brightness_example/view/controller_page.dart';
+import 'package:screen_brightness_example/view/home_page.dart';
+import 'package:screen_brightness_example/view/route_aware_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
+class MyApp extends StatelessWidget {
+  static final RouteObserver<Route> routeObserver = RouteObserver<Route>();
 
-class _MyAppState extends State<MyApp> {
-  double brightness = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    initScreenBrightness();
-  }
-
-  Future<void> initScreenBrightness() async {
-    double _brightness;
-
-    try {
-      _brightness = await ScreenBrightness.initial;
-    } catch (e) {
-      print(e);
-      throw 'Failed to get initial brightness';
-    }
-
-    if (!mounted) return;
-
-    setState(() {
-      brightness = _brightness;
-    });
-  }
-
-  Future<void> setBrightness(double brightness) async {
-    try {
-      await ScreenBrightness.setScreenBrightness(brightness);
-    } catch (e) {
-      print(e);
-      throw 'Failed to set brightness';
-    }
-  }
-
-  Future<void> resetBrightness() async {
-    try {
-      await ScreenBrightness.resetScreenBrightness();
-    } catch (e) {
-      print(e);
-      throw 'Failed to reset brightness';
-    }
-  }
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Current brightness: $brightness'),
-              Slider.adaptive(
-                value: brightness,
-                onChanged: (value) async {
-                  await setBrightness(value);
-                  setState(() {
-                    brightness = value;
-                  });
-                },
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await resetBrightness();
-                  await initScreenBrightness();
-                },
-                child: Text('reset brightness'),
-              ),
-            ],
-          ),
-        ),
-      ),
+      home: const HomePage(),
+      onGenerateRoute: (settings) {
+        late final Widget page;
+        switch (settings.name) {
+          case HomePage.routeName:
+            page = const HomePage();
+            break;
+
+          case ControllerPage.routeName:
+            page = const ControllerPage();
+            break;
+
+          case RouteAwarePage.routeName:
+            page = const RouteAwarePage();
+            break;
+
+          case BlankPage.routeName:
+            page = const BlankPage();
+            break;
+
+          default:
+            throw UnimplementedError('page name not found');
+        }
+
+        return MaterialPageRoute(
+          builder: (context) => page,
+          settings: settings,
+        );
+      },
+      navigatorObservers: [
+        routeObserver,
+      ],
     );
   }
 }

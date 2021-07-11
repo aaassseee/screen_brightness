@@ -7,7 +7,7 @@ import 'package:screen_brightness/src/constant/plugin.dart';
 import 'package:screen_brightness/src/extension/num_extension.dart';
 
 void main() {
-  final double initialBrightness = 0.5;
+  const double initialBrightness = 0.5;
 
   const MethodChannel channel = MethodChannel(pluginMethodChannelName);
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +58,7 @@ void main() {
     });
 
     test('set screen brightess with valid number', () async {
-      final targetBrightness = 0.1;
+      const targetBrightness = 0.1;
       await ScreenBrightness.setScreenBrightness(targetBrightness);
       expect(await ScreenBrightness.current, targetBrightness);
     });
@@ -68,7 +68,6 @@ void main() {
       try {
         await ScreenBrightness.setScreenBrightness(2);
       } catch (e) {
-        print(e);
         error = e;
       }
 
