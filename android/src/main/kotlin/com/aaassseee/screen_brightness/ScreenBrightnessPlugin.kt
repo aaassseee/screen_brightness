@@ -12,6 +12,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import kotlin.math.sign
+import kotlin.properties.Delegates
 
 /**
  * ScreenBrightnessPlugin setting screen brightness
@@ -27,8 +28,15 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     /// The value which will be init when this plugin is attached to the Flutter engine
     ///
-    /// Should not be changed in the future
+    /// This value refer to the brightness value between 0 to 1 when the application initialized.
     private var initialBrightness: Float? = null
+
+    /// The value which will be init when this plugin is attached to the Flutter engine
+    ///
+    /// This value refer to the maximum brightness value.
+    /// By system default the value should be 255.0f, however it vary in some OS, e.g Miui.
+    /// Should not be changed in the future
+    private var maximumBrightness by Delegates.notNull<Float>()
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(
@@ -37,10 +45,11 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         )
         channel.setMethodCallHandler(this)
         try {
+            maximumBrightness = getScreenMaximumBrightness()
             initialBrightness = Settings.System.getInt(
                 flutterPluginBinding.applicationContext.contentResolver,
                 Settings.System.SCREEN_BRIGHTNESS
-            ) / getScreenMaximumBrightness()
+            ) / maximumBrightness
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
         }
@@ -87,7 +96,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             brightness = Settings.System.getInt(
                 activity.contentResolver,
                 Settings.System.SCREEN_BRIGHTNESS
-            ) / getScreenMaximumBrightness()
+            ) / maximumBrightness
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
         }
