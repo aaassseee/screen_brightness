@@ -1,6 +1,7 @@
 package com.aaassseee.screen_brightness
 
 import android.app.Activity
+import android.content.res.Resources
 import android.provider.Settings
 import android.view.WindowManager
 import androidx.annotation.NonNull
@@ -10,7 +11,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 import kotlin.math.sign
 import kotlin.properties.Delegates
 
@@ -28,23 +28,28 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     /// The value which will be init when this plugin is attached to the Flutter engine
     ///
-    /// Should not be changed in the future
+    /// This value refer to the brightness value between 0 to 1 when the application initialized.
     private var initialBrightness: Float? = null
 
-    /**
-     *
-     */
+    /// The value which will be init when this plugin is attached to the Flutter engine
+    ///
+    /// This value refer to the maximum brightness value.
+    /// By system default the value should be 255.0f, however it vary in some OS, e.g Miui.
+    /// Should not be changed in the future
+    private var maximumBrightness by Delegates.notNull<Float>()
+
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(
-                flutterPluginBinding.binaryMessenger,
-                "github.com/aaassseee/screen_brightness"
+            flutterPluginBinding.binaryMessenger,
+            "github.com/aaassseee/screen_brightness"
         )
         channel.setMethodCallHandler(this)
         try {
+            maximumBrightness = getScreenMaximumBrightness()
             initialBrightness = Settings.System.getInt(
-                    flutterPluginBinding.applicationContext.contentResolver,
-                    Settings.System.SCREEN_BRIGHTNESS
-            ) / 255.0f
+                flutterPluginBinding.applicationContext.contentResolver,
+                Settings.System.SCREEN_BRIGHTNESS
+            ) / maximumBrightness
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
         }
@@ -54,7 +59,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         activity = binding.activity
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
         when (call.method) {
             "getInitialBrightness" -> getInitialBrightness(result)
             "getScreenBrightness" -> getScreenBrightness(result)
@@ -64,11 +69,11 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 
-    private fun getInitialBrightness(result: Result) {
+    private fun getInitialBrightness(result: MethodChannel.Result) {
         result.success(initialBrightness)
     }
 
-    private fun getScreenBrightness(result: Result) {
+    private fun getScreenBrightness(result: MethodChannel.Result) {
         val activity = activity
         if (activity == null) {
             result.error("-10", "Unexpected error on activity binding", null)
@@ -89,9 +94,9 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         // get system setting brightness
         try {
             brightness = Settings.System.getInt(
-                    activity.contentResolver,
-                    Settings.System.SCREEN_BRIGHTNESS
-            ) / 255.0f
+                activity.contentResolver,
+                Settings.System.SCREEN_BRIGHTNESS
+            ) / maximumBrightness
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
         }
@@ -102,6 +107,25 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
 
         result.success(brightness)
+    }
+
+    private fun getScreenMaximumBrightness(): Float {
+        return try {
+            val systemResources: Resources = Resources.getSystem()
+            val maximumBrightnessIdentifier: Int =
+                systemResources.getIdentifier(
+                    "config_screenBrightnessSettingMaximum",
+                    "integer",
+                    "android"
+                )
+            if (maximumBrightnessIdentifier == 0) {
+                throw NullPointerException()
+            }
+
+            systemResources.getInteger(maximumBrightnessIdentifier).toFloat()
+        } catch (e: Exception) {
+            255.0f
+        }
     }
 
     private fun setWindowsAttributesBrightness(brightness: Float): Boolean {
@@ -115,7 +139,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
     }
 
-    private fun setScreenBrightness(call: MethodCall, result: Result) {
+    private fun setScreenBrightness(call: MethodCall, result: MethodChannel.Result) {
         val activity = activity
         if (activity == null) {
             result.error("-10", "Unexpected error on activity binding", null)
@@ -137,7 +161,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(null)
     }
 
-    private fun resetScreenBrightness(result: Result) {
+    private fun resetScreenBrightness(result: MethodChannel.Result) {
         val activity = activity
         if (activity == null) {
             result.error("-10", "Unexpected error on activity binding", null)
@@ -145,7 +169,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         }
 
         val isSet =
-                setWindowsAttributesBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE)
+            setWindowsAttributesBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE)
         if (!isSet) {
             result.error("-1", "Unable to change screen brightness", null)
             return

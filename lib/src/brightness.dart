@@ -6,6 +6,11 @@ import 'package:screen_brightness/src/extension/num_extension.dart';
 
 /// Plugin for changing screen brightness
 class ScreenBrightness {
+  /// ScreenBrightness designed as static method collection class
+  /// So constructor should not provide to user.
+  ScreenBrightness._();
+
+  /// Method channel which can interact with native platform
   static const MethodChannel _channel = MethodChannel(pluginMethodChannelName);
 
   /// Returns intial screen brightness which is set when application is started.
