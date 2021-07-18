@@ -62,22 +62,8 @@ Future<void> resetBrightness() async {
 ### Usage
 
 * DON'T use didChangeAppLifecycleState to set or reset brightness because this plugin already implemented this function.
+* You may also use this plugin with [wakelock](https://pub.dev/packages/wakelock) to prevent screen sleep
 
 ## Maintainer
 
 [Jack Liu](https://github.com/aaassseee)
-
-    
-    
-    
-    
-    
-    
-
-    
-
-    
-    
-    
-    
-    
