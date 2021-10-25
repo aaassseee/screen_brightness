@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:screen_brightness/src/constant/brightness.dart';
 import 'package:screen_brightness/src/constant/method_name.dart';
-import 'package:screen_brightness/src/constant/plugin.dart';
+import 'package:screen_brightness/src/constant/plugin_channel.dart';
 import 'package:screen_brightness/src/extension/num_extension.dart';
 
 /// Plugin for changing screen brightness
@@ -9,9 +9,6 @@ class ScreenBrightness {
   /// ScreenBrightness designed as static method collection class
   /// So constructor should not provide to user.
   ScreenBrightness._();
-
-  /// Method channel which can interact with native platform
-  static const MethodChannel _channel = MethodChannel(pluginMethodChannelName);
 
   /// Returns intial screen brightness which is set when application is started.
   ///
@@ -26,8 +23,8 @@ class ScreenBrightness {
   ///
   /// Code: -9, Message: Brightness value returns null
   static Future<double> get initial async {
-    final initialBrightness =
-        await _channel.invokeMethod<double>(methodNameGetInitialBrightness);
+    final initialBrightness = await pluginMethodChannel
+        .invokeMethod<double>(methodNameGetInitialBrightness);
     if (initialBrightness == null) {
       throw PlatformException(
           code: "-9", message: "Brightness value returns null");
@@ -64,8 +61,8 @@ class ScreenBrightness {
   /// Unexpected error when getting brightness from Setting using
   /// Settings.System.SCREEN_BRIGHTNESS
   static Future<double> get current async {
-    final currentBrightness =
-        await _channel.invokeMethod<double>(methodNameGetScreenBrightness);
+    final currentBrightness = await pluginMethodChannel
+        .invokeMethod<double>(methodNameGetScreenBrightness);
     if (currentBrightness == null) {
       throw PlatformException(
           code: "-9", message: "Brightness value returns null");
@@ -101,7 +98,7 @@ class ScreenBrightness {
       throw RangeError.range(brightness, minBrightness, maxBrightness);
     }
 
-    await _channel.invokeMethod(
+    await pluginMethodChannel.invokeMethod(
         methodNameSetScreenBrightness, {"brightness": brightness});
   }
 
@@ -122,6 +119,18 @@ class ScreenBrightness {
   /// Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   static Future<void> resetScreenBrightness() async {
-    await _channel.invokeMethod(methodNameResetScreenBrightness);
+    await pluginMethodChannel.invokeMethod(methodNameResetScreenBrightness);
+  }
+
+  /// A stream return with screen brightness changes including
+  /// [ScreenBrightness.setScreenBrightness],
+  /// [ScreenBrightness.resetScreenBrightness], system control center or system
+  /// setting.
+  ///
+  /// This stream is useful for user to listen to brightness changes.
+  static Stream<double> get onCurrentBrightnessChanged {
+    return pluginEventChannelCurrentBrigntnessChange
+        .receiveBroadcastStream()
+        .cast<double>();
   }
 }

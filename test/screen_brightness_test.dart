@@ -3,19 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:screen_brightness/src/constant/brightness.dart';
 import 'package:screen_brightness/src/constant/method_name.dart';
-import 'package:screen_brightness/src/constant/plugin.dart';
+import 'package:screen_brightness/src/constant/plugin_channel.dart';
 import 'package:screen_brightness/src/extension/num_extension.dart';
 
 void main() {
   const double initialBrightness = 0.5;
-
-  const MethodChannel channel = MethodChannel(pluginMethodChannelName);
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
     double changedBrightness = initialBrightness;
 
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    pluginMethodChannel.setMockMethodCallHandler((MethodCall methodCall) async {
       switch (methodCall.method) {
         case methodNameGetInitialBrightness:
           return initialBrightness;
@@ -35,7 +33,7 @@ void main() {
   });
 
   tearDown(() {
-    channel.setMockMethodCallHandler(null);
+    pluginMethodChannel.setMockMethodCallHandler(null);
   });
 
   group('num extension test', () {
