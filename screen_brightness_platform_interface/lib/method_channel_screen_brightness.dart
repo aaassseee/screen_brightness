@@ -27,18 +27,18 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// Code: -9, Message: Brightness value returns null
   @override
   Future<double> get system async {
-    final initialBrightness = await pluginMethodChannel
+    final systemBrightness = await pluginMethodChannel
         .invokeMethod<double>(methodNameGetSystemScreenBrightness);
-    if (initialBrightness == null) {
+    if (systemBrightness == null) {
       throw PlatformException(
           code: "-9", message: "Brightness value returns null");
     }
 
-    if (!initialBrightness.isInRange(minBrightness, maxBrightness)) {
-      throw RangeError.range(initialBrightness, minBrightness, maxBrightness);
+    if (!systemBrightness.isInRange(minBrightness, maxBrightness)) {
+      throw RangeError.range(systemBrightness, minBrightness, maxBrightness);
     }
 
-    return initialBrightness;
+    return systemBrightness;
   }
 
   /// Returns current screen brightness which is current screen brightness value.
@@ -108,7 +108,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         methodNameSetScreenBrightness, {"brightness": brightness});
   }
 
-  /// Reset screen brightness with (Android)-1 or (iOS)initial brightness value.
+  /// Reset screen brightness with (Android)-1 or (iOS)system brightness value.
   ///
   /// This method is useful for user to reset screen brightness when user leave
   /// the page which has change the brightness value.
@@ -117,7 +117,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// [PlatformException] with code and message:
   ///
   /// Code: -2, Message: Unexpected error on null brightness
-  /// Initial brightness in plugin is null
+  /// System brightness in plugin is null
   ///
   /// Code: -1, Message: Unable to change screen brightness
   /// Compare changed value with set value fail

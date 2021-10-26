@@ -39,7 +39,7 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   /// This parameter is useful for user to get screen brightness value after
   /// calling [resetScreenBrightness]
   Future<double> get system async {
-    throw UnimplementedError('initial has not been implemented.');
+    throw UnimplementedError('system brightness has not been implemented.');
   }
 
   /// Returns current screen brightness which is current screen brightness value.
@@ -50,7 +50,7 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   /// This parameter is useful for user to get screen brightness value after
   /// calling [setScreenBrightness]
   Future<double> get current async {
-    throw UnimplementedError('current has not been implemented.');
+    throw UnimplementedError('current brightness has not been implemented.');
   }
 
   /// Set screen brightness with double value.
@@ -64,7 +64,7 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
         'setScreenBrightness(brightness) has not been implemented.');
   }
 
-  /// Reset screen brightness with (Android)-1 or (iOS)initial brightness value.
+  /// Reset screen brightness with (Android)-1 or (iOS)system brightness value.
   ///
   /// This method is useful for user to reset screen brightness when user leave
   /// the page which has change the brightness value.
