@@ -138,10 +138,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
         // get system setting brightness
         try {
-            brightness = Settings.System.getInt(
-                activity.contentResolver,
-                Settings.System.SCREEN_BRIGHTNESS
-            ) / maximumBrightness
+            brightness = getSystemBrightness(activity)
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
         }
