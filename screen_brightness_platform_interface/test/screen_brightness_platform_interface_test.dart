@@ -10,6 +10,8 @@ import 'package:screen_brightness_platform_interface/screen_brightness_platform_
 class MockUnimplementedScreenBrightnessPlatform
     extends ScreenBrightnessPlatform {}
 
+class FakeMethodChannelScreenBrightness extends MethodChannelScreenBrightness {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -79,6 +81,16 @@ void main() {
       pluginEventChannelCurrentBrightnessChange.setMockMethodCallHandler(null);
     });
 
+    test('get platform instance', () {
+      expect(ScreenBrightnessPlatform.instance, isNotNull);
+    });
+
+    test('set platform instance', () {
+      ScreenBrightnessPlatform.instance = FakeMethodChannelScreenBrightness();
+      expect(ScreenBrightnessPlatform.instance,
+          isA<FakeMethodChannelScreenBrightness>());
+    });
+
     test('get system brightness', () async {
       expect(await methodChannelScreenBrightness.system, systemBrightness);
     });
@@ -142,6 +154,7 @@ void main() {
 
   group('mock unimplemented platform interface test', () {
     final platform = MockUnimplementedScreenBrightnessPlatform();
+
     test('unimplemented system brightness', () {
       expect(() => platform.system, throwsUnimplementedError);
     });
