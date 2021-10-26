@@ -11,16 +11,13 @@ on:
       - master
       - develop
       - 'feature/**'
-    paths:
-      - 'screen_brightness/**'
+  
   pull_request:
     branches:
       - master
-    paths:
-      - 'screen_brightness/**'
 
 jobs:
-  build:
+  screen_brightness:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -47,5 +44,51 @@ jobs:
       # Your project will need to have tests in test/ and a dependency on
       # package:test for this step to succeed. Note that Flutter projects will
       # want to change this to 'flutter test'.
-      - name: Run tests
-        run: flutter test
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+  screen_brightness_platform_interface:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./screen_brightness_platform_interface
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'dev' # or: 'beta', 'dev' or 'master'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Uncomment this step to verify the use of 'dart format' on each commit.
+      # - name: Verify formatting
+      #   run: dart format --output=none --set-exit-if-changed .
+
+      # Consider passing '--fatal-infos' for slightly stricter analysis.
+      - name: Analyze project source
+        run: flutter analyze
+
+      # Your project will need to have tests in test/ and a dependency on
+      # package:test for this step to succeed. Note that Flutter projects will
+      # want to change this to 'flutter test'.
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+  upload_lcov:
+    needs:
+      - screen_brightness
+      - screen_brightness_platform_interface
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Upload coverage to Codecov
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./screen_brightness/coverage/lcov.info,./screen_brightness_platform_interface/coverage/lcov.info
+          flags: unittests
+          name: screen_brightness_merge_lcov
