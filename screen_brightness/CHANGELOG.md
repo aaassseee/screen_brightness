@@ -1,4 +1,9 @@
-## 0.1.0 <span style="color:red">breaking change</span>
+## 0.1.1
+
+* fixed broken repository link in pubspec
+
+## 0.1.0 
+###breaking change!!
 
 * migrated to [federated plugins](https://docs.google.com/document/d/1LD7QjmzJZLCopUrFAAE98wOUQpjmguyGTN2wd_89Srs)
 * fixed issue [#2](https://github.com/aaassseee/screen_brightness/issues/2) by monitoring system brightness
