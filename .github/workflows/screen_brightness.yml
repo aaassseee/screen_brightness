@@ -3,24 +3,35 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Flutter Plugin
+name: Screen brightness
 
 on:
   push:
-    branches: [ master, develop ]
+    branches:
+      - master
+      - develop
+      - 'feature/**'
+    paths:
+      - 'screen_brightness/**'
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+    paths:
+      - 'screen_brightness/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./screen_brightness
 
     steps:
       - uses: actions/checkout@v2
 
       - uses: subosito/flutter-action@v1
         with:
-         channel: 'dev' # or: 'beta', 'dev' or 'master'
+          channel: 'dev' # or: 'beta', 'dev' or 'master'
 
       - name: Install dependencies
         run: flutter pub get
