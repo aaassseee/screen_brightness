@@ -1,0 +1,63 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Screen brightness
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - 'feature/**'
+
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Install Flutter action
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'dev' # or: 'beta', 'dev' or 'master'
+
+      - name: Install screen_brightness_platform_interface dependencies
+        working-directory: ./screen_brightness
+        run: flutter pub get
+
+      - name: Analyze screen_brightness_platform_interface project source
+        working-directory: ./screen_brightness_platform_interface
+        run: flutter analyze
+
+      - name: Run screen_brightness_platform_interface tests with coverage
+        working-directory: ./screen_brightness_platform_interface
+        run: flutter test --coverage
+
+      - name: Install screen_brightness dependencies
+        working-directory: ./screen_brightness
+        run: flutter pub get
+
+      - name: Analyze screen_brightness project source
+        working-directory: ./screen_brightness
+        run: flutter analyze
+
+      - name: Run screen_brightness tests with coverage
+        working-directory: ./screen_brightness
+        run: flutter test --coverage
+
+      - name: Upload lcovs to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./screen_brightness/coverage/lcov.info,./screen_brightness_platform_interface/coverage/lcov.info
+          flags: unittests
+          name: screen_brightness_merge_lcov
+          fail_ci_if_error: true
