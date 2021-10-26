@@ -17,77 +17,47 @@ on:
       - master
 
 jobs:
-  screen_brightness:
+  build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
+
+    steps:
+      - name: Checkout project
+      - uses: actions/checkout@v2
+
+      - name: Install Flutter action
+        uses: subosito/flutter-action@v1
+        with:
+          channel: 'dev' # or: 'beta', 'dev' or 'master'
+
+      - name: Install screen_brightness_platform_interface dependencies
         working-directory: ./screen_brightness
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'dev' # or: 'beta', 'dev' or 'master'
-
-      - name: Install dependencies
         run: flutter pub get
 
-      # Uncomment this step to verify the use of 'dart format' on each commit.
-      # - name: Verify formatting
-      #   run: dart format --output=none --set-exit-if-changed .
-
-      # Consider passing '--fatal-infos' for slightly stricter analysis.
-      - name: Analyze project source
-        run: flutter analyze
-
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
-      - name: Run tests with coverage
-        run: flutter test --coverage
-
-  screen_brightness_platform_interface:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
+      - name: Analyze screen_brightness_platform_interface project source
         working-directory: ./screen_brightness_platform_interface
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'dev' # or: 'beta', 'dev' or 'master'
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      # Uncomment this step to verify the use of 'dart format' on each commit.
-      # - name: Verify formatting
-      #   run: dart format --output=none --set-exit-if-changed .
-
-      # Consider passing '--fatal-infos' for slightly stricter analysis.
-      - name: Analyze project source
         run: flutter analyze
 
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
-      - name: Run tests with coverage
+      - name: Run screen_brightness_platform_interface tests with coverage
+        working-directory: ./screen_brightness_platform_interface
         run: flutter test --coverage
 
-  upload_lcov:
-    needs:
-      - screen_brightness
-      - screen_brightness_platform_interface
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
+      - name: Install screen_brightness dependencies
+        working-directory: ./screen_brightness
+        run: flutter pub get
 
-      - uses: codecov/codecov-action@v2
+      - name: Analyze screen_brightness project source
+        working-directory: ./screen_brightness
+        run: flutter analyze
+
+      - name: Run screen_brightness tests with coverage
+        working-directory: ./screen_brightness
+        run: flutter test --coverage
+
+      - name: Upload lcovs to Codecov
+        uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./screen_brightness/coverage/lcov.info,./screen_brightness_platform_interface/coverage/lcov.info
           flags: unittests
           name: screen_brightness_merge_lcov
+          fail_ci_if_error: true
