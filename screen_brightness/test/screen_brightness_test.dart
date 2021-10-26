@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:async/async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:screen_brightness/screen_brightness.dart';
@@ -44,22 +45,49 @@ void main() {
     screenBrightness = ScreenBrightness();
   });
 
-  test('get system brightess', () async {
+  test('get system brightness', () async {
     expect(await screenBrightness.system, systemBrightness);
   });
 
-  test('get screen brightess', () async {
+  test('get screen brightness', () async {
     expect(await screenBrightness.current, systemBrightness);
   });
 
-  test('set screen brightess with valid number', () async {
+  test('set screen brightness with valid number', () async {
     const targetBrightness = 0.1;
     await screenBrightness.setScreenBrightness(targetBrightness);
     expect(await screenBrightness.current, targetBrightness);
   });
 
-  test('reset screen brightess', () async {
+  test('reset screen brightness', () async {
     await screenBrightness.resetScreenBrightness();
     expect(await screenBrightness.current, systemBrightness);
+  });
+
+  group('on screen brightness changed stream', () {
+    setUp(() {
+      controller = StreamController<double>();
+    });
+
+    tearDown(() {
+      controller.close();
+    });
+
+    test('receive values', () async {
+      final queue =
+          StreamQueue<double>(screenBrightness.onCurrentBrightnessChanged);
+
+      controller.add(0.2);
+      expect(await queue.next, 0.2);
+
+      controller.add(systemBrightness);
+      expect(await queue.next, systemBrightness);
+
+      controller.add(0);
+      expect(await queue.next, 0);
+
+      controller.add(1);
+      expect(await queue.next, 1);
+    });
   });
 }
