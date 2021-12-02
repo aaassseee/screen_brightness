@@ -19,7 +19,6 @@ import kotlin.math.sign
 import kotlin.properties.Delegates
 import android.R.attr.defaultValue
 
-
 /**
  * ScreenBrightnessPlugin setting screen brightness
  */
