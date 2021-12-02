@@ -31,7 +31,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private lateinit var currentBrightnessChangeEventChannel: EventChannel
 
-    private lateinit var currentBrightnessChangeStreamHandler: CurrentBrightnessChangeStreamHandler
+    private var currentBrightnessChangeStreamHandler: CurrentBrightnessChangeStreamHandler? = null
 
     private var activity: Activity? = null
 
@@ -228,7 +228,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     private fun handleCurrentBrightnessChanged(currentBrightness: Float) {
-        currentBrightnessChangeStreamHandler.addCurrentBrightnessToEventSink(currentBrightness.toDouble())
+        currentBrightnessChangeStreamHandler?.addCurrentBrightnessToEventSink(currentBrightness.toDouble())
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -241,10 +241,13 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onDetachedFromActivity() {
         activity = null
+        currentBrightnessChangeEventChannel.setStreamHandler(null)
+        currentBrightnessChangeStreamHandler = null
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         methodChannel.setMethodCallHandler(null)
         currentBrightnessChangeEventChannel.setStreamHandler(null)
+        currentBrightnessChangeStreamHandler = null
     }
 }
