@@ -2,7 +2,7 @@ package com.aaassseee.screen_brightness
 
 import android.app.Activity
 import android.content.Context
-import android.content.res.Resources
+import android.os.PowerManager
 import android.provider.Settings
 import android.view.WindowManager
 import androidx.annotation.NonNull
@@ -14,8 +14,11 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import java.lang.reflect.Field
 import kotlin.math.sign
 import kotlin.properties.Delegates
+import android.R.attr.defaultValue
+
 
 /**
  * ScreenBrightnessPlugin setting screen brightness
@@ -74,7 +77,7 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         )
 
         try {
-            maximumBrightness = getScreenMaximumBrightness()
+            maximumBrightness = getScreenMaximumBrightness(flutterPluginBinding.applicationContext)
             systemBrightness = getSystemBrightness(flutterPluginBinding.applicationContext)
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
@@ -151,22 +154,22 @@ class ScreenBrightnessPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         result.success(brightness)
     }
 
-    private fun getScreenMaximumBrightness(): Float {
-        return try {
-            val systemResources: Resources = Resources.getSystem()
-            val maximumBrightnessIdentifier: Int =
-                systemResources.getIdentifier(
-                    "config_screenBrightnessSettingMaximum",
-                    "integer",
-                    "android"
-                )
-            if (maximumBrightnessIdentifier == 0) {
-                throw NullPointerException()
+    private fun getScreenMaximumBrightness(context: Context): Float {
+        try {
+            val powerManager: PowerManager =
+                context.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                    ?: throw ClassNotFoundException()
+            val fields: Array<Field> = powerManager.javaClass.declaredFields
+            for (field in fields) {
+                if (field.name.equals("BRIGHTNESS_ON")) {
+                    field.isAccessible = true
+                    return (field[powerManager] as Int).toFloat()
+                }
             }
 
-            systemResources.getInteger(maximumBrightnessIdentifier).toFloat()
+            return 255.0f
         } catch (e: Exception) {
-            255.0f
+            return 255.0f
         }
     }
 
