@@ -14,14 +14,14 @@ latest_version:\
 [![pub package](https://img.shields.io/pub/v/screen_brightness.svg)](https://pub.dartlang.org/packages/screen_brightness)
 
 ### API
-#### Initial brightness
+#### System brightness
 ```dart
-Future<double> get initialBrightness async {
+Future<double> get systemBrightness async {
   try {
-    return await ScreenBrightness.initial;
+    return await ScreenBrightness().system;
   } catch (e) {
     print(e);
-    throw 'Failed to get initial brightness';
+    throw 'Failed to get system brightness';
   }
 }
 ```
@@ -29,7 +29,7 @@ Future<double> get initialBrightness async {
 ```dart
 Future<double> get currentBrightness async {
   try {
-    return await ScreenBrightness.current;
+    return await ScreenBrightness().current;
   } catch (e) {
     print(e);
     throw 'Failed to get current brightness';
@@ -40,7 +40,7 @@ Future<double> get currentBrightness async {
 ```dart
 Future<void> setBrightness(double brightness) async {
   try {
-    await ScreenBrightness.setScreenBrightness(brightness);
+    await ScreenBrightness().setScreenBrightness(brightness);
   } catch (e) {
     print(e);
     throw 'Failed to set brightness';
@@ -51,11 +51,29 @@ Future<void> setBrightness(double brightness) async {
 ```dart
 Future<void> resetBrightness() async {
   try {
-    await ScreenBrightness.resetScreenBrightness();
+    await ScreenBrightness().resetScreenBrightness();
   } catch (e) {
     print(e);
     throw 'Failed to reset brightness';
   }
+}
+```
+
+#### current brightness changed stream
+```dart
+@override
+Widget build(BuildContext context) {
+  return StreamBuilder<double>(
+    stream: ScreenBrightness().onCurrentBrightnessChanged,
+    builder: (context, snapshot) {
+      double changedBrightness = currentBrightness;
+      if (snapshot.hasData) {
+        changedBrightness = snapshot.data!;
+      }
+        
+      return Text('current brightness $changedBrightness');
+    },
+  );
 }
 ```
 
