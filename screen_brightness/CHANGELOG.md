@@ -1,10 +1,14 @@
+## 0.1.2
+
+* updated get maximum brightness method in android (ref. [issue](https://github.com/aaassseee/screen_brightness/issues/1) & [solution](https://stackoverflow.com/questions/56203720/how-do-i-detect-the-screen-brightness-range-on-android))
+
 ## 0.1.1
 
 * fixed broken repository link in pubspec
 
 ## 0.1.0 
-###breaking change!!
 
+(breaking change)
 * migrated to [federated plugins](https://docs.google.com/document/d/1LD7QjmzJZLCopUrFAAE98wOUQpjmguyGTN2wd_89Srs)
 * fixed issue [#2](https://github.com/aaassseee/screen_brightness/issues/2) by monitoring system brightness
 * added onCurrentBrightnessChanged stream
