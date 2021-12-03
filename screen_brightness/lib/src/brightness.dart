@@ -10,9 +10,9 @@ class ScreenBrightness {
   /// PLugin singletone
   static ScreenBrightness? _singleton;
 
-  /// Constructs a singleton instance of [Battery].
+  /// Constructs a singleton instance of [ScreenBrightness].
   ///
-  /// [Battery] is designed to work as a singleton.
+  /// [ScreenBrightness] is designed to work as a singleton.
   ///
   /// When a second instance is created, the first instance will not be able to listen to the
   /// EventChannel because it is overridden. Forcing the class to be a singleton class can prevent
