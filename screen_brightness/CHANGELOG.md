@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+* separated android and ios to different federated plugins
+
 ## 0.1.2
 
 * updated get maximum brightness method in android (ref. [issue](https://github.com/aaassseee/screen_brightness/issues/1) & [solution](https://stackoverflow.com/questions/56203720/how-do-i-detect-the-screen-brightness-range-on-android))

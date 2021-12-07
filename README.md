@@ -7,10 +7,10 @@ A Plugin for controlling screen brightness with application life cycle set and r
 
 ## Plugin
 
-| Plugin | Pub | Points |
-| --- | --- | --- |
+| Plugin                                                                          | Pub                                                                                                                                                             | Points                                                                                                                                                     |
+|---------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [screen_brightness_platform_interface](./screen_brightness_platform_interface/) | [![pub package](https://img.shields.io/pub/v/screen_brightness_platform_interface.svg)](https://pub.dartlang.org/packages/screen_brightness_platform_interface) | [![pub points](https://badges.bar/screen_brightness_platform_interface/pub%20points)](https://pub.dev/packages/screen_brightness_platform_interface/score) |
-| [screen_brightness](./screen_brightness/) | [![pub package](https://img.shields.io/pub/v/screen_brightness.svg)](https://pub.dartlang.org/packages/screen_brightness) | [![pub points](https://badges.bar/screen_brightness/pub%20points)](https://pub.dev/packages/screen_brightness/score) |
+| [screen_brightness](./screen_brightness/)                                       | [![pub package](https://img.shields.io/pub/v/screen_brightness.svg)](https://pub.dartlang.org/packages/screen_brightness)                                       | [![pub points](https://badges.bar/screen_brightness/pub%20points)](https://pub.dev/packages/screen_brightness/score)                                       |
 
 ## Maintainer
 
