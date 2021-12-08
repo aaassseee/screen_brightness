@@ -86,7 +86,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     }
 
     public func handleCurrentBrightnessChanged(_ currentBrightness: CGFloat) {
-        currentBrightnessChangeStreamHandler.addCurrentBrightnessToEventSink(Double(currentBrightness))
+        currentBrightnessChangeStreamHandler.addCurrentBrightnessToEventSink(currentBrightness)
     }
 
     @objc private func onSystemBrightnessChanged(notification: Notification) {
