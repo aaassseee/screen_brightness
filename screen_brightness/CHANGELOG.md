@@ -1,3 +1,7 @@
+## 0.1.2+2
+
+* updated screen_brightness_ios minimum version
+
 ## 0.1.2+1
 
 * separated android and ios to different federated plugins
