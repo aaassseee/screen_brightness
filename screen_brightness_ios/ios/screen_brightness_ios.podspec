@@ -5,9 +5,9 @@
 Pod::Spec.new do |s|
   s.name             = 'screen_brightness_ios'
   s.version          = '0.0.1'
-  s.summary          = 'The iOS implementation of screen_brightness'
+  s.summary          = 'The iOS federated plugin implementation of the screen_brightness.'
   s.description      = <<-DESC
-The iOS implementation of screen_brightness
+The iOS federated plugin implementation of the screen_brightness.
                        DESC
   s.homepage         = 'https://github.com/aaassseee/screen_brightness'
   s.license          = { :file => '../LICENSE' }

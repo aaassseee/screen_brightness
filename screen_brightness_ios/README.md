@@ -1,6 +1,6 @@
 # screen_brightness_ios
 
-The iOS implementation of [screen_brightness](https://pub.dev/packages/screen_brightness).
+The iOS federated plugin implementation of the [screen_brightness](https://pub.dev/packages/screen_brightness).
 
 ## Usage
 
