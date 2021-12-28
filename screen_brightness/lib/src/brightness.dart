@@ -82,7 +82,7 @@ class ScreenBrightness {
   /// Code: -1, Message: Unable to change screen brightness
   /// Compare changed value with set value fail
   ///
-  /// Code: -10, Message: Unexpected error on activity binding
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   Future<void> setScreenBrightness(double brightness) =>
       _platform.setScreenBrightness(brightness);
@@ -101,7 +101,7 @@ class ScreenBrightness {
   /// Code: -1, Message: Unable to change screen brightness
   /// Compare changed value with set value fail
   ///
-  /// Code: -10, Message: Unexpected error on activity binding
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   Future<void> resetScreenBrightness() => _platform.resetScreenBrightness();
 
