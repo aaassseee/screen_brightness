@@ -43,6 +43,10 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         case "resetScreenBrightness":
             handleResetScreenBrightnessMethodCall(result: result)
             break;
+            
+        case "hasChanged":
+            handleHasChangedMethodCall(result: result)
+            break;
 
         default:
             result(FlutterMethodNotImplemented)
@@ -50,15 +54,15 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         }
     }
 
-    func handleGetSystemBrightnessMethodCall(result: FlutterResult) {
+    private func handleGetSystemBrightnessMethodCall(result: FlutterResult) {
         result(systemBrightness)
     }
 
-    func handleGetScreenBrightnessMethodCall(result: FlutterResult) {
+    private func handleGetScreenBrightnessMethodCall(result: FlutterResult) {
         result(UIScreen.main.brightness)
     }
 
-    func handleSetScreenBrightnessMethodCall(call: FlutterMethodCall, result: FlutterResult) {
+    private func handleSetScreenBrightnessMethodCall(call: FlutterMethodCall, result: FlutterResult) {
         guard let parameters = call.arguments as? Dictionary<String, Any>, let brightness = parameters["brightness"] as? NSNumber else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null brightness", details: nil))
             return
@@ -72,7 +76,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         result(nil)
     }
 
-    func handleResetScreenBrightnessMethodCall(result: FlutterResult) {
+    private func handleResetScreenBrightnessMethodCall(result: FlutterResult) {
         guard let initialBrightness = systemBrightness else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null brightness", details: nil))
             return
@@ -84,8 +88,12 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         handleCurrentBrightnessChanged(initialBrightness)
         result(nil)
     }
+    
+    private func handleHasChangedMethodCall(result: FlutterResult) {
+        result(changedBrightness != nil)
+    }
 
-    public func handleCurrentBrightnessChanged(_ currentBrightness: CGFloat) {
+    private func handleCurrentBrightnessChanged(_ currentBrightness: CGFloat) {
         currentBrightnessChangeStreamHandler.addCurrentBrightnessToEventSink(currentBrightness)
     }
 
