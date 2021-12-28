@@ -85,7 +85,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     
     func handleGetSystemBrightnessMethodCall(result: FlutterResult) {
         guard let systemBrightness = systemBrightness else {
-            result(FlutterError.init(code: "-2", message: "System brightness is nil", details: nil))
+            result(FlutterError.init(code: "-11", message: "Could not found system setting screen brightness value", details: nil))
             return
         }
         
@@ -112,7 +112,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         do {
             try setDisplayBrightness(brightness: _changedBrightness)
         } catch {
-            result(FlutterError.init(code: "-2", message: "Failed to set brightness", details: nil))
+            result(FlutterError.init(code: "-1", message: "Unable to change screen brightness", details: nil))
         }
         
         changedBrightness = _changedBrightness
@@ -129,7 +129,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         do {
             try setDisplayBrightness(brightness: initialBrightness)
         } catch {
-            result(FlutterError.init(code: "-2", message: "Failed to reset brightness", details: nil))
+            result(FlutterError.init(code: "-1", message: "Unable to change screen brightness", details: nil))
         }
         
         changedBrightness = nil

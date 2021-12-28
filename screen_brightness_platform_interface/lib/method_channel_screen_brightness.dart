@@ -21,6 +21,9 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// This parameter is useful for user to get screen brightness value after
   /// calling [resetScreenBrightness]
   ///
+  /// Platform difference:
+  /// (macOS): return initial brightness
+  ///
   /// When [_channel.invokeMethod] fails to get current brightness, it throws
   /// [PlatformException] with code and message:
   ///
@@ -60,10 +63,10 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   ///
-  /// (Android only) Code: -11, Message: Could not found system setting screen
-  /// brightness value
+  /// (Android only) (macOS only) Code: -11, Message: Could not found system
+  /// setting screen brightness value
   /// Unexpected error when getting brightness from Setting using
-  /// Settings.System.SCREEN_BRIGHTNESS
+  /// (Android) Settings.System.SCREEN_BRIGHTNESS
   @override
   Future<double> get current async {
     final currentBrightness = await pluginMethodChannel
@@ -90,13 +93,13 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// When [_channel.invokeMethod] fails to get current brightness, it throws
   /// [PlatformException] with code and message:
   ///
+  /// Code: -1, Message: Unable to change screen brightness
+  /// Failed to set brightness
+  ///
   /// Code: -2, Message: Unexpected error on null brightness
   /// Cannot read parameter from method channel map, or parameter is null
   ///
-  /// Code: -1, Message: Unable to change screen brightness
-  /// Compare changed value with set value fail
-  ///
-  /// Code: -10, Message: Unexpected error on activity binding
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   @override
   Future<void> setScreenBrightness(double brightness) async {
@@ -116,13 +119,13 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// When [_channel.invokeMethod] fails to get current brightness, it throws
   /// [PlatformException] with code and message:
   ///
+  /// Code: -1, Message: Unable to change screen brightness
+  /// Failed to reset brightness
+  ///
   /// Code: -2, Message: Unexpected error on null brightness
   /// System brightness in plugin is null
   ///
-  /// Code: -1, Message: Unable to change screen brightness
-  /// Compare changed value with set value fail
-  ///
-  /// Code: -10, Message: Unexpected error on activity binding
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   @override
   Future<void> resetScreenBrightness() async {
