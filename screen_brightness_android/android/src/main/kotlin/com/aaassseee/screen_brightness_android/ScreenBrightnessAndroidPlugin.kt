@@ -105,6 +105,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             "getScreenBrightness" -> handleGetScreenBrightnessMethodCall(result)
             "setScreenBrightness" -> handleSetScreenBrightnessMethodCall(call, result)
             "resetScreenBrightness" -> handleResetScreenBrightnessMethodCall(result)
+            "hasChanged" -> handleHasChangedMethodCall(result)
             else -> result.notImplemented()
         }
     }
@@ -231,6 +232,10 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
 
     private fun handleCurrentBrightnessChanged(currentBrightness: Float) {
         currentBrightnessChangeStreamHandler?.addCurrentBrightnessToEventSink(currentBrightness.toDouble())
+    }
+
+    private fun handleHasChangedMethodCall(result: MethodChannel.Result) {
+        result.success(changedBrightness != null)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
