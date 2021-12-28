@@ -27,14 +27,13 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// When [_channel.invokeMethod] fails to get current brightness, it throws
   /// [PlatformException] with code and message:
   ///
-  /// Code: -9, Message: Brightness value returns null
+  /// Code: -9, Message: value returns null
   @override
   Future<double> get system async {
     final systemBrightness = await pluginMethodChannel
         .invokeMethod<double>(methodNameGetSystemScreenBrightness);
     if (systemBrightness == null) {
-      throw PlatformException(
-          code: "-9", message: "Brightness value returns null");
+      throw PlatformException(code: "-9", message: "value returns null");
     }
 
     if (!systemBrightness.isInRange(minBrightness, maxBrightness)) {
@@ -58,7 +57,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// When [_channel.invokeMethod] fails to get current brightness, it throws
   /// [PlatformException] with code and message:
   ///
-  /// Code: -9, Message: Brightness value returns null
+  /// Code: -9, Message: value returns null
   ///
   /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
@@ -72,8 +71,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     final currentBrightness = await pluginMethodChannel
         .invokeMethod<double>(methodNameGetScreenBrightness);
     if (currentBrightness == null) {
-      throw PlatformException(
-          code: "-9", message: "Brightness value returns null");
+      throw PlatformException(code: "-9", message: "value returns null");
     }
 
     if (!currentBrightness.isInRange(minBrightness, maxBrightness)) {
@@ -144,5 +142,26 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         .receiveBroadcastStream()
         .cast<double>();
     return _onCurrentBrightnessChanged!;
+  }
+
+  /// A boolean to identify brightness has changed with this plugin.
+  ///
+  /// e.g
+  /// [ScreenBrightness.setScreenBrightness] will make this true
+  /// [ScreenBrightness.resetScreenBrightness] will make this false
+  ///
+  /// When [_channel.invokeMethod] fails to get current brightness, it throws
+  /// [PlatformException] with code and message:
+  ///
+  /// Code: -9, Message: value returns null
+  @override
+  Future<bool> get hasChanged async {
+    final hasChanged =
+        await pluginMethodChannel.invokeMethod<bool>(methodNameHasChanged);
+    if (hasChanged == null) {
+      throw PlatformException(code: "-9", message: "value returns null");
+    }
+
+    return hasChanged;
   }
 }

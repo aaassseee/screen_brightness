@@ -81,6 +81,15 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   /// This stream is useful for user to listen to brightness changes.
   Stream<double> get onCurrentBrightnessChanged {
     throw UnimplementedError(
-        'get onCurrentBrightnessChanged has not been implemented.');
+        'onCurrentBrightnessChanged has not been implemented.');
+  }
+
+  /// A boolean to identify brightness has changed with this plugin.
+  ///
+  /// e.g
+  /// [ScreenBrightness.setScreenBrightness] will make this true
+  /// [ScreenBrightness.resetScreenBrightness] will make this false
+  Future<bool> get hasChanged {
+    throw UnimplementedError('hasChanged has not been implemented.');
   }
 }
