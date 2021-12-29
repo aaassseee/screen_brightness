@@ -47,7 +47,7 @@ Future<void> setBrightness(double brightness) async {
   }
 }
 ```
-#### reset brightness
+#### Reset brightness
 ```dart
 Future<void> resetBrightness() async {
   try {
@@ -59,7 +59,7 @@ Future<void> resetBrightness() async {
 }
 ```
 
-#### current brightness changed stream
+#### Current brightness changed stream
 ```dart
 @override
 Widget build(BuildContext context) {
@@ -72,6 +72,20 @@ Widget build(BuildContext context) {
       }
         
       return Text('current brightness $changedBrightness');
+    },
+  );
+}
+```
+
+#### Has changed
+```dart
+@override
+Widget build(BuildContext context) {
+  return FutureBuilder<bool>(
+    future: ScreenBrightness().hasChanged,
+    builder: (context, snapshot) {
+      return Text(
+          'Brightness has changed via plugin: ${snapshot.data}');
     },
   );
 }
