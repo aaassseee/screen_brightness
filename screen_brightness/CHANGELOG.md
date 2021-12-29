@@ -1,3 +1,7 @@
+## 0.1.3
+
+* added has changed boolean
+
 ## 0.1.2+2
 
 * updated screen_brightness_ios minimum version

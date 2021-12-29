@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Screen brightness
+name: screen_brightness
 
 on:
   push:
@@ -15,6 +15,8 @@ on:
   pull_request:
     branches:
       - master
+      - develop
+      - 'feature/**'
 
 jobs:
   build:
@@ -60,4 +62,4 @@ jobs:
           files: ./screen_brightness/coverage/lcov.info,./screen_brightness_platform_interface/coverage/lcov.info
           flags: unittests
           name: screen_brightness_merge_lcov
-          fail_ci_if_error: true
+          fail_ci_if_error: false

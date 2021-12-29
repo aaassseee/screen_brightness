@@ -82,7 +82,7 @@ class ScreenBrightness {
   /// Code: -1, Message: Unable to change screen brightness
   /// Compare changed value with set value fail
   ///
-  /// Code: -10, Message: Unexpected error on activity binding
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   Future<void> setScreenBrightness(double brightness) =>
       _platform.setScreenBrightness(brightness);
@@ -101,7 +101,7 @@ class ScreenBrightness {
   /// Code: -1, Message: Unable to change screen brightness
   /// Compare changed value with set value fail
   ///
-  /// Code: -10, Message: Unexpected error on activity binding
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   Future<void> resetScreenBrightness() => _platform.resetScreenBrightness();
 
@@ -113,4 +113,16 @@ class ScreenBrightness {
   /// This stream is useful for user to listen to brightness changes.
   Stream<double> get onCurrentBrightnessChanged =>
       _platform.onCurrentBrightnessChanged;
+
+  /// A boolean to identify brightness has changed with this plugin.
+  ///
+  /// e.g
+  /// [ScreenBrightness.setScreenBrightness] will make this true
+  /// [ScreenBrightness.resetScreenBrightness] will make this false
+  ///
+  /// When [_channel.invokeMethod] fails to get current brightness, it throws
+  /// [PlatformException] with code and message:
+  ///
+  /// Code: -9, Message: Brightness value returns null
+  Future<bool> get hasChanged => _platform.hasChanged;
 }
