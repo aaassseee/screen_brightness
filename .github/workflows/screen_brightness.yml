@@ -62,4 +62,4 @@ jobs:
           files: ./screen_brightness/coverage/lcov.info,./screen_brightness_platform_interface/coverage/lcov.info
           flags: unittests
           name: screen_brightness_merge_lcov
-          fail_ci_if_error: true
+          fail_ci_if_error: false
