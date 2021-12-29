@@ -14,6 +14,7 @@ class MockScreenBrightnessPlatform
     with MockPlatformInterfaceMixin
     implements ScreenBrightnessPlatform {
   double _currentBrightness = systemBrightness;
+  double? _changedBrightness;
 
   @override
   Future<double> get system => Future.value(systemBrightness);
@@ -24,15 +25,20 @@ class MockScreenBrightnessPlatform
   @override
   Future<void> setScreenBrightness(double brightness) async {
     _currentBrightness = brightness;
+    _changedBrightness = brightness;
   }
 
   @override
   Future<void> resetScreenBrightness() async {
     _currentBrightness = systemBrightness;
+    _changedBrightness = null;
   }
 
   @override
   Stream<double> get onCurrentBrightnessChanged => controller.stream;
+
+  @override
+  Future<bool> get hasChanged async => _changedBrightness != null;
 }
 
 void main() {

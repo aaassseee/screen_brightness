@@ -34,7 +34,6 @@ void main() {
 
     setUp(() {
       systemBrightness = 0.5;
-      changedBrightness = systemBrightness;
       methodChannelScreenBrightness = MethodChannelScreenBrightness();
 
       pluginMethodChannel
@@ -44,15 +43,18 @@ void main() {
             return systemBrightness;
 
           case methodNameGetScreenBrightness:
-            return changedBrightness;
+            return changedBrightness ?? systemBrightness;
 
           case methodNameSetScreenBrightness:
             changedBrightness = methodCall.arguments['brightness'];
             return null;
 
           case methodNameResetScreenBrightness:
-            changedBrightness = systemBrightness;
-            return changedBrightness;
+            changedBrightness = null;
+            return null;
+
+          case methodNameHasChanged:
+            return changedBrightness != null;
         }
       });
 
@@ -112,7 +114,7 @@ void main() {
     });
 
     test('get screen brightness with null', () async {
-      changedBrightness = null;
+      systemBrightness = null;
       expect(() async => methodChannelScreenBrightness.current,
           throwsA(isA<PlatformException>()));
     });
@@ -150,6 +152,22 @@ void main() {
           await methodChannelScreenBrightness.onCurrentBrightnessChanged.first;
       expect(result, 0.2);
     });
+
+    test('on screen brightness changed', () async {
+      final result =
+          await methodChannelScreenBrightness.onCurrentBrightnessChanged.first;
+      expect(result, 0.2);
+    });
+
+    test('has changed', () async {
+      expect(await methodChannelScreenBrightness.hasChanged, false);
+
+      await methodChannelScreenBrightness.setScreenBrightness(0.1);
+      expect(await methodChannelScreenBrightness.hasChanged, true);
+
+      await methodChannelScreenBrightness.resetScreenBrightness();
+      expect(await methodChannelScreenBrightness.hasChanged, false);
+    });
   });
 
   group('mock unimplemented platform interface test', () {
@@ -174,6 +192,10 @@ void main() {
     test('unimplemented onCurrentBrightnessChanged stream', () {
       expect(
           () => platform.onCurrentBrightnessChanged, throwsUnimplementedError);
+    });
+
+    test('unimplemented has changed', () {
+      expect(() => platform.hasChanged, throwsUnimplementedError);
     });
   });
 }

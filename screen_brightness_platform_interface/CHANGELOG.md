@@ -1,3 +1,7 @@
+## 0.0.3
+
+* add has change boolean
+
 ## 0.0.2
 
 * fixed broken repository link in pubspec

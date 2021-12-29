@@ -157,6 +157,13 @@ class _ControllerPageState extends State<ControllerPage> {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    FutureBuilder<bool>(
+                      future: ScreenBrightness().hasChanged,
+                      builder: (context, snapshot) {
+                        return Text(
+                            'Brightness has changed via plugin: ${snapshot.data}');
+                      },
+                    ),
                     Text('Current brightness: $changedBrightness'),
                     Slider.adaptive(
                       value: changedBrightness,

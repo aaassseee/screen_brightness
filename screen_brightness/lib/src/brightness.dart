@@ -116,4 +116,16 @@ class ScreenBrightness {
   /// This stream is useful for user to listen to brightness changes.
   Stream<double> get onCurrentBrightnessChanged =>
       _platform.onCurrentBrightnessChanged;
+
+  /// A boolean to identify brightness has changed with this plugin.
+  ///
+  /// e.g
+  /// [ScreenBrightness.setScreenBrightness] will make this true
+  /// [ScreenBrightness.resetScreenBrightness] will make this false
+  ///
+  /// When [_channel.invokeMethod] fails to get current brightness, it throws
+  /// [PlatformException] with code and message:
+  ///
+  /// Code: -9, Message: Brightness value returns null
+  Future<bool> get hasChanged => _platform.hasChanged;
 }
