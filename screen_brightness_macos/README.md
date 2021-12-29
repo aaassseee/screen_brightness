@@ -1,15 +1,9 @@
 # screen_brightness_macos
 
-The macOS federated plugin implementation of the screen_brightness.
+The macOS federated plugin implementation of the [screen_brightness](https://pub.dev/packages/screen_brightness).
 
-## Getting Started
+## Usage
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This package is [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin), which means you can simply use `screen_brightness`
+normally. This package will be automatically included in your app when you do.
 
