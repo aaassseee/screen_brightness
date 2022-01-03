@@ -1,3 +1,7 @@
+## 0.0.4
+
+* fixed [#5](https://github.com/aaassseee/screen_brightness/issues/5)
+
 ## 0.0.3
 
 * added has changed bool

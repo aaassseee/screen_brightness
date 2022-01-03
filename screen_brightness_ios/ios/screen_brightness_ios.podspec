@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'screen_brightness_ios'
-  s.version          = '0.0.1'
+  s.version          = '0.0.4'
   s.summary          = 'The iOS federated plugin implementation of the screen_brightness.'
   s.description      = <<-DESC
 The iOS federated plugin implementation of the screen_brightness.
