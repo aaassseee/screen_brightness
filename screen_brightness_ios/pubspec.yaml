@@ -1,6 +1,6 @@
 name: screen_brightness_ios
 description: The iOS federated plugin implementation of the screen_brightness.
-version: 0.0.4
+version: 0.0.5
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness_ios
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 #  screen_brightness_platform_interface:
 #    path: ../screen_brightness_platform_interface/
-  screen_brightness_platform_interface: ^0.0.3
+  screen_brightness_platform_interface: ^0.0.4
 
 dev_dependencies:
   flutter_test:

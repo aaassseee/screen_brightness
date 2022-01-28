@@ -1,6 +1,11 @@
+## 0.0.4
+
+* added auto reset boolean
+* downgrade plugin_platform_interface to support variety of version
+
 ## 0.0.3
 
-* add has change boolean
+* added has change boolean
 
 ## 0.0.2
 
@@ -8,4 +13,4 @@
 
 ## 0.0.1
 
-* Initial release
+* initial release

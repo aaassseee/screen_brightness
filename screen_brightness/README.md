@@ -91,6 +91,35 @@ Widget build(BuildContext context) {
 }
 ```
 
+#### Auto reset (iOS only)
+```dart
+bool isAutoReset = true;
+
+Future<void> getAutoResetSetting() async {
+  if (!Platform.isIOS) {
+    return;
+  }
+
+  final _isAutoReset = await ScreenBrightness().isAutoReset;
+  setState(() {
+    isAutoReset = _isAutoReset;
+  });
+}
+
+@override
+Widget build(BuildContext context) {
+  return Switch(
+    value: isAutoReset,
+    onChanged: !Platform.isIOS
+        ? null
+        : (value) async {
+      await ScreenBrightness().setAutoReset(value);
+      await getAutoResetSetting();
+    },
+  );
+}
+```
+
 ### Usage
 
 * DON'T use didChangeAppLifecycleState to set or reset brightness because this plugin already implemented this function.

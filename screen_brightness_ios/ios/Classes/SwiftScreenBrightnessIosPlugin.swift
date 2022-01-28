@@ -8,7 +8,9 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     let currentBrightnessChangeStreamHandler: CurrentBrightnessChangeStreamHandler = CurrentBrightnessChangeStreamHandler()
     
     var systemBrightness: CGFloat?
-    var changedBrightness: CGFloat? 
+    var changedBrightness: CGFloat?
+    
+    var isAutoReset: Bool = true
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = SwiftScreenBrightnessIosPlugin()
@@ -47,6 +49,12 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         case "hasChanged":
             handleHasChangedMethodCall(result: result)
             break;
+            
+        case "isAutoReset":
+            handleIsAutoResetMethodCall(result: result)
+            
+        case "setAutoReset":
+            handleSetAutoResetMethodCall(call: call, result: result)
             
         default:
             result(FlutterMethodNotImplemented)
@@ -97,6 +105,20 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         currentBrightnessChangeStreamHandler.addCurrentBrightnessToEventSink(currentBrightness)
     }
     
+    private func handleIsAutoResetMethodCall(result: FlutterResult) {
+        result(isAutoReset)
+    }
+    
+    private func handleSetAutoResetMethodCall(call: FlutterMethodCall, result: FlutterResult) {
+        guard let parameters = call.arguments as? Dictionary<String, Any>, let isAutoReset = parameters["isAutoReset"] as? Bool else {
+            result(FlutterError.init(code: "-2", message: "Unexpected error on null isAutoReset", details: nil))
+            return
+        }
+        
+        self.isAutoReset = isAutoReset
+        result(nil)
+    }
+    
     @objc private func onSystemBrightnessChanged(notification: Notification) {
         guard let screenObject = notification.object, let brightness = (screenObject as AnyObject).brightness else {
             return
@@ -109,7 +131,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     }
     
     func onApplicationPause() {
-        guard let initialBrightness = systemBrightness else {
+        guard isAutoReset, let initialBrightness = systemBrightness else {
             return
         }
         
@@ -117,7 +139,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     }
     
     func onApplicationResume() {
-        guard let changedBrightness = changedBrightness else {
+        guard isAutoReset, let changedBrightness = changedBrightness else {
             return
         }
         
