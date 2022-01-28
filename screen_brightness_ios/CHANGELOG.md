@@ -1,6 +1,14 @@
+## 0.0.5
+
+* added auto reset boolean to prevent auto reset when application lifecycle changed
+
+## 0.0.4
+
+* fixed [#5](https://github.com/aaassseee/screen_brightness/issues/5)
+
 ## 0.0.3
 
-* added has changed bool
+* added has changed boolean
 
 ## 0.0.2
 

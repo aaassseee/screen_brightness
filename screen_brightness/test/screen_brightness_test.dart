@@ -16,6 +16,8 @@ class MockScreenBrightnessPlatform
   double _currentBrightness = systemBrightness;
   double? _changedBrightness;
 
+  bool _isAutoReset = true;
+
   @override
   Future<double> get system => Future.value(systemBrightness);
 
@@ -39,6 +41,14 @@ class MockScreenBrightnessPlatform
 
   @override
   Future<bool> get hasChanged async => _changedBrightness != null;
+
+  @override
+  Future<bool> get isAutoReset async => _isAutoReset;
+
+  @override
+  Future<void> setAutoReset(bool isAutoReset) async {
+    _isAutoReset = isAutoReset;
+  }
 }
 
 void main() {
@@ -95,5 +105,28 @@ void main() {
       controller.add(1);
       expect(await queue.next, 1);
     });
+  });
+
+  test('has changed', () async {
+    expect(await screenBrightness.hasChanged, false);
+
+    await screenBrightness.setScreenBrightness(0.1);
+    expect(await screenBrightness.hasChanged, true);
+
+    await screenBrightness.setScreenBrightness(systemBrightness);
+    expect(await screenBrightness.hasChanged, true);
+
+    await screenBrightness.resetScreenBrightness();
+    expect(await screenBrightness.hasChanged, false);
+  });
+
+  test('is auto reset', () async {
+    expect(await screenBrightness.isAutoReset, true);
+
+    await screenBrightness.setAutoReset(false);
+    expect(await screenBrightness.isAutoReset, false);
+
+    await screenBrightness.setAutoReset(true);
+    expect(await screenBrightness.isAutoReset, true);
   });
 }

@@ -28,6 +28,7 @@ void main() {
   group('plugin test', () {
     double? systemBrightness;
     double? changedBrightness;
+    bool isAutoReset = true;
     const pluginEventChannelCurrentBrightnessChange =
         MethodChannel(pluginEventChannelCurrentBrightnessChangeName);
     late MethodChannelScreenBrightness methodChannelScreenBrightness;
@@ -55,6 +56,13 @@ void main() {
 
           case methodNameHasChanged:
             return changedBrightness != null;
+
+          case methodNameIsAutoReset:
+            return isAutoReset;
+
+          case methodNameSetAutoReset:
+            isAutoReset = methodCall.arguments['isAutoReset'];
+            return null;
         }
       });
 
@@ -168,6 +176,16 @@ void main() {
       await methodChannelScreenBrightness.resetScreenBrightness();
       expect(await methodChannelScreenBrightness.hasChanged, false);
     });
+
+    test('is auto reset', () async {
+      expect(await methodChannelScreenBrightness.isAutoReset, true);
+
+      await methodChannelScreenBrightness.setAutoReset(false);
+      expect(await methodChannelScreenBrightness.isAutoReset, false);
+
+      await methodChannelScreenBrightness.setAutoReset(true);
+      expect(await methodChannelScreenBrightness.isAutoReset, true);
+    });
   });
 
   group('mock unimplemented platform interface test', () {
@@ -196,6 +214,14 @@ void main() {
 
     test('unimplemented has changed', () {
       expect(() => platform.hasChanged, throwsUnimplementedError);
+    });
+
+    test('unimplemented is auto reset', () {
+      expect(() => platform.isAutoReset, throwsUnimplementedError);
+    });
+
+    test('unimplemented set auto reset', () {
+      expect(() => platform.setAutoReset(true), throwsUnimplementedError);
     });
   });
 }
