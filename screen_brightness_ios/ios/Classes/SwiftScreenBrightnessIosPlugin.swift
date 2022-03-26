@@ -71,7 +71,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     public func setScreenBrightness(brightness: CGFloat) {
         taskQueue.cancelAllOperations()
         let step: CGFloat = 0.04 * ((brightness > UIScreen.main.brightness) ? 1 : -1)
-        taskQueue.addOperations(stride(from: brightness, through: brightness, by: step).map({ _brightness -> Operation in
+        taskQueue.addOperations(stride(from: UIScreen.main.brightness, through: brightness, by: step).map({ _brightness -> Operation in
             let blockOperation = BlockOperation()
             unowned let _unownedOperation = blockOperation
             blockOperation.addExecutionBlock({
