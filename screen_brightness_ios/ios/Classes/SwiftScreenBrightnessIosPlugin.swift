@@ -76,18 +76,19 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         }
         
         let currentBrightness = UIScreen.main.brightness
-        var fps: Double = 60.0;
+        var framePerSecond = 60.0
         if #available(iOS 10.3, *) {
-            fps = Double(UIScreen.main.maximumFramesPerSecond)
+            framePerSecond = Double(UIScreen.main.maximumFramesPerSecond)
         }
-        let step: CGFloat = 0.01 * ((targetBrightness > currentBrightness) ? 1 : -1)
+        let step: CGFloat = 0.001 / (framePerSecond / 60.0) * ((targetBrightness > currentBrightness) ? 1 : -1)
+        let stepPerFrame = 16.0
         
         taskQueue.addOperations(stride(from: currentBrightness, through: targetBrightness, by: step).map({ _brightness -> Operation in
             let blockOperation = BlockOperation()
             unowned let _unownedOperation = blockOperation
             blockOperation.addExecutionBlock({
                 if !_unownedOperation.isCancelled {
-                    Thread.sleep(forTimeInterval: 1 / fps / 2)
+                    Thread.sleep(forTimeInterval: 1 / framePerSecond / stepPerFrame)
                     DispatchQueue.main.async {
                         UIScreen.main.brightness = _brightness
                     }
