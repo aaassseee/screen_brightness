@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/screen_brightness/screen_brightness.iml" filepath="$PROJECT_DIR$/screen_brightness/screen_brightness.iml" />
+      <module fileurl="file://$PROJECT_DIR$/screen_brightness_android/screen_brightness_android.iml" filepath="$PROJECT_DIR$/screen_brightness_android/screen_brightness_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/screen_brightness_ios/screen_brightness_ios.iml" filepath="$PROJECT_DIR$/screen_brightness_ios/screen_brightness_ios.iml" />
+      <module fileurl="file://$PROJECT_DIR$/screen_brightness_macos/screen_brightness_macos.iml" filepath="$PROJECT_DIR$/screen_brightness_macos/screen_brightness_macos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/screen_brightness_platform_interface/screen_brightness_platform_interface.iml" filepath="$PROJECT_DIR$/screen_brightness_platform_interface/screen_brightness_platform_interface.iml" />
+    </modules>
+  </component>
+</project>
