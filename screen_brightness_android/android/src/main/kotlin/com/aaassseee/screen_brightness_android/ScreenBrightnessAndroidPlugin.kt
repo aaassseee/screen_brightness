@@ -147,8 +147,6 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             result.error("-11", "Could not found system setting screen brightness value", null)
             return
         }
-
-        result.success(brightness)
     }
 
     private fun getScreenMaximumBrightness(context: Context): Float {
