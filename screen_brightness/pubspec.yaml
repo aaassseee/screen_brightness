@@ -1,6 +1,6 @@
 name: screen_brightness
-description: A Plugin for controlling screen brightness with application life cycle set and reset brightness implemented
-version: 0.1.4
+description: A Plugin for controlling screen brightness with application life cycle reset implemented
+version: 0.2.0
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
@@ -18,9 +18,9 @@ dependencies:
 #    path: ../screen_brightness_android
 #  screen_brightness_ios:
 #    path: ../screen_brightness_ios
-  screen_brightness_platform_interface: ^0.0.4
-  screen_brightness_android: ^0.0.4
-  screen_brightness_ios: ^0.0.5
+  screen_brightness_platform_interface: ">=0.1.0 <1.0.0"
+  screen_brightness_android: ">=0.1.0 <1.0.0"
+  screen_brightness_ios: ">=0.1.0 <1.0.0"
 
 dev_dependencies:
   flutter_test:

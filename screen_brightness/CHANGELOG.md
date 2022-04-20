@@ -1,3 +1,9 @@
+## 0.2.0
+
+* upgraded dependecies
+* changed dependencies version using version range
+* updated README.md
+
 ## 0.1.4
 
 * added is auto reset boolean for disable auto reset (iOS only)

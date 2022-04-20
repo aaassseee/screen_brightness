@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_platform_interface/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_platform_interface/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_platform_interface/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_android/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_android/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_android/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_ios/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_ios/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_ios/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_ios/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_ios/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_ios/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/ios/.symlinks/plugins/screen_brightness_ios/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/ios/.symlinks/plugins/screen_brightness_ios/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/ios/.symlinks/plugins/screen_brightness_ios/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_android/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_android/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness_android/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/ios/.symlinks/plugins/screen_brightness_ios/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/ios/.symlinks/plugins/screen_brightness_ios/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/example/ios/.symlinks/plugins/screen_brightness_ios/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/build" />
+      <excludeFolder url="file://$MODULE_DIR$/screen_brightness/.pub" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

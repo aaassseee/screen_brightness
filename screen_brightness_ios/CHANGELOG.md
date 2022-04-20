@@ -1,3 +1,8 @@
+## 0.1.0
+
+* added fade animation when brightness changed
+* change dependencies version using version range
+
 ## 0.0.5
 
 * added auto reset boolean to prevent auto reset when application lifecycle changed
