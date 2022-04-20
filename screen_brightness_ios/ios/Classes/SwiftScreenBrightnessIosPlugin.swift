@@ -68,7 +68,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         }
     }
     
-    public func setScreenBrightness(targetBrightness: CGFloat, animated: Bool) {
+    public func setScreenBrightness(targetBrightness: CGFloat, animated: Bool, duration: TimeInterval = 1.0) {
         taskQueue.cancelAllOperations()
         if !animated {
             UIScreen.main.brightness = targetBrightness
@@ -80,19 +80,21 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         if #available(iOS 10.3, *) {
             framePerSecond = Double(UIScreen.main.maximumFramesPerSecond)
         }
-        let step: CGFloat = 0.001 / (framePerSecond / 60.0) * ((targetBrightness > currentBrightness) ? 1 : -1)
-        let stepPerFrame = 16.0
+        let changes = 0.01 / (framePerSecond / 60.0)
+        let step = changes * ((targetBrightness > currentBrightness) ? 1 : -1)
         
         taskQueue.addOperations(stride(from: currentBrightness, through: targetBrightness, by: step).map({ _brightness -> Operation in
             let blockOperation = BlockOperation()
             unowned let _unownedOperation = blockOperation
             blockOperation.addExecutionBlock({
-                if !_unownedOperation.isCancelled {
-                    Thread.sleep(forTimeInterval: 1 / framePerSecond / stepPerFrame)
-                    DispatchQueue.main.async {
-                        UIScreen.main.brightness = _brightness
-                    }
+                guard !_unownedOperation.isCancelled else {
+                    return
                 }
+                
+                Thread.sleep(forTimeInterval: duration * changes)
+                OperationQueue.main.addOperation({
+                    UIScreen.main.brightness = _brightness
+                })
             })
             return blockOperation
         }), waitUntilFinished: false)
@@ -171,7 +173,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
             return
         }
         
-        setScreenBrightness(targetBrightness: initialBrightness, animated: true)
+        setScreenBrightness(targetBrightness: initialBrightness, animated: true, duration: 0.5)
     }
     
     func onApplicationResume() {
@@ -179,7 +181,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
             return
         }
         
-        setScreenBrightness(targetBrightness: changedBrightness, animated: true)
+        setScreenBrightness(targetBrightness: changedBrightness, animated: true, duration: 0.5)
     }
     
     public func applicationWillResignActive(_ application: UIApplication) {
