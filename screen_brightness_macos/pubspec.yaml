@@ -1,6 +1,6 @@
 name: screen_brightness_macos
 description: The macOS federated plugin implementation of the screen_brightness.
-version: 0.0.1-dev.2
+version: 0.1.0-dev.1
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/feature/macos_support/screen_brightness_macos
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 #  screen_brightness_platform_interface:
 #    path: ../screen_brightness_platform_interface/
-  screen_brightness_platform_interface: ^0.0.3
+  screen_brightness_platform_interface: ">=0.1.0 <1.0.0"
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,10 @@
 import Cocoa
 import FlutterMacOS
 
+enum ScreenBrightnessError: Error {
+    case serviceMissing
+}
+
 public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     var methodChannel: FlutterMethodChannel?
     
@@ -9,6 +13,8 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     
     var systemBrightness: Float?
     var changedBrightness: Float?
+    
+    var isAutoReset: Bool = true
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = ScreenBrightnessMacosPlugin()
@@ -21,7 +27,13 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     
     override init() {
         super.init()
-        systemBrightness = try? getDisplayBrightness()
+        systemBrightness = try? getScreenBrightness()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive), name: NSApplication.willResignActiveNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: NSApplication.didBecomeActiveNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate), name: NSApplication.willTerminateNotification, object: nil)
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -46,21 +58,39 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
             handleHasChangedMethodCall(result: result)
             break;
             
+        case "isAutoReset":
+            handleIsAutoResetMethodCall(result: result)
+            
+        case "setAutoReset":
+            handleSetAutoResetMethodCall(call: call, result: result)
+            
         default:
             result(FlutterMethodNotImplemented)
             break;
         }
     }
     
-    private func getDisplayBrightness() throws -> Float {
-        var brightness: Float = 1.0
-        var service: io_object_t = 1
-        var iterator: io_iterator_t = 0
-        let result: kern_return_t = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching("IODisplayConnect"), &iterator)
+    @discardableResult private func getIODisplayConnectServices(iterator: inout io_iterator_t) throws -> kern_return_t {
+        var port: mach_port_t = kIOMasterPortDefault
+        if #available(macOS 12.0, *) {
+            port = kIOMainPortDefault
+        }
         
-        if result != kIOReturnSuccess {
+        let result = IOServiceGetMatchingServices(port, IOServiceMatching("IODisplayConnect"), &iterator)
+        
+        guard result == kIOReturnSuccess else {
             throw ScreenBrightnessError.serviceMissing
         }
+        
+        return result
+    }
+    
+    private func getScreenBrightness() throws -> Float {
+        var brightness: Float = 0.0
+        
+        var service: io_object_t = 1
+        var iterator: io_iterator_t = 0
+        try getIODisplayConnectServices(iterator: &iterator)
         
         while service != 0 {
             service = IOIteratorNext(iterator)
@@ -71,18 +101,14 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         return brightness
     }
     
-    private func setDisplayBrightness(brightness: Float) throws {
+    private func setScreenBrightness(targetBrightness: Float) throws {
         var service: io_object_t = 1
         var iterator: io_iterator_t = 0
-        let result: kern_return_t = IOServiceGetMatchingServices(kIOMasterPortDefault, IOServiceMatching("IODisplayConnect"), &iterator)
-        
-        if result != kIOReturnSuccess {
-            throw ScreenBrightnessError.serviceMissing
-        }
+        try getIODisplayConnectServices(iterator: &iterator)
         
         while service != 0 {
             service = IOIteratorNext(iterator)
-            IODisplaySetFloatParameter(service, 0, kIODisplayBrightnessKey as CFString, brightness)
+            IODisplaySetFloatParameter(service, 0, kIODisplayBrightnessKey as CFString, targetBrightness)
             IOObjectRelease(service)
         }
     }
@@ -96,9 +122,9 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         result(systemBrightness)
     }
     
-    func handleGetScreenBrightnessMethodCall(result: FlutterResult) {
+    private func handleGetScreenBrightnessMethodCall(result: FlutterResult) {
         do {
-            let brightness = try getDisplayBrightness()
+            let brightness = try getScreenBrightness()
             result(brightness)
         } catch {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null brightness", details: nil))
@@ -114,7 +140,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         let _changedBrightness = Float(brightness.doubleValue)
         
         do {
-            try setDisplayBrightness(brightness: _changedBrightness)
+            try setScreenBrightness(targetBrightness: _changedBrightness)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change screen brightness", details: nil))
         }
@@ -131,7 +157,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
         
         do {
-            try setDisplayBrightness(brightness: initialBrightness)
+            try setScreenBrightness(targetBrightness: initialBrightness)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change screen brightness", details: nil))
         }
@@ -148,8 +174,69 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     private func handleHasChangedMethodCall(result: FlutterResult) {
         result(changedBrightness != nil)
     }
-}
-
-enum ScreenBrightnessError: Error {
-    case serviceMissing
+    
+    private func handleIsAutoResetMethodCall(result: FlutterResult) {
+        result(isAutoReset)
+    }
+    
+    private func handleSetAutoResetMethodCall(call: FlutterMethodCall, result: FlutterResult) {
+        guard let parameters = call.arguments as? Dictionary<String, Any>, let isAutoReset = parameters["isAutoReset"] as? Bool else {
+            result(FlutterError.init(code: "-2", message: "Unexpected error on null isAutoReset", details: nil))
+            return
+        }
+        
+        self.isAutoReset = isAutoReset
+        result(nil)
+    }
+    
+    func onApplicationPause() {
+        guard let initialBrightness = systemBrightness else {
+            return
+        }
+        
+        try! setScreenBrightness(targetBrightness: initialBrightness)
+    }
+    
+    func onApplicationResume() {
+        guard let changedBrightness = changedBrightness else {
+            return
+        }
+        
+        try! setScreenBrightness(targetBrightness: changedBrightness)
+    }
+    
+    @objc public func applicationWillResignActive(notification: Notification) {
+        guard isAutoReset else {
+            return
+        }
+        
+        onApplicationPause()
+        //        NotificationCenter.default.addObserver(self, selector: #selector(onSystemBrightnessChanged), name: UIScreen.brightnessDidChangeNotification, object: nil)
+    }
+    
+    @objc public func applicationDidBecomeActive(notification: Notification) {
+        guard isAutoReset else {
+            return
+        }
+        
+        //        NotificationCenter.default.removeObserver(self, name: UIScreen.brightnessDidChangeNotification, object: nil)
+        //        systemBrightness = UIScreen.main.brightness
+        //        if (changedBrightness == nil) {
+        //            handleCurrentBrightnessChanged(systemBrightness!)
+        //        }
+        
+        onApplicationResume()
+    }
+    
+    @objc public func applicationWillTerminate(notification: Notification) {
+        onApplicationPause()
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        
+        methodChannel?.setMethodCallHandler(nil)
+        currentBrightnessChangeEventChannel?.setStreamHandler(nil)
+    }
 }
