@@ -1,6 +1,8 @@
 # screen_brightness
 
-A Plugin for controlling screen brightness with application life cycle set and reset brightness implemented
+A Plugin for controlling screen brightness with application life cycle reset implemented.
+
+This plugin only changes application brightness not system brightness. So no permission is needed for this plugin.
 
 ## Getting Started
 ### Install
@@ -86,6 +88,35 @@ Widget build(BuildContext context) {
     builder: (context, snapshot) {
       return Text(
           'Brightness has changed via plugin: ${snapshot.data}');
+    },
+  );
+}
+```
+
+#### Auto reset (iOS only) (experiment feature things maybe weird)
+```dart
+bool isAutoReset = true;
+
+Future<void> getAutoResetSetting() async {
+  if (!Platform.isIOS) {
+    return;
+  }
+
+  final _isAutoReset = await ScreenBrightness().isAutoReset;
+  setState(() {
+    isAutoReset = _isAutoReset;
+  });
+}
+
+@override
+Widget build(BuildContext context) {
+  return Switch(
+    value: isAutoReset,
+    onChanged: !Platform.isIOS
+        ? null
+        : (value) async {
+      await ScreenBrightness().setAutoReset(value);
+      await getAutoResetSetting();
     },
   );
 }

@@ -73,7 +73,7 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
         'resetScreenBrightness() has not been implemented.');
   }
 
-  /// A stream return with screen brightness changes including
+  /// Returns stream with screen brightness changes including
   /// [ScreenBrightness.setScreenBrightness],
   /// [ScreenBrightness.resetScreenBrightness], system control center or system
   /// setting.
@@ -84,12 +84,35 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
         'onCurrentBrightnessChanged has not been implemented.');
   }
 
-  /// A boolean to identify brightness has changed with this plugin.
+  /// Returns boolean to identify brightness has changed with this plugin.
   ///
   /// e.g
   /// [ScreenBrightness.setScreenBrightness] will make this true
   /// [ScreenBrightness.resetScreenBrightness] will make this false
   Future<bool> get hasChanged {
     throw UnimplementedError('hasChanged has not been implemented.');
+  }
+
+  /// Returns boolean to identify will auto reset when application lifecycle
+  /// changed.
+  ///
+  /// This parameter is useful for user to determinate current state of auto reset.
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
+  Future<bool> get isAutoReset async {
+    throw UnimplementedError(
+        'isAutoResetWithLifecycleChange has not been implemented.');
+  }
+
+  /// Returns boolean for disable auto reset when application lifecycle changed
+  ///
+  /// This method is useful for user change weather this plugin should auto reset
+  /// brightness when application lifecycle changed.
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
+  Future<void> setAutoReset(bool isAutoReset) async {
+    throw UnimplementedError('setAutoReset has not been implemented.');
   }
 }

@@ -17,7 +17,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import java.lang.reflect.Field
 import kotlin.math.sign
 import kotlin.properties.Delegates
-import android.R.attr.defaultValue
 
 /**
  * ScreenBrightnessAndroidPlugin setting screen brightness
@@ -142,16 +141,12 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         // get system setting brightness
         try {
             brightness = getSystemBrightness(activity)
+            result.success(brightness)
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
-        }
-
-        if (brightness == null) {
             result.error("-11", "Could not found system setting screen brightness value", null)
             return
         }
-
-        result.success(brightness)
     }
 
     private fun getScreenMaximumBrightness(context: Context): Float {

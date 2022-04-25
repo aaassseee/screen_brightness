@@ -108,7 +108,7 @@ class ScreenBrightness {
   /// Unexpected error when getting activity, activity may be null
   Future<void> resetScreenBrightness() => _platform.resetScreenBrightness();
 
-  /// A stream return with screen brightness changes including
+  /// Returns stream with screen brightness changes including
   /// [ScreenBrightness.setScreenBrightness],
   /// [ScreenBrightness.resetScreenBrightness], system control center or system
   /// setting.
@@ -117,15 +117,29 @@ class ScreenBrightness {
   Stream<double> get onCurrentBrightnessChanged =>
       _platform.onCurrentBrightnessChanged;
 
-  /// A boolean to identify brightness has changed with this plugin.
+  /// Returns boolean to identify brightness has changed with this plugin.
   ///
   /// e.g
   /// [ScreenBrightness.setScreenBrightness] will make this true
   /// [ScreenBrightness.resetScreenBrightness] will make this false
-  ///
-  /// When [_channel.invokeMethod] fails to get current brightness, it throws
-  /// [PlatformException] with code and message:
-  ///
-  /// Code: -9, Message: Brightness value returns null
   Future<bool> get hasChanged => _platform.hasChanged;
+
+  /// Returns boolean to identify will auto reset when application lifecycle
+  /// changed.
+  ///
+  /// This parameter is useful for user to determinate current state of auto reset.
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
+  Future<bool> get isAutoReset => _platform.isAutoReset;
+
+  /// Returns boolean for disable auto reset when application lifecycle changed
+  ///
+  /// This method is useful for user change weather this plugin should auto reset
+  /// brightness when application lifecycle changed.
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
+  Future<void> setAutoReset(bool isAutoReset) =>
+      _platform.setAutoReset(isAutoReset);
 }

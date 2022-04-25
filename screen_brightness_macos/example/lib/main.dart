@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
 
@@ -31,6 +33,10 @@ class MyApp extends StatelessWidget {
 
           case BlankPage.routeName:
             page = const BlankPage();
+            break;
+
+          case SettingPage.routeName:
+            page = const SettingPage();
             break;
 
           default:
@@ -96,7 +102,12 @@ class HomePage extends StatelessWidget {
               onPressed: () =>
                   Navigator.of(context).pushNamed(RouteAwarePage.routeName),
               child: const Text('Route aware example page'),
-            )
+            ),
+            ElevatedButton(
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(SettingPage.routeName),
+              child: const Text('Setting page'),
+            ),
           ],
         ),
       ),
@@ -149,7 +160,7 @@ class _ControllerPageState extends State<ControllerPage> {
 
             return StreamBuilder<double>(
               stream:
-                  ScreenBrightnessPlatform.instance.onCurrentBrightnessChanged,
+              ScreenBrightnessPlatform.instance.onCurrentBrightnessChanged,
               builder: (context, snapshot) {
                 double changedBrightness = currentBrightness;
                 if (snapshot.hasData) {
@@ -262,6 +273,62 @@ class BlankPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Blank'),
+      ),
+    );
+  }
+}
+
+class SettingPage extends StatefulWidget {
+  static const routeName = '/setting';
+
+  const SettingPage({Key? key}) : super(key: key);
+
+  @override
+  _SettingPageState createState() => _SettingPageState();
+}
+
+class _SettingPageState extends State<SettingPage> {
+  bool isAutoReset = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getAutoResetSetting();
+  }
+
+  Future<void> getAutoResetSetting() async {
+    if (!Platform.isIOS) {
+      return;
+    }
+
+    final _isAutoReset = await ScreenBrightnessPlatform.instance.isAutoReset;
+    setState(() {
+      isAutoReset = _isAutoReset;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Setting'),
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            title: const Text('Auto Reset'),
+            trailing: Switch(
+              value: isAutoReset,
+              onChanged: !Platform.isIOS
+                  ? null
+                  : (value) async {
+                await ScreenBrightnessPlatform.instance
+                    .setAutoReset(value);
+                await getAutoResetSetting();
+              },
+            ),
+          )
+        ],
       ),
     );
   }

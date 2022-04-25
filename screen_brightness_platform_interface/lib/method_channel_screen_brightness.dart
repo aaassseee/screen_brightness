@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:screen_brightness_platform_interface/extension/num_extension.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
@@ -130,7 +128,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     await pluginMethodChannel.invokeMethod(methodNameResetScreenBrightness);
   }
 
-  /// A stream return with screen brightness changes including
+  /// Returns stream with screen brightness changes including
   /// [ScreenBrightness.setScreenBrightness],
   /// [ScreenBrightness.resetScreenBrightness], system control center or system
   /// setting.
@@ -144,24 +142,41 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     return _onCurrentBrightnessChanged!;
   }
 
-  /// A boolean to identify brightness has changed with this plugin.
+  /// Returns boolean to identify brightness has changed with this plugin.
   ///
   /// e.g
   /// [ScreenBrightness.setScreenBrightness] will make this true
   /// [ScreenBrightness.resetScreenBrightness] will make this false
-  ///
-  /// When [_channel.invokeMethod] fails to get current brightness, it throws
-  /// [PlatformException] with code and message:
-  ///
-  /// Code: -9, Message: value returns null
   @override
   Future<bool> get hasChanged async {
-    final hasChanged =
-        await pluginMethodChannel.invokeMethod<bool>(methodNameHasChanged);
-    if (hasChanged == null) {
-      throw PlatformException(code: "-9", message: "value returns null");
-    }
+    return await pluginMethodChannel.invokeMethod<bool>(methodNameHasChanged) ??
+        false;
+  }
 
-    return hasChanged;
+  /// Returns boolean to identify will auto reset when application lifecycle
+  /// changed.
+  ///
+  /// This parameter is useful for user to determinate current state of auto reset.
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
+  @override
+  Future<bool> get isAutoReset async {
+    return await pluginMethodChannel
+            .invokeMethod<bool>(methodNameIsAutoReset) ??
+        true;
+  }
+
+  /// Returns boolean for disable auto reset when application lifecycle changed
+  ///
+  /// This method is useful for user change weather this plugin should auto reset
+  /// brightness when application lifecycle changed.
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
+  @override
+  Future<void> setAutoReset(bool isAutoReset) async {
+    await pluginMethodChannel
+        .invokeMethod(methodNameSetAutoReset, {"isAutoReset": isAutoReset});
   }
 }

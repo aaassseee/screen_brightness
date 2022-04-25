@@ -4,3 +4,6 @@ const methodNameSetScreenBrightness = 'setScreenBrightness';
 const methodNameResetScreenBrightness = 'resetScreenBrightness';
 
 const methodNameHasChanged = 'hasChanged';
+
+const methodNameIsAutoReset = 'isAutoReset';
+const methodNameSetAutoReset = 'setAutoReset';
