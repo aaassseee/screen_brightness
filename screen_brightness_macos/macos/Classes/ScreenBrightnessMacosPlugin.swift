@@ -16,6 +16,8 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     
     var isAutoReset: Bool = true
     
+    var brightnessPollingTimer: Timer?
+    
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = ScreenBrightnessMacosPlugin()
         instance.methodChannel = FlutterMethodChannel(name: "github.com/aaassseee/screen_brightness", binaryMessenger: registrar.messenger)
@@ -189,6 +191,17 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         result(nil)
     }
     
+    @objc private func getSystemBrightness(_: Timer) {
+        guard let _systemBrightness = try? getScreenBrightness(), systemBrightness != _systemBrightness else {
+            return
+        }
+        
+        systemBrightness = _systemBrightness
+        if (changedBrightness == nil) {
+            handleCurrentBrightnessChanged(_systemBrightness)
+        }
+    }
+    
     func onApplicationPause() {
         guard let initialBrightness = systemBrightness else {
             return
@@ -211,7 +224,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
         
         onApplicationPause()
-        //        NotificationCenter.default.addObserver(self, selector: #selector(onSystemBrightnessChanged), name: UIScreen.brightnessDidChangeNotification, object: nil)
+        brightnessPollingTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(getSystemBrightness), userInfo: nil, repeats: true)
     }
     
     @objc public func applicationDidBecomeActive(notification: Notification) {
@@ -219,11 +232,15 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
             return
         }
         
-        //        NotificationCenter.default.removeObserver(self, name: UIScreen.brightnessDidChangeNotification, object: nil)
-        //        systemBrightness = UIScreen.main.brightness
-        //        if (changedBrightness == nil) {
-        //            handleCurrentBrightnessChanged(systemBrightness!)
-        //        }
+        brightnessPollingTimer?.invalidate()
+        brightnessPollingTimer = nil
+        
+        if let _systemBrightness = try? getScreenBrightness() {
+            systemBrightness = _systemBrightness
+            if (changedBrightness == nil) {
+                handleCurrentBrightnessChanged(systemBrightness!)
+            }
+        }
         
         onApplicationResume()
     }
@@ -231,6 +248,9 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     @objc public func applicationWillTerminate(notification: Notification) {
         onApplicationPause()
         NotificationCenter.default.removeObserver(self)
+        
+        brightnessPollingTimer?.invalidate()
+        brightnessPollingTimer = nil
     }
     
     deinit {
