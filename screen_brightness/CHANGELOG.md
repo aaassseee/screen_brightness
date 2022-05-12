@@ -1,3 +1,7 @@
+## 0.2.1
+
+* add macos support
+
 ## 0.2.0
 
 * upgraded dependecies
