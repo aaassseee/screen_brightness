@@ -24,12 +24,12 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Flutter action
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2
         with:
-          channel: 'dev' # or: 'beta', 'dev' or 'master'
+          channel: 'stable' # or: 'beta' or 'master'
 
       - name: Install screen_brightness_platform_interface dependencies
         working-directory: ./screen_brightness
