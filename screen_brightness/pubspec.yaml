@@ -12,15 +12,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  screen_brightness_platform_interface: ">=0.1.0 <1.0.0"
 #  screen_brightness_platform_interface:
 #    path: ../screen_brightness_platform_interface/
+  screen_brightness_android: ">=0.1.0 <1.0.0"
 #  screen_brightness_android:
 #    path: ../screen_brightness_android
+  screen_brightness_ios: ">=0.1.0 <1.0.0"
 #  screen_brightness_ios:
 #    path: ../screen_brightness_ios
-  screen_brightness_platform_interface: ">=0.1.0 <1.0.0"
-  screen_brightness_android: ">=0.1.0 <1.0.0"
-  screen_brightness_ios: ">=0.1.0 <1.0.0"
+  screen_brightness_macos: ">=0.1.0 <1.0.0"
+#  screen_brightness_macos:
+#    path: ../screen_brightness_macos
 
 dev_dependencies:
   flutter_test:
@@ -44,6 +47,8 @@ flutter:
         default_package: screen_brightness_android
       ios:
         default_package: screen_brightness_ios
+      macos:
+        default_package: screen_brightness_macos
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
