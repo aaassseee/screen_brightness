@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* fixed repository link
+
 ## 0.1.0
 
 * macos stable release
