@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/screen_brightness_ios/screen_brightness_ios.iml" filepath="$PROJECT_DIR$/screen_brightness_ios/screen_brightness_ios.iml" />
       <module fileurl="file://$PROJECT_DIR$/screen_brightness_macos/screen_brightness_macos.iml" filepath="$PROJECT_DIR$/screen_brightness_macos/screen_brightness_macos.iml" />
       <module fileurl="file://$PROJECT_DIR$/screen_brightness_platform_interface/screen_brightness_platform_interface.iml" filepath="$PROJECT_DIR$/screen_brightness_platform_interface/screen_brightness_platform_interface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/screen_brightness_windows/screen_brightness_windows.iml" filepath="$PROJECT_DIR$/screen_brightness_windows/screen_brightness_windows.iml" />
     </modules>
   </component>
 </project>
