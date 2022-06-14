@@ -1,7 +1,7 @@
 #include "include/screen_brightness_windows/screen_brightness_windows_plugin.h"
 
 // This must be included before many other Windows headers.
-#include <windows.h>
+#include <Windows.h>
 
 #include <flutter/event_channel.h>
 #include <flutter/event_stream_handler_functions.h>
@@ -24,107 +24,109 @@ namespace
 	class BaseStreamHandler : public flutter::StreamHandler<T>
 	{
 	public:
-		BaseStreamHandler();
-		virtual ~BaseStreamHandler();
+		BaseStreamHandler() = default;
+
+		~BaseStreamHandler() override;
+
+		BaseStreamHandler(const BaseStreamHandler&) = delete;
+
+		BaseStreamHandler& operator=(const BaseStreamHandler&) = delete;
 
 	protected:
-		std::unique_ptr<flutter::EventSink<T>> sink;
+		std::unique_ptr<flutter::EventSink<T>> sink_;
 
 		std::unique_ptr<flutter::StreamHandlerError<T>> OnListenInternal(
 			const T* arguments,
 			std::unique_ptr<flutter::EventSink<T>>&& events) override
 		{
-			sink = std::move(events);
+			sink_ = std::move(events);
 			return nullptr;
 		}
 
 		std::unique_ptr<flutter::StreamHandlerError<T>> OnCancelInternal(
 			const T* arguments) override
 		{
-			sink.reset();
+			sink_.reset();
 			return nullptr;
 		}
 	};
 
 	template<typename T>
-	BaseStreamHandler<T>::BaseStreamHandler()
-	{
-	}
-
-	template<typename T>
 	BaseStreamHandler<T>::~BaseStreamHandler()
 	{
-		sink.reset();
+		sink_.reset();
 	}
 
 	// CurrentBrightnessChangeStreamHandler
-	class CurrentBrightnessChangeStreamHandler : public BaseStreamHandler<flutter::EncodableValue>
+	class CurrentBrightnessChangeStreamHandler final : public BaseStreamHandler<flutter::EncodableValue>
 	{
 	public:
-		CurrentBrightnessChangeStreamHandler();
-		~CurrentBrightnessChangeStreamHandler();
+		CurrentBrightnessChangeStreamHandler() = default;
 
-		void AddCurrentBrightnessToEventSink(double brightness);
+		~CurrentBrightnessChangeStreamHandler() override;
+
+		CurrentBrightnessChangeStreamHandler(const CurrentBrightnessChangeStreamHandler&) = delete;
+
+		CurrentBrightnessChangeStreamHandler& operator=(const CurrentBrightnessChangeStreamHandler&) = delete;
+
+		void AddCurrentBrightnessToEventSink(double brightness) const;
 	};
-
-	CurrentBrightnessChangeStreamHandler::CurrentBrightnessChangeStreamHandler()
-	{
-	}
 
 	CurrentBrightnessChangeStreamHandler::~CurrentBrightnessChangeStreamHandler()
 	{
+		BaseStreamHandler<flutter::EncodableValue>::~BaseStreamHandler();
 	}
 
-	void CurrentBrightnessChangeStreamHandler::AddCurrentBrightnessToEventSink(double brightness)
+	void CurrentBrightnessChangeStreamHandler::AddCurrentBrightnessToEventSink(double brightness) const
 	{
-		if (sink == nullptr) {
+		if (sink_ == nullptr) {
 			return;
 		}
 
-		sink->Success(flutter::EncodableValue(brightness));
+		sink_->Success(brightness);
 	}
 
-	class ScreenBrightnessWindowsPlugin : public flutter::Plugin
+	class ScreenBrightnessWindowsPlugin final : public flutter::Plugin
 	{
 	public:
 		static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
-		ScreenBrightnessWindowsPlugin();
+		ScreenBrightnessWindowsPlugin() = default;
 
-		virtual ~ScreenBrightnessWindowsPlugin();
+		~ScreenBrightnessWindowsPlugin() override = default;
 
 	private:
-		HWND windowHandler;
+		HWND window_handler_ = nullptr;
 
-		DWORD systemBrightness;
+		DWORD system_brightness_ = 0;
 
-		DWORD minimumBrightness;
+		DWORD minimum_brightness_ = 0;
 
-		DWORD maximumBrightness;
+		DWORD maximum_brightness_ = 100;
 
-		DWORD currentBrightness;
+		DWORD current_brightness_ = 0;
 
-		DWORD changedBrightness;
+		DWORD changed_brightness_ = 0;
 
-		bool isAutoReset;
+		bool is_auto_reset_ = true;
 
-		CurrentBrightnessChangeStreamHandler* currentBrightnessChangeStreamHandler;
+		CurrentBrightnessChangeStreamHandler* current_brightness_change_stream_handler_ = nullptr;
 
 		// Called when a method is called on this plugin's channel from Dart.
 		void HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue>& method_call,
 			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
-		void GetBrightness(DWORD _minimumBrightness, DWORD brightness, DWORD _maximumBrightness);
+		void GetBrightness(DWORD minimum_brightness, DWORD brightness, DWORD maximum_brightness) const;
 
-		void SetBrightness(DWORD brightness);
+		void SetBrightness(DWORD brightness) const;
 
-		double GetBrighnessPercentage(DWORD brightness);
+		[[nodiscard]] double GetBrightnessPercentage(DWORD brightness) const;
 
-		DWORD GetBrightnessValueByPercentage(double percentage);
+		[[nodiscard]] DWORD GetBrightnessValueByPercentage(double percentage) const;
 
-		void HandleGetSystemBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void HandleGetSystemBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const;
 
-		void HandleGetScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void HandleGetScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const;
 
 		void HandleSetScreenBrightnessMethodCall(
 			const flutter::MethodCall<flutter::EncodableValue>& call,
@@ -132,9 +134,9 @@ namespace
 
 		void HandleResetScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
-		void HandleCurrentBrightnessChanged(DWORD changedBrightness);
+		void HandleCurrentBrightnessChanged(DWORD brightness) const;
 
-		void HandleHasChangedMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void HandleHasChangedMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const;
 
 		void HandleIsAutoResetMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
@@ -147,93 +149,76 @@ namespace
 		flutter::PluginRegistrarWindows* registrar) {
 		auto plugin = std::make_unique<ScreenBrightnessWindowsPlugin>();
 
-		auto methodChannel =
+		const auto method_channel =
 			std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
 				registrar->messenger(), "github.com/aaassseee/screen_brightness",
 				&flutter::StandardMethodCodec::GetInstance());
-		methodChannel->SetMethodCallHandler
+		method_channel->SetMethodCallHandler
 		([plugin_pointer = plugin.get()](const auto& call, auto result)
 		{
 			plugin_pointer->HandleMethodCall(call, std::move(result));
 		});
 
-		auto currentBrightnessChangeEventChannel =
+		const auto current_brightness_change_event_channel =
 			std::make_unique<flutter::EventChannel<flutter::EncodableValue>>(
 				registrar->messenger(), "github.com/aaassseee/screen_brightness/change",
 				&flutter::StandardMethodCodec::GetInstance());
 
-		plugin->currentBrightnessChangeStreamHandler = new CurrentBrightnessChangeStreamHandler();
-		std::unique_ptr<flutter::StreamHandler<flutter::EncodableValue>> uniquePointer
+		plugin->current_brightness_change_stream_handler_ = new CurrentBrightnessChangeStreamHandler();
+		std::unique_ptr<flutter::StreamHandler<flutter::EncodableValue>> current_brightness_change_stream_handler_unique_pointer
 		{
-			static_cast<flutter::StreamHandler<flutter::EncodableValue>*>(plugin->currentBrightnessChangeStreamHandler)
+			static_cast<flutter::StreamHandler<flutter::EncodableValue>*>(plugin->current_brightness_change_stream_handler_)
 		};
-		currentBrightnessChangeEventChannel->SetStreamHandler(std::move(uniquePointer));
+		current_brightness_change_event_channel->SetStreamHandler(std::move(current_brightness_change_stream_handler_unique_pointer));
 
 		// init parameter
-		plugin->windowHandler = registrar->GetView()->GetNativeWindow();
-		plugin->GetBrightness(plugin->minimumBrightness, plugin->systemBrightness, plugin->maximumBrightness);
+		plugin->window_handler_ = registrar->GetView()->GetNativeWindow();
+		plugin->GetBrightness(plugin->minimum_brightness_, plugin->system_brightness_, plugin->maximum_brightness_);
 
 		registrar->AddPlugin(std::move(plugin));
-	}
-
-	ScreenBrightnessWindowsPlugin::ScreenBrightnessWindowsPlugin()
-	{
-		windowHandler = NULL;
-		systemBrightness = NULL;
-		systemBrightness = NULL;
-		minimumBrightness = NULL;
-		maximumBrightness = NULL;
-		currentBrightness = NULL;
-		changedBrightness = NULL;
-		isAutoReset = true;
-		currentBrightnessChangeStreamHandler = nullptr;
-	}
-
-	ScreenBrightnessWindowsPlugin::~ScreenBrightnessWindowsPlugin()
-	{
 	}
 
 	void ScreenBrightnessWindowsPlugin::HandleMethodCall(
 		const flutter::MethodCall<flutter::EncodableValue>& method_call,
 		std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
 	{
-		if (method_call.method_name().compare("getSystemScreenBrightness") == 0)
+		if (method_call.method_name() == "getSystemScreenBrightness")
 		{
 			HandleGetScreenBrightnessMethodCall(std::move(result));
 			return;
 		}
 
-		if (method_call.method_name().compare("getScreenBrightness") == 0)
+		if (method_call.method_name() == "getScreenBrightness")
 		{
 			HandleGetScreenBrightnessMethodCall(std::move(result));
 			return;
 		}
 
-		if (method_call.method_name().compare("setScreenBrightness") == 0)
+		if (method_call.method_name() == "setScreenBrightness")
 		{
 			HandleSetScreenBrightnessMethodCall(method_call, std::move(result));
 			return;
 		}
 
-		if (method_call.method_name().compare("resetScreenBrightness") == 0)
+		if (method_call.method_name() == "resetScreenBrightness")
 		{
 			HandleResetScreenBrightnessMethodCall(std::move(result));
 			return;
 		}
 
-		if (method_call.method_name().compare("hasChanged"))
+		if (method_call.method_name() == "hasChanged")
 		{
 			HandleHasChangedMethodCall(std::move(result));
 			return;
 		}
 
-		if (method_call.method_name().compare("isAutoReset"))
+		if (method_call.method_name() == "isAutoReset")
 		{
 			HandleIsAutoResetMethodCall(std::move(result));
 			return;
 		}
 
-		if (method_call.method_name().compare("setAutoReset"))
+		if (method_call.method_name() == "setAutoReset")
 		{
 			HandleSetAutoResetMethodCall(method_call, std::move(result));
 			return;
@@ -242,51 +227,53 @@ namespace
 		result->NotImplemented();
 	}
 
-	void ScreenBrightnessWindowsPlugin::GetBrightness(DWORD _minimumBrightness, DWORD brightness, DWORD _maximumBrightness)
+	
+
+	void ScreenBrightnessWindowsPlugin::GetBrightness(DWORD minimum_brightness, DWORD brightness, DWORD maximum_brightness) const
 	{
-		if (!GetMonitorBrightness(windowHandler, &_minimumBrightness, &brightness, &_maximumBrightness))
+		if (!GetMonitorBrightness(window_handler_, &minimum_brightness, &brightness, &maximum_brightness))
 		{
-			throw("Problem getting monitor brightness");
+			throw std::exception("Problem getting monitor brightness");
 		}
 	}
 
-	void ScreenBrightnessWindowsPlugin::SetBrightness(DWORD brightness)
+	void ScreenBrightnessWindowsPlugin::SetBrightness(const DWORD brightness) const
 	{
-		if (!SetMonitorBrightness(windowHandler, brightness))
+		if (!SetMonitorBrightness(window_handler_, brightness))
 		{
-			throw("Problem setting monitor brightness");
+			throw std::exception("Problem setting monitor brightness");
 		}
 	}
 
-	double ScreenBrightnessWindowsPlugin::GetBrighnessPercentage(DWORD brightness)
+	double ScreenBrightnessWindowsPlugin::GetBrightnessPercentage(const DWORD brightness) const
 	{
 		if (brightness == NULL)
 		{
 			return 0;
 		}
 
-		return (double)((brightness - minimumBrightness) / (maximumBrightness - minimumBrightness));
+		return static_cast<double>(brightness - minimum_brightness_) / (maximum_brightness_ - minimum_brightness_);
 	}
 
-	DWORD ScreenBrightnessWindowsPlugin::GetBrightnessValueByPercentage(double percentage)
+	DWORD ScreenBrightnessWindowsPlugin::GetBrightnessValueByPercentage(const double percentage) const
 	{
-		return (DWORD)((percentage * (maximumBrightness - minimumBrightness)) + minimumBrightness);
+		return static_cast<DWORD>((percentage * (maximum_brightness_ - minimum_brightness_)) + minimum_brightness_);
 	}
 
-	void ScreenBrightnessWindowsPlugin::HandleGetSystemBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	void ScreenBrightnessWindowsPlugin::HandleGetSystemBrightnessMethodCall(const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const
 	{
-		if (systemBrightness == NULL)
+		if (system_brightness_ == NULL)
 		{
 			result->Error("-11", "Could not found system setting screen brightness value");
 			return;
 		}
 
-		result->Success(flutter::EncodableValue(GetBrighnessPercentage(systemBrightness)));
+		result->Success(GetBrightnessPercentage(system_brightness_));
 	}
 
-	void ScreenBrightnessWindowsPlugin::HandleGetScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	void ScreenBrightnessWindowsPlugin::HandleGetScreenBrightnessMethodCall(const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const
 	{
-		if (windowHandler == NULL)
+		if (window_handler_ == nullptr)
 		{
 			result->Error("-10", "Unexpected error on window handler");
 			return;
@@ -294,99 +281,106 @@ namespace
 
 		try
 		{
-			GetBrightness(minimumBrightness, currentBrightness, maximumBrightness);
-			result->Success(flutter::EncodableValue(GetBrighnessPercentage(currentBrightness)));
+			GetBrightness(minimum_brightness_, current_brightness_, maximum_brightness_);
+			result->Success(GetBrightnessPercentage(current_brightness_));
 		}
-		catch (std::exception exception)
+		catch (const std::exception& exception)
 		{
+			std::cout << exception.what() << std::endl;
 			result->Error("-11", "Could not found monitor brightness value");
 		}
 	}
 
-	void ScreenBrightnessWindowsPlugin::HandleSetScreenBrightnessMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	void ScreenBrightnessWindowsPlugin::HandleSetScreenBrightnessMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call, const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
 	{
-		if (windowHandler == NULL)
+		if (window_handler_ == nullptr)
 		{
 			result->Error("-10", "Unexpected error on window handler");
 			return;
 		}
 
 		const flutter::EncodableMap& args = std::get<flutter::EncodableMap>(*call.arguments());
-		double brightness = std::get<double>(args.at(flutter::EncodableValue("brightness")));
-		if (brightness == NULL)
+		const double brightness = std::get<double>(args.at(flutter::EncodableValue("brightness")));
+		if (std::isnan(brightness))
 		{
 			result->Error("-2", "Unexpected error on null brightness");
 			return;
 		}
 
-		if (minimumBrightness == NULL || maximumBrightness == NULL) {
+		if (minimum_brightness_ == NULL || maximum_brightness_ == NULL) {
 			result->Error("-3", "Missing minimum or maximum brightness");
 			return;
 		}
 
-		DWORD _changedBrightness = GetBrightnessValueByPercentage(brightness);
-		if (!SetMonitorBrightness(windowHandler, _changedBrightness))
+		const DWORD changed_brightness = GetBrightnessValueByPercentage(brightness);
+		if (!SetMonitorBrightness(window_handler_, changed_brightness))
 		{
 			result->Error("-1", "Unable to change screen brightness");
 			return;
 		}
 
-		changedBrightness = _changedBrightness;
+		changed_brightness_ = changed_brightness;
 		result->Success(nullptr);
 	}
 
 	void ScreenBrightnessWindowsPlugin::HandleResetScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
 	{
-		if (windowHandler == NULL)
+		if (window_handler_ == nullptr)
 		{
 			result->Error("-10", "Unexpected error on window handler");
 			return;
 		}
 
-		if (!SetMonitorBrightness(windowHandler, systemBrightness))
+		if (!SetMonitorBrightness(window_handler_, system_brightness_))
 		{
 			result->Error("-1", "Unable to change screen brightness");
 			return;
 		}
 
-		changedBrightness = NULL;
+		changed_brightness_ = NULL;
 		result->Success(nullptr);
 	}
 
-	void ScreenBrightnessWindowsPlugin::HandleCurrentBrightnessChanged(DWORD brightness)
+	void ScreenBrightnessWindowsPlugin::HandleCurrentBrightnessChanged(const DWORD brightness) const
 	{
-		if (currentBrightnessChangeStreamHandler == nullptr)
+		if (current_brightness_change_stream_handler_ == nullptr)
 		{
 			return;
 		}
 
-		double brighrnessPercentage = GetBrighnessPercentage(brightness);
-		currentBrightnessChangeStreamHandler->AddCurrentBrightnessToEventSink(brighrnessPercentage);
+		try
+		{
+			const double brightness_percentage = GetBrightnessPercentage(brightness);
+			current_brightness_change_stream_handler_->AddCurrentBrightnessToEventSink(brightness_percentage);
+		}
+		catch (const std::exception& exception)
+		{
+			std::cout << exception.what();
+		}
 	}
 
-	void ScreenBrightnessWindowsPlugin::HandleHasChangedMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	void ScreenBrightnessWindowsPlugin::HandleHasChangedMethodCall(const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const
 	{
-		result->Success(changedBrightness != NULL);
+		result->Success(changed_brightness_ != NULL);
 	}
 
-	void ScreenBrightnessWindowsPlugin::HandleIsAutoResetMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	void ScreenBrightnessWindowsPlugin::HandleIsAutoResetMethodCall(const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
 	{
-		result->Success(isAutoReset);
+		result->Success(is_auto_reset_);
 	}
 
-	void ScreenBrightnessWindowsPlugin::HandleSetAutoResetMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	void ScreenBrightnessWindowsPlugin::HandleSetAutoResetMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call, const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
 	{
 		const flutter::EncodableMap& args = std::get<flutter::EncodableMap>(*call.arguments());
-		bool _isAutoReset = std::get<bool>(args.at(flutter::EncodableValue("isAutoReset")));
-		if (_isAutoReset == NULL) {
+		const bool is_auto_reset = std::get<bool>(args.at(flutter::EncodableValue("isAutoReset")));
+		if (is_auto_reset == NULL) {
 			result->Error("-2", "Unexpected error on null isAutoReset");
 			return;
 		}
 
-		isAutoReset = _isAutoReset;
+		is_auto_reset_ = is_auto_reset;
 		result->Success(nullptr);
 	}
-
 }  // namespace
 
 void ScreenBrightnessWindowsPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar)
