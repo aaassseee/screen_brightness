@@ -19,8 +19,7 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import java.lang.reflect.Field
-import kotlin.math.sign
+import kotlin.math.*
 import kotlin.properties.Delegates
 
 /**
@@ -57,6 +56,16 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             }
         }
     }
+
+    /**
+     * The value which will be init when this plugin is attached to the Flutter engine
+     *
+     * This value refer to the minimum brightness value.
+     *
+     * By system default the value should be 0.0f, however it varies in some OS, e.g. POCO series.
+     * Should not be changed in the future
+     */
+    private var minimumScreenBrightness by Delegates.notNull<Float>()
 
     /**
      * The value which will be init when this plugin is attached to the Flutter engine
@@ -104,6 +113,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         )
 
         try {
+            minimumScreenBrightness = getScreenMinimumBrightness(flutterPluginBinding.applicationContext)
             maximumScreenBrightness = getScreenMaximumBrightness(flutterPluginBinding.applicationContext)
             systemScreenBrightness = getSystemScreenBrightness(flutterPluginBinding.applicationContext)
         } catch (e: Settings.SettingNotFoundException) {
@@ -312,9 +322,29 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     }
 
     private fun getSystemScreenBrightness(context: Context): Float {
-        return Settings.System.getInt(
-            context.contentResolver, Settings.System.SCREEN_BRIGHTNESS
-        ) / maximumScreenBrightness
+//        return Settings.System.getInt(
+//            context.contentResolver, Settings.System.SCREEN_BRIGHTNESS
+//        ) / maximumScreenBrightness
+
+        val brightness = Settings.System.getInt(
+            context.contentResolver,
+            Settings.System.SCREEN_BRIGHTNESS
+        ).toFloat()
+
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                Settings.System.getFloat(
+                    context.contentResolver,
+                    "screen_brightness_float"
+                )
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> convertLinearToGamma(
+                brightness,
+                minimumScreenBrightness,
+                maximumScreenBrightness
+            )
+            else -> norm(minimumScreenBrightness, maximumScreenBrightness, brightness)
+        }
     }
 
     private fun setSystemScreenBrightness(context: Context, brightness: Float): Boolean {
@@ -335,21 +365,54 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         )
     }
 
-    private fun getScreenMaximumBrightness(context: Context): Float {
+    private fun getScreenMinimumBrightness(context: Context): Float {
         try {
             val powerManager: PowerManager =
-                context.getSystemService(Context.POWER_SERVICE) as PowerManager? ?: throw ClassNotFoundException()
-            val fields: Array<Field> = powerManager.javaClass.declaredFields
-            for (field in fields) {
-                if (field.name.equals("BRIGHTNESS_ON")) {
-                    field.isAccessible = true
-                    return (field[powerManager] as Int).toFloat()
+                context.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                    ?: throw ClassNotFoundException()
+
+            powerManager.javaClass.declaredMethods.forEach {
+                if (it.name.equals("getMinimumScreenBrightnessSetting")) {
+                    it.isAccessible = true
+                    return (it.invoke(powerManager) as Int).toFloat()
                 }
             }
 
-            return 255.0f
+            powerManager.javaClass.declaredFields.forEach {
+                if (it.name.equals("BRIGHTNESS_OFF")) {
+                    it.isAccessible = true
+                    return (it[powerManager] as Int).toFloat()
+                }
+            }
+
+            return 0f
         } catch (e: Exception) {
-            return 255.0f
+            return 0f
+        }
+    }
+
+    private fun getScreenMaximumBrightness(context: Context): Float {
+        try {
+            val powerManager: PowerManager =
+                context.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                    ?: throw ClassNotFoundException()
+            powerManager.javaClass.declaredMethods.forEach {
+                if (it.name.equals("getMaximumScreenBrightnessSetting")) {
+                    it.isAccessible = true
+                    return (it.invoke(powerManager) as Int).toFloat()
+                }
+            }
+
+            powerManager.javaClass.declaredFields.forEach {
+                if (it.name.equals("BRIGHTNESS_ON")) {
+                    it.isAccessible = true
+                    return (it[powerManager] as Int).toFloat()
+                }
+            }
+
+            return 255f
+        } catch (e: Exception) {
+            return 255f
         }
     }
 
@@ -362,5 +425,38 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         } catch (e: Exception) {
             false
         }
+    }
+
+    private fun norm(start: Float, stop: Float, value: Float): Float {
+        return (value - start) / (stop - start)
+    }
+
+    private fun lerp(start: Float, stop: Float, amount: Float): Float {
+        return start + (stop - start) * amount
+    }
+
+    private fun convertLinearToGamma(
+        brightness: Float,
+        minimumBrightness: Float,
+        maximumBrightness: Float
+    ): Float {
+        val gammaSpaceMax = 1023f
+        val r = 0.5f
+        val a = 0.17883277f
+        val b = 0.28466892f
+        val c = 0.55991073f
+
+        val normalizedVal: Float = norm(minimumBrightness, maximumBrightness, brightness) * 12
+        val ret: Float = if (normalizedVal <= 1f) {
+            sqrt(normalizedVal) * r
+        } else {
+            a * ln(normalizedVal - b) + c
+        }
+
+        // HLG is normalized to the range [0, 12], so we need to re-normalize to the range [0, 1]
+        // in order to derive the correct setting value.
+        // HLG is normalized to the range [0, 12], so we need to re-normalize to the range [0, 1]
+        // in order to derive the correct setting value.
+        return round(lerp(0f, gammaSpaceMax, ret)) / gammaSpaceMax
     }
 }

@@ -30,7 +30,7 @@ android {
         namespace 'com.aaassseee.screen_brightness_android'
     }
 
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
