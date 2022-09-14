@@ -145,7 +145,7 @@ namespace
 	};
 
 	// static
-	 void ScreenBrightnessWindowsPlugin::RegisterWithRegistrar(
+	void ScreenBrightnessWindowsPlugin::RegisterWithRegistrar(
 		flutter::PluginRegistrarWindows* registrar) 
 	{
 		auto plugin = std::make_unique<ScreenBrightnessWindowsPlugin>();
