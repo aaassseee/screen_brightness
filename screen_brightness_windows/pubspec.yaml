@@ -1,5 +1,5 @@
 name: screen_brightness_windows
-description: The Windows implementation of screen_brightness.
+description: The Windows federated plugin implementation of the screen_brightness.
 version: 0.1.0-dev.1
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness_windows
