@@ -17,11 +17,33 @@
 
 namespace screen_brightness
 {
+	ScreenBrightnessWindowsPlugin::ScreenBrightnessWindowsPlugin(
+		flutter::PluginRegistrarWindows* registrar) : registrar_(registrar)
+	{
+		window_handler_ = registrar->GetView()->GetNativeWindow();
+		GetBrightness(minimum_brightness_, system_brightness_, maximum_brightness_);
+
+		window_proc_id_ = registrar->RegisterTopLevelWindowProcDelegate
+		([this](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+			{
+				return HandleWindowProc(hWnd, message, wParam, lParam);
+			});
+	}
+
+	ScreenBrightnessWindowsPlugin::~ScreenBrightnessWindowsPlugin()
+	{
+		registrar_->UnregisterTopLevelWindowProcDelegate(window_proc_id_);
+		delete current_brightness_change_stream_handler_;
+		delete window_handler_;
+		delete registrar_;
+		flutter::Plugin::~Plugin();
+	}
+
 	// static
 	void ScreenBrightnessWindowsPlugin::RegisterWithRegistrar(
-		flutter::PluginRegistrarWindows* registrar) 
+		flutter::PluginRegistrarWindows* registrar)
 	{
-		auto plugin = std::make_unique<ScreenBrightnessWindowsPlugin>();
+		auto plugin = std::make_unique<ScreenBrightnessWindowsPlugin>(registrar);
 
 		const auto method_channel =
 			std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
@@ -39,15 +61,12 @@ namespace screen_brightness
 				&flutter::StandardMethodCodec::GetInstance());
 
 		plugin->current_brightness_change_stream_handler_ = new CurrentBrightnessChangeStreamHandler();
-		std::unique_ptr<flutter::StreamHandler<flutter::EncodableValue>> current_brightness_change_stream_handler_unique_pointer
+		std::unique_ptr<flutter::StreamHandler<flutter::EncodableValue>>
+			current_brightness_change_stream_handler_unique_pointer
 		{
 			static_cast<flutter::StreamHandler<flutter::EncodableValue>*>(plugin->current_brightness_change_stream_handler_)
 		};
 		current_brightness_change_event_channel->SetStreamHandler(std::move(current_brightness_change_stream_handler_unique_pointer));
-
-		// init parameter
-		plugin->window_handler_ = registrar->GetView()->GetNativeWindow();
-		plugin->GetBrightness(plugin->minimum_brightness_, plugin->system_brightness_, plugin->maximum_brightness_);
 
 		registrar->AddPlugin(std::move(plugin));
 	}
@@ -103,71 +122,71 @@ namespace screen_brightness
 
 	void ScreenBrightnessWindowsPlugin::GetBrightness(long& minimum_brightness, long& brightness, long& maximum_brightness)
 	{
-		DWORD dwPhysicalMonitorArraySize = 0;
-		HMONITOR hMonitor = MonitorFromWindow(window_handler_, MONITOR_DEFAULTTOPRIMARY);
-		DWORD dwMin = 0, dwCurrent = 0, dwMax = 0;
+		DWORD physical_monitor_array_size = 0;
+		HMONITOR monitor_handler = MonitorFromWindow(window_handler_, MONITOR_DEFAULTTOPRIMARY);
+		DWORD minimum = 0, current = 0, maximum = 0;
 
-		if (!GetNumberOfPhysicalMonitorsFromHMONITOR(hMonitor, &dwPhysicalMonitorArraySize))
+		if (!GetNumberOfPhysicalMonitorsFromHMONITOR(monitor_handler, &physical_monitor_array_size))
 		{
 			throw std::exception("Problem getting numbers of monitor");
 		}
 
-		LPPHYSICAL_MONITOR pPhysicalMonitor = (LPPHYSICAL_MONITOR)malloc(dwPhysicalMonitorArraySize * sizeof(PHYSICAL_MONITOR));
+		LPPHYSICAL_MONITOR physical_monitor = (LPPHYSICAL_MONITOR)malloc(physical_monitor_array_size * sizeof(PHYSICAL_MONITOR));
 
-		if (pPhysicalMonitor == NULL)
+		if (physical_monitor == NULL)
 		{
 			throw std::exception("No monitors");
 		}
 
-		if (!GetPhysicalMonitorsFromHMONITOR(hMonitor, dwPhysicalMonitorArraySize, pPhysicalMonitor))
+		if (!GetPhysicalMonitorsFromHMONITOR(monitor_handler, physical_monitor_array_size, physical_monitor))
 		{
 			throw std::exception("Problem getting physical monitors");
 		}
 
-		if (!GetMonitorBrightness(pPhysicalMonitor->hPhysicalMonitor, &dwMin, &dwCurrent, &dwMax))
+		if (!GetMonitorBrightness(physical_monitor->hPhysicalMonitor, &minimum, &current, &maximum))
 		{
 			throw std::exception("Problem getting monitor brightness");
 		}
 
-		minimum_brightness = dwMin;
-		brightness = dwCurrent;
-		maximum_brightness = dwMax;
+		minimum_brightness = minimum;
+		brightness = current;
+		maximum_brightness = maximum;
 
-		DestroyPhysicalMonitors(dwPhysicalMonitorArraySize, pPhysicalMonitor);
+		DestroyPhysicalMonitors(physical_monitor_array_size, physical_monitor);
 
-		free(pPhysicalMonitor);
+		free(physical_monitor);
 	}
 
 	void ScreenBrightnessWindowsPlugin::SetBrightness(const long brightness)
 	{
-		DWORD dwPhysicalMonitorArraySize = 0;
-		HMONITOR hMonitor = MonitorFromWindow(window_handler_, MONITOR_DEFAULTTOPRIMARY);
+		DWORD physical_monitor_array_size = 0;
+		HMONITOR monitor_handler = MonitorFromWindow(window_handler_, MONITOR_DEFAULTTOPRIMARY);
 
-		if (!GetNumberOfPhysicalMonitorsFromHMONITOR(hMonitor, &dwPhysicalMonitorArraySize))
+		if (!GetNumberOfPhysicalMonitorsFromHMONITOR(monitor_handler, &physical_monitor_array_size))
 		{
 			throw std::exception("Problem getting numbers of monitor");
 		}
 
-		LPPHYSICAL_MONITOR pPhysicalMonitor = (LPPHYSICAL_MONITOR)malloc(dwPhysicalMonitorArraySize * sizeof(PHYSICAL_MONITOR));
+		LPPHYSICAL_MONITOR physical_monitor = (LPPHYSICAL_MONITOR)malloc(physical_monitor_array_size * sizeof(PHYSICAL_MONITOR));
 
-		if (pPhysicalMonitor == NULL)
+		if (physical_monitor == NULL)
 		{
 			throw std::exception("No monitors");
 		}
 
-		if (!GetPhysicalMonitorsFromHMONITOR(hMonitor, dwPhysicalMonitorArraySize, pPhysicalMonitor))
+		if (!GetPhysicalMonitorsFromHMONITOR(monitor_handler, physical_monitor_array_size, physical_monitor))
 		{
 			throw std::exception("Problem getting physical monitors");
 		}
 
-		if (!SetMonitorBrightness(pPhysicalMonitor->hPhysicalMonitor, brightness))
+		if (!SetMonitorBrightness(physical_monitor->hPhysicalMonitor, brightness))
 		{
 			throw std::exception("Problem setting monitor brightness");
 		}
 
-		DestroyPhysicalMonitors(dwPhysicalMonitorArraySize, pPhysicalMonitor);
+		DestroyPhysicalMonitors(physical_monitor_array_size, physical_monitor);
 
-		free(pPhysicalMonitor);
+		free(physical_monitor);
 	}
 
 	double ScreenBrightnessWindowsPlugin::GetBrightnessPercentage(const long brightness) const
@@ -205,7 +224,7 @@ namespace screen_brightness
 		}
 		catch (const std::exception& exception)
 		{
-			result->Error("-11", "Could not found monitor brightness value. error: " + *exception.what());
+			result->Error("-11", "Could not found monitor brightness value.", exception.what());
 		}
 	}
 
@@ -226,7 +245,7 @@ namespace screen_brightness
 		}
 
 		const long changed_brightness = GetBrightnessValueByPercentage(brightness);
-		try 
+		try
 		{
 			SetBrightness(changed_brightness);
 			changed_brightness_ = changed_brightness;
@@ -235,7 +254,7 @@ namespace screen_brightness
 		}
 		catch (const std::exception& exception)
 		{
-			result->Error("-1", "Unable to change screen brightness. error: " + *exception.what());
+			result->Error("-1", "Unable to change screen brightness.", exception.what());
 		}
 	}
 
@@ -256,7 +275,7 @@ namespace screen_brightness
 		}
 		catch (const std::exception& exception)
 		{
-			result->Error("-1", "Unable reset screen brightness. error: " + *exception.what());
+			result->Error("-1", "Unable reset screen brightness. error: ", exception.what());
 		}
 	}
 
@@ -292,13 +311,46 @@ namespace screen_brightness
 	{
 		const flutter::EncodableMap& args = std::get<flutter::EncodableMap>(*call.arguments());
 		const bool is_auto_reset = std::get<bool>(args.at(flutter::EncodableValue("isAutoReset")));
-		if (is_auto_reset == NULL) {
-			result->Error("-2", "Unexpected error on null isAutoReset");
-			return;
-		}
 
 		is_auto_reset_ = is_auto_reset;
 		result->Success(nullptr);
+	}
+
+	std::optional<LRESULT> ScreenBrightnessWindowsPlugin::HandleWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		if (changed_brightness_ == -1 || !is_auto_reset_)
+		{
+			return std::nullopt;
+		}
+
+		switch (message)
+		{
+		case WM_SIZE:
+			switch (wParam)
+			{
+			case SIZE_MINIMIZED:
+				SetBrightness(system_brightness_);
+				break;
+
+			case SIZE_MAXIMIZED:
+			case SIZE_RESTORED:
+				SetBrightness(changed_brightness_);
+				break;
+			}
+			break;
+
+		case WM_DESTROY:
+			SetBrightness(system_brightness_);
+			break;
+
+		case WM_ACTIVATEAPP:
+			bool is_activate = bool(wParam);
+			SetBrightness(is_activate ? changed_brightness_ : system_brightness_);
+			break;
+		}
+
+		// allow another plugin to process message
+		return std::nullopt;
 	}
 }
 

@@ -32,9 +32,13 @@ namespace screen_brightness
 	public:
 		static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
-		ScreenBrightnessWindowsPlugin() = default;
+		ScreenBrightnessWindowsPlugin(flutter::PluginRegistrarWindows* registrar);
+
+		virtual ~ScreenBrightnessWindowsPlugin();
 
 	private:
+		flutter::PluginRegistrarWindows* registrar_;
+
 		HWND window_handler_ = nullptr;
 
 		long system_brightness_ = -1;
@@ -50,6 +54,8 @@ namespace screen_brightness
 		bool is_auto_reset_ = true;
 
 		CurrentBrightnessChangeStreamHandler* current_brightness_change_stream_handler_ = nullptr;
+
+		int window_proc_id_ = -1;
 
 		// Called when a method is called on this plugin's channel from Dart.
 		void HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue>& method_call,
@@ -81,6 +87,8 @@ namespace screen_brightness
 
 		void HandleSetAutoResetMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call,
 			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+		std::optional<LRESULT> HandleWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	};
 }
 
