@@ -295,10 +295,6 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Future<void> getAutoResetSetting() async {
-    if (!Platform.isIOS) {
-      return;
-    }
-
     final _isAutoReset = await ScreenBrightness().isAutoReset;
     setState(() {
       isAutoReset = _isAutoReset;
@@ -317,12 +313,13 @@ class _SettingPageState extends State<SettingPage> {
             title: const Text('Auto Reset (iOS only)'),
             trailing: Switch(
               value: isAutoReset,
-              onChanged: !Platform.isIOS
-                  ? null
-                  : (value) async {
-                      await ScreenBrightness().setAutoReset(value);
-                      await getAutoResetSetting();
-                    },
+              onChanged:
+                  Platform.isIOS || Platform.isWindows || Platform.isMacOS
+                      ? (value) async {
+                          await ScreenBrightness().setAutoReset(value);
+                          await getAutoResetSetting();
+                        }
+                      : null,
             ),
           )
         ],
