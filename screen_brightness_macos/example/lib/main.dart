@@ -160,7 +160,7 @@ class _ControllerPageState extends State<ControllerPage> {
 
             return StreamBuilder<double>(
               stream:
-              ScreenBrightnessPlatform.instance.onCurrentBrightnessChanged,
+                  ScreenBrightnessPlatform.instance.onCurrentBrightnessChanged,
               builder: (context, snapshot) {
                 double changedBrightness = currentBrightness;
                 if (snapshot.hasData) {
@@ -297,10 +297,6 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Future<void> getAutoResetSetting() async {
-    if (!Platform.isIOS) {
-      return;
-    }
-
     final _isAutoReset = await ScreenBrightnessPlatform.instance.isAutoReset;
     setState(() {
       isAutoReset = _isAutoReset;
@@ -319,13 +315,14 @@ class _SettingPageState extends State<SettingPage> {
             title: const Text('Auto Reset'),
             trailing: Switch(
               value: isAutoReset,
-              onChanged: !Platform.isIOS
-                  ? null
-                  : (value) async {
-                await ScreenBrightnessPlatform.instance
-                    .setAutoReset(value);
-                await getAutoResetSetting();
-              },
+              onChanged:
+                  Platform.isIOS || Platform.isWindows || Platform.isMacOS
+                      ? (value) async {
+                          await ScreenBrightnessPlatform.instance
+                              .setAutoReset(value);
+                          await getAutoResetSetting();
+                        }
+                      : null,
             ),
           )
         ],

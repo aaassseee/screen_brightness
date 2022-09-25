@@ -70,7 +70,7 @@ void main() {
           .setMockMethodCallHandler((call) async {
         switch (call.method) {
           case 'listen':
-            await ServicesBinding.instance!.defaultBinaryMessenger
+            await ServicesBinding.instance.defaultBinaryMessenger
                 .handlePlatformMessage(
               pluginEventChannelCurrentBrightnessChange.name,
               pluginEventChannelCurrentBrightnessChange.codec
