@@ -1,6 +1,10 @@
+## 0.2.2
+
+* add Windows support
+
 ## 0.2.1
 
-* add macos support
+* add macOS support
 
 ## 0.2.0
 
