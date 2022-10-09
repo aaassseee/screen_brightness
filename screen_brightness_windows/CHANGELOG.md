@@ -1,6 +1,6 @@
 ## 0.1.1
 
-* fixed startup crash (#12)
+* fixed startup crash [#12](https://github.com/aaassseee/screen_brightness/issues/12)
 
 ## 0.1.0 [broken build]
 
