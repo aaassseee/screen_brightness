@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* update android gradle version
+
 ## 0.1.0
 
 * fixed code warning
