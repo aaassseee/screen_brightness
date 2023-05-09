@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* support AGP 8.0
+
 ## 0.1.0+1
 
 * update android gradle version
