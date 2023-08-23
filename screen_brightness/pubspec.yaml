@@ -5,7 +5,7 @@ homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
 
-topic:
+topics:
   - screen
   - monitor
   - brightness
