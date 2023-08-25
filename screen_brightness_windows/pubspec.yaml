@@ -1,12 +1,12 @@
 name: screen_brightness_windows
 description: The Windows federated plugin implementation of the screen_brightness.
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness_windows
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.12.0 <4.0.0"
   flutter: ">=2.0.0"
 
 dependencies:

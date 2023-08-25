@@ -1,3 +1,8 @@
+## 0.2.2+1
+
+* updated topics
+* updated dependencies
+
 ## 0.2.2
 
 * add Windows support
