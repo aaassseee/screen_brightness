@@ -37,9 +37,9 @@ void main() {
       systemBrightness = 0.5;
       methodChannelScreenBrightness = MethodChannelScreenBrightness();
 
-      pluginMethodChannel
-          .setMockMethodCallHandler((MethodCall methodCall) async {
-        switch (methodCall.method) {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(pluginMethodChannel, (call) async {
+        switch (call.method) {
           case methodNameGetSystemScreenBrightness:
             return systemBrightness;
 
@@ -47,7 +47,7 @@ void main() {
             return changedBrightness ?? systemBrightness;
 
           case methodNameSetScreenBrightness:
-            changedBrightness = methodCall.arguments['brightness'];
+            changedBrightness = call.arguments['brightness'];
             return null;
 
           case methodNameResetScreenBrightness:
@@ -61,16 +61,20 @@ void main() {
             return isAutoReset;
 
           case methodNameSetAutoReset:
-            isAutoReset = methodCall.arguments['isAutoReset'];
+            isAutoReset = call.arguments['isAutoReset'];
             return null;
         }
+
+        return null;
       });
 
-      pluginEventChannelCurrentBrightnessChange
-          .setMockMethodCallHandler((call) async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(pluginEventChannelCurrentBrightnessChange,
+              (call) async {
         switch (call.method) {
           case 'listen':
-            await ServicesBinding.instance.defaultBinaryMessenger
+            await TestDefaultBinaryMessengerBinding
+                .instance.defaultBinaryMessenger
                 .handlePlatformMessage(
               pluginEventChannelCurrentBrightnessChange.name,
               pluginEventChannelCurrentBrightnessChange.codec
@@ -83,12 +87,17 @@ void main() {
           default:
             return null;
         }
+
+        return null;
       });
     });
 
     tearDown(() {
-      pluginMethodChannel.setMockMethodCallHandler(null);
-      pluginEventChannelCurrentBrightnessChange.setMockMethodCallHandler(null);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(pluginMethodChannel, null);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              pluginEventChannelCurrentBrightnessChange, null);
     });
 
     test('get platform instance', () {

@@ -21,7 +21,14 @@ namespace screen_brightness
 		flutter::PluginRegistrarWindows* registrar) : registrar_(registrar)
 	{
 		window_handler_ = registrar->GetView()->GetNativeWindow();
-		GetBrightness(minimum_brightness_, system_brightness_, maximum_brightness_);
+		try
+		{
+			GetBrightness(minimum_brightness_, system_brightness_, maximum_brightness_);
+		}
+		catch (const std::exception& exception)
+		{
+			std::cout << exception.what() << std::endl;
+		}
 
 		window_proc_id_ = registrar->RegisterTopLevelWindowProcDelegate
 		([this](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -34,7 +41,7 @@ namespace screen_brightness
 	{
 		registrar_->UnregisterTopLevelWindowProcDelegate(window_proc_id_);
 		delete current_brightness_change_stream_handler_;
-		delete window_handler_;
+		DestroyWindow(window_handler_);
 		delete registrar_;
 		flutter::Plugin::~Plugin();
 	}

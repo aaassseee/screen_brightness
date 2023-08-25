@@ -1,12 +1,17 @@
 name: screen_brightness
 description: A Plugin for controlling screen brightness with application life cycle reset implemented
-version: 0.2.2
+version: 0.2.2+1
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
 
+topics:
+  - screen
+  - monitor
+  - brightness
+
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.12.0 <4.0.0"
   flutter: ">=2.0.0"
 
 dependencies:
@@ -32,9 +37,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.4
-  plugin_platform_interface: ^2.0.0
-  async: ^2.5.0
+  flutter_lints: ">=2.0.0 <3.0.0"
+  plugin_platform_interface: ">=2.0.0 <3.0.0"
+  async: ">=2.0.0 <3.0.0"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
