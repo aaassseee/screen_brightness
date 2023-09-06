@@ -1,3 +1,7 @@
+## 0.1.3
+
+* removed all delete pointer code due to crash [#23](https://github.com/aaassseee/screen_brightness/issues/23)
+
 ## 0.1.2
 
 * fixed release windows object pointer crash [#23](https://github.com/aaassseee/screen_brightness/issues/23)
