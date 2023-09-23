@@ -54,12 +54,14 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   }
 
   /// Set screen brightness with double value.
+  /// 
+  /// [animated] dictates wether the brightness change should be animated or not. Only support on iOS.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
   ///
   /// This method is useful for user to change screen brightness.
-  Future<void> setScreenBrightness(double brightness) async {
+  Future<void> setScreenBrightness(double brightness, {bool animated = true}) async {
     throw UnimplementedError(
         'setScreenBrightness(brightness) has not been implemented.');
   }

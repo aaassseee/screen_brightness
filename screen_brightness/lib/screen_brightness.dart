@@ -71,6 +71,8 @@ class ScreenBrightness {
 
   /// Set screen brightness with double value.
   ///
+  /// [animated] dictates wether the brightness change should be animated or not. Only support on iOS.
+  ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
   ///
@@ -87,8 +89,8 @@ class ScreenBrightness {
   ///
   /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
-  Future<void> setScreenBrightness(double brightness) =>
-      _platform.setScreenBrightness(brightness);
+  Future<void> setScreenBrightness(double brightness, {bool animated = true}) =>
+      _platform.setScreenBrightness(brightness, animated: animated);
 
   /// Reset screen brightness with (Android)-1 or (iOS)system brightness value.
   ///
@@ -114,8 +116,7 @@ class ScreenBrightness {
   /// setting.
   ///
   /// This stream is useful for user to listen to brightness changes.
-  Stream<double> get onCurrentBrightnessChanged =>
-      _platform.onCurrentBrightnessChanged;
+  Stream<double> get onCurrentBrightnessChanged => _platform.onCurrentBrightnessChanged;
 
   /// Returns boolean to identify brightness has changed with this plugin.
   ///
@@ -140,6 +141,5 @@ class ScreenBrightness {
   ///
   /// (iOS only) implemented in iOS only because only iOS native side does not
   /// having reset method.
-  Future<void> setAutoReset(bool isAutoReset) =>
-      _platform.setAutoReset(isAutoReset);
+  Future<void> setAutoReset(bool isAutoReset) => _platform.setAutoReset(isAutoReset);
 }

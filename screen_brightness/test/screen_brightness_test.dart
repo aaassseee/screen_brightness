@@ -25,7 +25,7 @@ class MockScreenBrightnessPlatform
   Future<double> get current => Future.value(_currentBrightness);
 
   @override
-  Future<void> setScreenBrightness(double brightness) async {
+  Future<void> setScreenBrightness(double brightness, {bool animated = true}) async {
     _currentBrightness = brightness;
     _changedBrightness = brightness;
   }
