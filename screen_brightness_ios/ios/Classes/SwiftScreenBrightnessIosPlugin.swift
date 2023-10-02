@@ -109,13 +109,13 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     }
     
     private func handleSetScreenBrightnessMethodCall(call: FlutterMethodCall, result: FlutterResult) {
-        guard let parameters = call.arguments as? Dictionary<String, Any>, let brightness = parameters["brightness"] as? NSNumber else {
+        guard let parameters = call.arguments as? Dictionary<String, Any>, let brightness = parameters["brightness"] as? NSNumber, let animated = parameters["animated"] as? Bool else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null brightness", details: nil))
             return
         }
         
         let _changedBrightness = CGFloat(brightness.doubleValue)
-        setScreenBrightness(targetBrightness: _changedBrightness, animated: true)
+        setScreenBrightness(targetBrightness: _changedBrightness, animated: animated)
         
         changedBrightness = _changedBrightness
         handleCurrentBrightnessChanged(_changedBrightness)
