@@ -126,8 +126,7 @@ class ControllerPage extends StatefulWidget {
 class _ControllerPageState extends State<ControllerPage> {
   Future<void> setBrightness(double brightness) async {
     try {
-      await ScreenBrightness.instance
-          .setScreenBrightness(brightness, animated: true);
+      await ScreenBrightness.instance.setScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
       throw 'Failed to set brightness';

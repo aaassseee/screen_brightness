@@ -80,8 +80,6 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   }
 
   /// Set screen brightness with double value.
-  /// 
-  /// [animated] dictates wether the brightness change should be animated or not. Only support on iOS.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
@@ -100,13 +98,13 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   @override
-  Future<void> setScreenBrightness(double brightness, {bool animated = true}) async {
+  Future<void> setScreenBrightness(double brightness) async {
     if (!brightness.isInRange(minBrightness, maxBrightness)) {
       throw RangeError.range(brightness, minBrightness, maxBrightness);
     }
 
     await pluginMethodChannel.invokeMethod(
-        methodNameSetScreenBrightness, {"brightness": brightness, "animated": animated});
+        methodNameSetScreenBrightness, {"brightness": brightness});
   }
 
   /// Reset screen brightness with (Android)-1 or (iOS)system brightness value.
