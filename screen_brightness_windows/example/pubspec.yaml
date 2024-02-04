@@ -20,6 +20,7 @@ dependencies:
 
   screen_brightness_windows:
     path: ../
+  screen_brightness_platform_interface:
 
 dev_dependencies:
   flutter_test:

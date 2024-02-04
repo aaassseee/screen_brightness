@@ -72,7 +72,7 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FutureBuilder<double>(
-              future: ScreenBrightness().current,
+              future: ScreenBrightness.instance.current,
               builder: (context, snapshot) {
                 double currentBrightness = 0;
                 if (snapshot.hasData) {
@@ -80,7 +80,7 @@ class HomePage extends StatelessWidget {
                 }
 
                 return StreamBuilder<double>(
-                  stream: ScreenBrightness().onCurrentBrightnessChanged,
+                  stream: ScreenBrightness.instance.onCurrentBrightnessChanged,
                   builder: (context, snapshot) {
                     double changedBrightness = currentBrightness;
                     if (snapshot.hasData) {
@@ -126,7 +126,7 @@ class ControllerPage extends StatefulWidget {
 class _ControllerPageState extends State<ControllerPage> {
   Future<void> setBrightness(double brightness) async {
     try {
-      await ScreenBrightness().setScreenBrightness(brightness);
+      await ScreenBrightness.instance.setScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
       throw 'Failed to set brightness';
@@ -135,7 +135,7 @@ class _ControllerPageState extends State<ControllerPage> {
 
   Future<void> resetBrightness() async {
     try {
-      await ScreenBrightness().resetScreenBrightness();
+      await ScreenBrightness.instance.resetScreenBrightness();
     } catch (e) {
       debugPrint(e.toString());
       throw 'Failed to reset brightness';
@@ -150,7 +150,7 @@ class _ControllerPageState extends State<ControllerPage> {
       ),
       body: Center(
         child: FutureBuilder<double>(
-          future: ScreenBrightness().current,
+          future: ScreenBrightness.instance.current,
           builder: (context, snapshot) {
             double currentBrightness = 0;
             if (snapshot.hasData) {
@@ -158,7 +158,7 @@ class _ControllerPageState extends State<ControllerPage> {
             }
 
             return StreamBuilder<double>(
-              stream: ScreenBrightness().onCurrentBrightnessChanged,
+              stream: ScreenBrightness.instance.onCurrentBrightnessChanged,
               builder: (context, snapshot) {
                 double changedBrightness = currentBrightness;
                 if (snapshot.hasData) {
@@ -169,7 +169,7 @@ class _ControllerPageState extends State<ControllerPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     FutureBuilder<bool>(
-                      future: ScreenBrightness().hasChanged,
+                      future: ScreenBrightness.instance.hasChanged,
                       builder: (context, snapshot) {
                         return Text(
                             'Brightness has changed via plugin: ${snapshot.data}');
@@ -224,25 +224,25 @@ class _RouteAwarePageState extends State<RouteAwarePage> with RouteAware {
   @override
   void didPush() {
     super.didPush();
-    ScreenBrightness().setScreenBrightness(0.7);
+    ScreenBrightness.instance.setScreenBrightness(0.7);
   }
 
   @override
   void didPushNext() {
     super.didPushNext();
-    ScreenBrightness().resetScreenBrightness();
+    ScreenBrightness.instance.resetScreenBrightness();
   }
 
   @override
   void didPop() {
     super.didPop();
-    ScreenBrightness().resetScreenBrightness();
+    ScreenBrightness.instance.resetScreenBrightness();
   }
 
   @override
   void didPopNext() {
     super.didPopNext();
-    ScreenBrightness().setScreenBrightness(0.7);
+    ScreenBrightness.instance.setScreenBrightness(0.7);
   }
 
   @override
@@ -295,7 +295,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Future<void> getAutoResetSetting() async {
-    final isAutoReset = await ScreenBrightness().isAutoReset;
+    final isAutoReset = await ScreenBrightness.instance.isAutoReset;
     setState(() {
       this.isAutoReset = isAutoReset;
     });
@@ -316,7 +316,7 @@ class _SettingPageState extends State<SettingPage> {
               onChanged:
                   Platform.isIOS || Platform.isWindows || Platform.isMacOS
                       ? (value) async {
-                          await ScreenBrightness().setAutoReset(value);
+                          await ScreenBrightness.instance.setAutoReset(value);
                           await getAutoResetSetting();
                         }
                       : null,
