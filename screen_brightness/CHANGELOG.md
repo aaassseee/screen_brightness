@@ -1,3 +1,8 @@
+## 1.0.0
+
+* updated minimum supported SDK version to Flutter 3.0/Dart 3.0.
+* added static instance method
+
 ## 0.2.2+1
 
 * updated topics
