@@ -58,7 +58,7 @@ void main() {
   setUp(() {
     mockScreenBrightnessPlatform = MockScreenBrightnessPlatform();
     ScreenBrightnessPlatform.instance = mockScreenBrightnessPlatform;
-    screenBrightness = ScreenBrightness();
+    screenBrightness = ScreenBrightness.instance;
   });
 
   test('get system brightness', () async {

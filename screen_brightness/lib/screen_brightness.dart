@@ -7,22 +7,20 @@ class ScreenBrightness {
   /// So constructor should not provide to user.
   ScreenBrightness._();
 
-  /// PLugin singletone
-  static ScreenBrightness? _singleton;
+  /// Plugin singleton
+  static final ScreenBrightness _instance = ScreenBrightness._();
 
-  /// Constructs a singleton instance of [ScreenBrightness].
+  /// Returns a singleton instance of [ScreenBrightness].
   ///
   /// [ScreenBrightness] is designed to work as a singleton.
-  ///
-  /// When a second instance is created, the first instance will not be able to listen to the
-  /// EventChannel because it is overridden. Forcing the class to be a singleton class can prevent
-  /// misuse of creating a second instance from a programmer.
-  factory ScreenBrightness() {
-    _singleton ??= ScreenBrightness._();
-    return _singleton!;
-  }
+  factory ScreenBrightness() => instance;
 
-  /// Private platform prevent direct access or overidding
+  /// Returns a singleton instance of [ScreenBrightness].
+  ///
+  /// [ScreenBrightness] is designed to work as a singleton.
+  static ScreenBrightness get instance => _instance;
+
+  /// Private platform prevent direct access or overriding
   static ScreenBrightnessPlatform get _platform {
     return ScreenBrightnessPlatform.instance;
   }

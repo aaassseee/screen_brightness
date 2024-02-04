@@ -10,7 +10,7 @@ void main() {
 class MyApp extends StatelessWidget {
   static final RouteObserver<Route> routeObserver = RouteObserver<Route>();
 
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   static const routeName = '/home';
 
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +118,7 @@ class HomePage extends StatelessWidget {
 class ControllerPage extends StatefulWidget {
   static const routeName = '/controller';
 
-  const ControllerPage({Key? key}) : super(key: key);
+  const ControllerPage({super.key});
 
   @override
   State<ControllerPage> createState() => _ControllerPageState();
@@ -204,10 +204,10 @@ class _ControllerPageState extends State<ControllerPage> {
 class RouteAwarePage extends StatefulWidget {
   static const routeName = '/routeAware';
 
-  const RouteAwarePage({Key? key}) : super(key: key);
+  const RouteAwarePage({super.key});
 
   @override
-  _RouteAwarePageState createState() => _RouteAwarePageState();
+  State<RouteAwarePage> createState() => _RouteAwarePageState();
 }
 
 class _RouteAwarePageState extends State<RouteAwarePage> with RouteAware {
@@ -266,7 +266,7 @@ class _RouteAwarePageState extends State<RouteAwarePage> with RouteAware {
 class BlankPage extends StatelessWidget {
   static const routeName = '/blankPage';
 
-  const BlankPage({Key? key}) : super(key: key);
+  const BlankPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -281,10 +281,10 @@ class BlankPage extends StatelessWidget {
 class SettingPage extends StatefulWidget {
   static const routeName = '/setting';
 
-  const SettingPage({Key? key}) : super(key: key);
+  const SettingPage({super.key});
 
   @override
-  _SettingPageState createState() => _SettingPageState();
+  State<SettingPage> createState() => _SettingPageState();
 }
 
 class _SettingPageState extends State<SettingPage> {
@@ -297,9 +297,9 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Future<void> getAutoResetSetting() async {
-    final _isAutoReset = await ScreenBrightnessPlatform.instance.isAutoReset;
+    final isAutoReset = await ScreenBrightnessPlatform.instance.isAutoReset;
     setState(() {
-      isAutoReset = _isAutoReset;
+      this.isAutoReset = isAutoReset;
     });
   }
 
