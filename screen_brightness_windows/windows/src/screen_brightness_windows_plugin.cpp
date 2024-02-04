@@ -40,10 +40,6 @@ namespace screen_brightness
 	ScreenBrightnessWindowsPlugin::~ScreenBrightnessWindowsPlugin()
 	{
 		registrar_->UnregisterTopLevelWindowProcDelegate(window_proc_id_);
-		delete current_brightness_change_stream_handler_;
-		DestroyWindow(window_handler_);
-		delete registrar_;
-		flutter::Plugin::~Plugin();
 	}
 
 	// static
