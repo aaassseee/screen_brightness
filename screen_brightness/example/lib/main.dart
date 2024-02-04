@@ -10,7 +10,7 @@ void main() {
 class MyApp extends StatelessWidget {
   static final RouteObserver<Route> routeObserver = RouteObserver<Route>();
 
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   static const routeName = '/home';
 
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FutureBuilder<double>(
-              future: ScreenBrightness().current,
+              future: ScreenBrightness.instance.current,
               builder: (context, snapshot) {
                 double currentBrightness = 0;
                 if (snapshot.hasData) {
@@ -80,7 +80,7 @@ class HomePage extends StatelessWidget {
                 }
 
                 return StreamBuilder<double>(
-                  stream: ScreenBrightness().onCurrentBrightnessChanged,
+                  stream: ScreenBrightness.instance.onCurrentBrightnessChanged,
                   builder: (context, snapshot) {
                     double changedBrightness = currentBrightness;
                     if (snapshot.hasData) {
@@ -117,7 +117,7 @@ class HomePage extends StatelessWidget {
 class ControllerPage extends StatefulWidget {
   static const routeName = '/controller';
 
-  const ControllerPage({Key? key}) : super(key: key);
+  const ControllerPage({super.key});
 
   @override
   State<ControllerPage> createState() => _ControllerPageState();
@@ -126,7 +126,8 @@ class ControllerPage extends StatefulWidget {
 class _ControllerPageState extends State<ControllerPage> {
   Future<void> setBrightness(double brightness) async {
     try {
-      await ScreenBrightness().setScreenBrightness(brightness, animated: true);
+      await ScreenBrightness.instance
+          .setScreenBrightness(brightness, animated: true);
     } catch (e) {
       debugPrint(e.toString());
       throw 'Failed to set brightness';
@@ -135,7 +136,7 @@ class _ControllerPageState extends State<ControllerPage> {
 
   Future<void> resetBrightness() async {
     try {
-      await ScreenBrightness().resetScreenBrightness();
+      await ScreenBrightness.instance.resetScreenBrightness();
     } catch (e) {
       debugPrint(e.toString());
       throw 'Failed to reset brightness';
@@ -150,7 +151,7 @@ class _ControllerPageState extends State<ControllerPage> {
       ),
       body: Center(
         child: FutureBuilder<double>(
-          future: ScreenBrightness().current,
+          future: ScreenBrightness.instance.current,
           builder: (context, snapshot) {
             double currentBrightness = 0;
             if (snapshot.hasData) {
@@ -158,7 +159,7 @@ class _ControllerPageState extends State<ControllerPage> {
             }
 
             return StreamBuilder<double>(
-              stream: ScreenBrightness().onCurrentBrightnessChanged,
+              stream: ScreenBrightness.instance.onCurrentBrightnessChanged,
               builder: (context, snapshot) {
                 double changedBrightness = currentBrightness;
                 if (snapshot.hasData) {
@@ -169,7 +170,7 @@ class _ControllerPageState extends State<ControllerPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     FutureBuilder<bool>(
-                      future: ScreenBrightness().hasChanged,
+                      future: ScreenBrightness.instance.hasChanged,
                       builder: (context, snapshot) {
                         return Text(
                             'Brightness has changed via plugin: ${snapshot.data}');
@@ -202,10 +203,10 @@ class _ControllerPageState extends State<ControllerPage> {
 class RouteAwarePage extends StatefulWidget {
   static const routeName = '/routeAware';
 
-  const RouteAwarePage({Key? key}) : super(key: key);
+  const RouteAwarePage({super.key});
 
   @override
-  _RouteAwarePageState createState() => _RouteAwarePageState();
+  State<RouteAwarePage> createState() => _RouteAwarePageState();
 }
 
 class _RouteAwarePageState extends State<RouteAwarePage> with RouteAware {
@@ -224,25 +225,25 @@ class _RouteAwarePageState extends State<RouteAwarePage> with RouteAware {
   @override
   void didPush() {
     super.didPush();
-    ScreenBrightness().setScreenBrightness(0.7);
+    ScreenBrightness.instance.setScreenBrightness(0.7);
   }
 
   @override
   void didPushNext() {
     super.didPushNext();
-    ScreenBrightness().resetScreenBrightness();
+    ScreenBrightness.instance.resetScreenBrightness();
   }
 
   @override
   void didPop() {
     super.didPop();
-    ScreenBrightness().resetScreenBrightness();
+    ScreenBrightness.instance.resetScreenBrightness();
   }
 
   @override
   void didPopNext() {
     super.didPopNext();
-    ScreenBrightness().setScreenBrightness(0.7);
+    ScreenBrightness.instance.setScreenBrightness(0.7);
   }
 
   @override
@@ -264,7 +265,7 @@ class _RouteAwarePageState extends State<RouteAwarePage> with RouteAware {
 class BlankPage extends StatelessWidget {
   static const routeName = '/blankPage';
 
-  const BlankPage({Key? key}) : super(key: key);
+  const BlankPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -279,10 +280,10 @@ class BlankPage extends StatelessWidget {
 class SettingPage extends StatefulWidget {
   static const routeName = '/setting';
 
-  const SettingPage({Key? key}) : super(key: key);
+  const SettingPage({super.key});
 
   @override
-  _SettingPageState createState() => _SettingPageState();
+  State<SettingPage> createState() => _SettingPageState();
 }
 
 class _SettingPageState extends State<SettingPage> {
@@ -295,9 +296,9 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Future<void> getAutoResetSetting() async {
-    final _isAutoReset = await ScreenBrightness().isAutoReset;
+    final isAutoReset = await ScreenBrightness.instance.isAutoReset;
     setState(() {
-      isAutoReset = _isAutoReset;
+      this.isAutoReset = isAutoReset;
     });
   }
 
@@ -316,7 +317,7 @@ class _SettingPageState extends State<SettingPage> {
               onChanged:
                   Platform.isIOS || Platform.isWindows || Platform.isMacOS
                       ? (value) async {
-                          await ScreenBrightness().setAutoReset(value);
+                          await ScreenBrightness.instance.setAutoReset(value);
                           await getAutoResetSetting();
                         }
                       : null,
