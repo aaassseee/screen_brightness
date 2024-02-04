@@ -1,3 +1,7 @@
+## 1.0.0
+
+* updated minimum supported SDK version to Flutter 3.0/Dart 3.0.
+
 ## 0.1.0+2
 
 * support AGP 8.0
