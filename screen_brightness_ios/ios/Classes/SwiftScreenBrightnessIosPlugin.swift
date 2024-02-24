@@ -11,6 +11,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     var changedBrightness: CGFloat?
     
     var isAutoReset: Bool = true
+    var isAnimated: Bool = true
     
     let taskQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -61,7 +62,13 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
             
         case "setAutoReset":
             handleSetAutoResetMethodCall(call: call, result: result)
-            
+
+        case "isAnimated":
+            handleIsAnimatedMethodCall(result: result)
+
+        case "setAnimated":
+            handleSetAnimatedMethodCall(call: call, result: result)
+
         default:
             result(FlutterMethodNotImplemented)
             break;
@@ -109,7 +116,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     }
     
     private func handleSetScreenBrightnessMethodCall(call: FlutterMethodCall, result: FlutterResult) {
-        guard let parameters = call.arguments as? Dictionary<String, Any>, let brightness = parameters["brightness"] as? NSNumber, let animated = parameters["animated"] as? Bool else {
+        guard let parameters = call.arguments as? Dictionary<String, Any>, let brightness = parameters["brightness"] as? NSNumber else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null brightness", details: nil))
             return
         }
@@ -156,7 +163,21 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         self.isAutoReset = isAutoReset
         result(nil)
     }
-    
+
+    private func handleIsAnimatedMethodCall(result: FlutterResult) {
+        result(isAnimated)
+    }
+
+    private func handleSetAnimatedMethodCall(call: FlutterMethodCall, result: FlutterResult) {
+        guard let parameters = call.arguments as? Dictionary<String, Any>, let isAutoReset = parameters["isAnimated"] as? Bool else {
+            result(FlutterError.init(code: "-2", message: "Unexpected error on null isAnimated", details: nil))
+            return
+        }
+
+        self.isAnimated = isAnimated
+        result(nil)
+    }
+
     @objc private func onSystemBrightnessChanged(notification: Notification) {
         guard let screenObject = notification.object, let brightness = (screenObject as AnyObject).brightness else {
             return

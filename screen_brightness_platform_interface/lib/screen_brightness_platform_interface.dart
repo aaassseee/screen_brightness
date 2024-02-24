@@ -115,4 +115,12 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   Future<void> setAutoReset(bool isAutoReset) async {
     throw UnimplementedError('setAutoReset has not been implemented.');
   }
+
+  Future<bool> get isAnimated async {
+    throw UnimplementedError('isAnimated has not been implemented.');
+  }
+
+  Future<void> setAnimated(bool isAnimated) async {
+    throw UnimplementedError('setAnimated has not been implemented.');
+  }
 }

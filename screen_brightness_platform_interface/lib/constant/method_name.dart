@@ -7,3 +7,6 @@ const methodNameHasChanged = 'hasChanged';
 
 const methodNameIsAutoReset = 'isAutoReset';
 const methodNameSetAutoReset = 'setAutoReset';
+
+const methodNameIsAnimated = 'isAnimated';
+const methodNameSetAnimated = 'setAnimated';

@@ -179,4 +179,16 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     await pluginMethodChannel
         .invokeMethod(methodNameSetAutoReset, {"isAutoReset": isAutoReset});
   }
+
+  @override
+  Future<bool> get isAnimated async {
+    return await pluginMethodChannel.invokeMethod<bool>(methodNameIsAnimated) ??
+        true;
+  }
+
+  @override
+  Future<void> setAnimated(bool isAnimated) async {
+    await pluginMethodChannel
+        .invokeMethod(methodNameSetAnimated, {"isAnimated": isAnimated});
+  }
 }
