@@ -16,6 +16,7 @@ The iOS federated plugin implementation of the screen_brightness.
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '9.0'
+  s.resource_bundles = {'screen_brightness_ios_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
