@@ -105,7 +105,7 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
         'isAutoResetWithLifecycleChange has not been implemented.');
   }
 
-  /// Returns boolean for disable auto reset when application lifecycle changed
+  /// Set auto reset when application lifecycle changed
   ///
   /// This method is useful for user change weather this plugin should auto reset
   /// brightness when application lifecycle changed.
@@ -116,11 +116,19 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
     throw UnimplementedError('setAutoReset has not been implemented.');
   }
 
-  Future<bool> get isAnimated async {
+  /// Returns boolean to identify will animate brightness transition
+  ///
+  /// This parameter is useful for user to determinate will there be animate
+  /// transition.
+  Future<bool> get isAnimate async {
     throw UnimplementedError('isAnimated has not been implemented.');
   }
 
-  Future<void> setAnimated(bool isAnimated) async {
+  /// Set animate when brightness transition
+  ///
+  /// This method is useful for user change weather this plugin should animate
+  /// when brightness transition
+  Future<void> setAnimate(bool isAnimated) async {
     throw UnimplementedError('setAnimated has not been implemented.');
   }
 }

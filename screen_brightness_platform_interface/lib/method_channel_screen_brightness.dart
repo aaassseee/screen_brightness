@@ -167,7 +167,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         true;
   }
 
-  /// Returns boolean for disable auto reset when application lifecycle changed
+  /// Set auto reset when application lifecycle changed
   ///
   /// This method is useful for user change weather this plugin should auto reset
   /// brightness when application lifecycle changed.
@@ -180,15 +180,23 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         .invokeMethod(methodNameSetAutoReset, {"isAutoReset": isAutoReset});
   }
 
+  /// Returns boolean to identify will animate brightness transition
+  ///
+  /// This parameter is useful for user to determinate will there be animate
+  /// transition.
   @override
-  Future<bool> get isAnimated async {
-    return await pluginMethodChannel.invokeMethod<bool>(methodNameIsAnimated) ??
+  Future<bool> get isAnimate async {
+    return await pluginMethodChannel.invokeMethod<bool>(methodNameIsAnimate) ??
         true;
   }
 
+  /// Set animate when brightness transition
+  ///
+  /// This method is useful for user change weather this plugin should animate
+  /// when brightness transition
   @override
-  Future<void> setAnimated(bool isAnimated) async {
+  Future<void> setAnimate(bool isAnimated) async {
     await pluginMethodChannel
-        .invokeMethod(methodNameSetAnimated, {"isAnimated": isAnimated});
+        .invokeMethod(methodNameSetAnimate, {"isAnimate": isAnimated});
   }
 }

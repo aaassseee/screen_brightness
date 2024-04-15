@@ -8,5 +8,5 @@ const methodNameHasChanged = 'hasChanged';
 const methodNameIsAutoReset = 'isAutoReset';
 const methodNameSetAutoReset = 'setAutoReset';
 
-const methodNameIsAnimated = 'isAnimated';
-const methodNameSetAnimated = 'setAnimated';
+const methodNameIsAnimate = 'isAnimate';
+const methodNameSetAnimate = 'setAnimate';
