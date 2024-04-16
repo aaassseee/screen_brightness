@@ -11,7 +11,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     var changedBrightness: CGFloat?
     
     var isAutoReset: Bool = true
-    var isAnimated: Bool = true
+    var isAnimate: Bool = true
     
     let taskQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -63,11 +63,11 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         case "setAutoReset":
             handleSetAutoResetMethodCall(call: call, result: result)
 
-        case "isAnimated":
-            handleIsAnimatedMethodCall(result: result)
+        case "isAnimate":
+            handleIsAnimateMethodCall(result: result)
 
-        case "setAnimated":
-            handleSetAnimatedMethodCall(call: call, result: result)
+        case "setAnimate":
+            handleSetAnimateMethodCall(call: call, result: result)
 
         default:
             result(FlutterMethodNotImplemented)
@@ -122,7 +122,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         }
         
         let _changedBrightness = CGFloat(brightness.doubleValue)
-        setScreenBrightness(targetBrightness: _changedBrightness, animated: animated)
+        setScreenBrightness(targetBrightness: _changedBrightness, animated: isAnimate)
         
         changedBrightness = _changedBrightness
         handleCurrentBrightnessChanged(_changedBrightness)
@@ -135,7 +135,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
             return
         }
         
-        setScreenBrightness(targetBrightness: initialBrightness, animated: true)
+        setScreenBrightness(targetBrightness: initialBrightness, animated: isAnimate)
         
         changedBrightness = nil
         handleCurrentBrightnessChanged(initialBrightness)
@@ -164,17 +164,17 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         result(nil)
     }
 
-    private func handleIsAnimatedMethodCall(result: FlutterResult) {
-        result(isAnimated)
+    private func handleIsAnimateMethodCall(result: FlutterResult) {
+        result(isAnimate)
     }
 
-    private func handleSetAnimatedMethodCall(call: FlutterMethodCall, result: FlutterResult) {
-        guard let parameters = call.arguments as? Dictionary<String, Any>, let isAutoReset = parameters["isAnimated"] as? Bool else {
-            result(FlutterError.init(code: "-2", message: "Unexpected error on null isAnimated", details: nil))
+    private func handleSetAnimateMethodCall(call: FlutterMethodCall, result: FlutterResult) {
+        guard let parameters = call.arguments as? Dictionary<String, Any>, let isAutoReset = parameters["isAnimate"] as? Bool else {
+            result(FlutterError.init(code: "-2", message: "Unexpected error on null isAnimate", details: nil))
             return
         }
 
-        self.isAnimated = isAnimated
+        self.isAnimate = isAnimate
         result(nil)
     }
 
@@ -194,7 +194,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
             return
         }
         
-        setScreenBrightness(targetBrightness: initialBrightness, animated: true, duration: 0.5)
+        setScreenBrightness(targetBrightness: initialBrightness, animated: isAnimate, duration: 0.5)
     }
     
     func onApplicationResume() {
@@ -202,7 +202,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
             return
         }
         
-        setScreenBrightness(targetBrightness: changedBrightness, animated: true, duration: 0.5)
+        setScreenBrightness(targetBrightness: changedBrightness, animated: isAnimate, duration: 0.5)
     }
     
     public func applicationWillResignActive(_ application: UIApplication) {

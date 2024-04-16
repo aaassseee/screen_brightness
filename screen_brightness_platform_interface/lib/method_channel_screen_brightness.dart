@@ -184,6 +184,9 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   ///
   /// This parameter is useful for user to determinate will there be animate
   /// transition.
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
   @override
   Future<bool> get isAnimate async {
     return await pluginMethodChannel.invokeMethod<bool>(methodNameIsAnimate) ??
@@ -194,9 +197,12 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   ///
   /// This method is useful for user change weather this plugin should animate
   /// when brightness transition
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
   @override
-  Future<void> setAnimate(bool isAnimated) async {
+  Future<void> setAnimate(bool isAnimate) async {
     await pluginMethodChannel
-        .invokeMethod(methodNameSetAnimate, {"isAnimate": isAnimated});
+        .invokeMethod(methodNameSetAnimate, {"isAnimate": isAnimate});
   }
 }

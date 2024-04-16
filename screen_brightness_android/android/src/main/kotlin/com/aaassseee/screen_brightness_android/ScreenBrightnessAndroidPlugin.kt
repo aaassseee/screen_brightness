@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.PowerManager
 import android.provider.Settings
 import android.view.WindowManager
-import androidx.annotation.NonNull
 import com.aaassseee.screen_brightness_android.stream_handler.CurrentBrightnessChangeStreamHandler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -39,7 +38,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     /**
      * The value which will be init when this plugin is attached to the Flutter engine
      *
-     * This value refer to the brightness value between 0 to 1 when the application initialized.
+     * This value refer to the brightness value between 0 and 1 when the application initialized.
      */
     private var systemBrightness by Delegates.notNull<Float>()
 
@@ -48,7 +47,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
      *
      * This value refer to the maximum brightness value.
      *
-     * By system default the value should be 255.0f, however it vary in some OS, e.g Miui.
+     * By system default the value should be 255.0f, however it vary in some OS, e.g. Miui.
      * Should not be changed in the future
      */
     private var maximumBrightness by Delegates.notNull<Float>()
@@ -57,11 +56,15 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
      * The value which will be set when user called [handleSetScreenBrightnessMethodCall]
      * or [handleResetScreenBrightnessMethodCall]
      *
-     * This value refer to the brightness value between 0 to 1 when user called [handleSetScreenBrightnessMethodCall].
+     * This value refer to the brightness value between 0 and 1 when user called [handleSetScreenBrightnessMethodCall].
      */
     private var changedBrightness: Float? = null
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    private var isAutoReset: Boolean = true
+
+    private var isAnimate: Boolean = true
+
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         methodChannel = MethodChannel(
             flutterPluginBinding.binaryMessenger,
             "github.com/aaassseee/screen_brightness"
@@ -98,13 +101,17 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         currentBrightnessChangeEventChannel.setStreamHandler(currentBrightnessChangeStreamHandler)
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "getSystemScreenBrightness" -> handleGetSystemBrightnessMethodCall(result)
             "getScreenBrightness" -> handleGetScreenBrightnessMethodCall(result)
             "setScreenBrightness" -> handleSetScreenBrightnessMethodCall(call, result)
             "resetScreenBrightness" -> handleResetScreenBrightnessMethodCall(result)
             "hasChanged" -> handleHasChangedMethodCall(result)
+            "isAutoReset" -> handleIsAutoResetMethodCall(result)
+            "setAutoReset" -> handleSetAutoResetMethodCall(call, result)
+            "isAnimate" -> handleIsAnimateMethodCall(result)
+            "setAnimate" -> handleSetAnimateMethodCall(call, result)
             else -> result.notImplemented()
         }
     }
@@ -233,6 +240,36 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         result.success(changedBrightness != null)
     }
 
+    private fun handleIsAutoResetMethodCall(result: MethodChannel.Result) {
+        result.success(isAutoReset)
+    }
+
+    private fun handleSetAutoResetMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        val isAutoReset: Boolean? = call.argument("isAutoReset") as? Boolean
+        if (isAutoReset == null) {
+            result.error("-2", "Unexpected error on null isAutoReset", null)
+            return
+        }
+
+        this.isAutoReset = isAutoReset
+        result.success(null)
+    }
+
+    private fun handleIsAnimateMethodCall(result: MethodChannel.Result) {
+        result.success(isAnimate)
+    }
+
+    private fun handleSetAnimateMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        val isAnimate: Boolean? = call.argument("isAnimate") as? Boolean
+        if (isAnimate == null) {
+            result.error("-2", "Unexpected error on null isAnimate", null)
+            return
+        }
+
+        this.isAnimate = isAnimate
+        result.success(null)
+    }
+
     override fun onDetachedFromActivityForConfigChanges() {
         activity = null
     }
@@ -247,7 +284,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         currentBrightnessChangeStreamHandler = null
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         methodChannel.setMethodCallHandler(null)
         currentBrightnessChangeEventChannel.setStreamHandler(null)
         currentBrightnessChangeStreamHandler = null

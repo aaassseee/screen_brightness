@@ -121,14 +121,14 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   /// This parameter is useful for user to determinate will there be animate
   /// transition.
   Future<bool> get isAnimate async {
-    throw UnimplementedError('isAnimated has not been implemented.');
+    throw UnimplementedError('isAnimate has not been implemented.');
   }
 
   /// Set animate when brightness transition
   ///
   /// This method is useful for user change weather this plugin should animate
   /// when brightness transition
-  Future<void> setAnimate(bool isAnimated) async {
-    throw UnimplementedError('setAnimated has not been implemented.');
+  Future<void> setAnimate(bool isAnimate) async {
+    throw UnimplementedError('setAnimate has not been implemented.');
   }
 }
