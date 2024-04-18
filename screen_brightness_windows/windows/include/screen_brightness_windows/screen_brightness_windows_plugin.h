@@ -53,6 +53,8 @@ namespace screen_brightness
 
 		bool is_auto_reset_ = true;
 
+		bool is_animate_ = true;
+
 		CurrentBrightnessChangeStreamHandler* current_brightness_change_stream_handler_ = nullptr;
 
 		int window_proc_id_ = -1;
@@ -86,6 +88,11 @@ namespace screen_brightness
 		void HandleIsAutoResetMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
 		void HandleSetAutoResetMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call,
+			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+		void HandleIsAnimateMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+		void HandleSetAnimateMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call,
 			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
 		std::optional<LRESULT> HandleWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

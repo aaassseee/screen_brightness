@@ -120,6 +120,18 @@ namespace screen_brightness
 			return;
 		}
 
+		if (method_call.method_name() == "isAnimate")
+		{
+			HandleIsAnimateMethodCall(std::move(result));
+			return;
+		}
+
+		if (method_call.method_name() == "setAnimate")
+		{
+			HandleSetAnimateMethodCall(method_call, std::move(result));
+			return;
+		}
+
 		result->NotImplemented();
 	}
 
@@ -316,6 +328,20 @@ namespace screen_brightness
 		const bool is_auto_reset = std::get<bool>(args.at(flutter::EncodableValue("isAutoReset")));
 
 		is_auto_reset_ = is_auto_reset;
+		result->Success(nullptr);
+	}
+
+	void ScreenBrightnessWindowsPlugin::HandleIsAnimateMethodCall(const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	{
+		result->Success(is_animate_);
+	}
+
+	void ScreenBrightnessWindowsPlugin::HandleSetAnimateMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call, const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	{
+		const flutter::EncodableMap& args = std::get<flutter::EncodableMap>(*call.arguments());
+		const bool is_animate = std::get<bool>(args.at(flutter::EncodableValue("isAnimate")));
+
+		is_animate_ = is_animate;
 		result->Success(nullptr);
 	}
 
