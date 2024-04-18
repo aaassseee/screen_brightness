@@ -1,3 +1,7 @@
+## 1.0.1
+
+* added animate boolean
+
 ## 1.0.0+1
 
 * added iOS privacy manifests
