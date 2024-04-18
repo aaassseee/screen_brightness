@@ -35,6 +35,8 @@ struct _ScreenBrightnessLinuxPlugin {
     gdouble changed_brightness_ = -1;
 
     gboolean is_auto_reset_ = true;
+
+    gboolean is_animate_ = true;
 };
 
 G_DEFINE_TYPE(ScreenBrightnessLinuxPlugin, screen_brightness_linux_plugin, g_object_get_type()
@@ -215,6 +217,31 @@ static void screen_brightness_linux_plugin_handle_set_auto_reset_method_call(Scr
     fl_method_call_respond_success(method_call, fl_value_new_bool(self->is_auto_reset_), nullptr);
 }
 
+static void screen_brightness_linux_plugin_handle_is_animate_method_call(ScreenBrightnessLinuxPlugin * self,
+                                                                            FlMethodCall * method_call) {
+    fl_method_call_respond_success(method_call, fl_value_new_bool(self->is_animate_), nullptr);
+}
+
+static void screen_brightness_linux_plugin_handle_set_animate_method_call(ScreenBrightnessLinuxPlugin * self,
+                                                                             FlMethodCall * method_call) {
+    g_autoptr(FlValue)
+    args = fl_method_call_get_args(method_call);
+    if (fl_value_get_type(args) != FL_VALUE_TYPE_MAP) {
+        fl_method_call_respond_error(method_call, "-2", "Unexpected error on parameter", nullptr, nullptr);
+        return;
+    }
+
+    g_autoptr(FlValue)
+    isAnimateValue = fl_value_lookup_string(args, "isAnimate");
+    if (fl_value_get_type(args) != FL_VALUE_TYPE_BOOL) {
+        fl_method_call_respond_error(method_call, "-2", "Unexpected error on parameter", nullptr, nullptr);
+        return;
+    }
+
+    self->is_animate_ = fl_value_get_bool(isAnimateValue);
+    fl_method_call_respond_success(method_call, fl_value_new_bool(self->is_animate_), nullptr);
+}
+
 // Called when a method call is received from Flutter.
 static void screen_brightness_linux_plugin_handle_method_call(
         ScreenBrightnessLinuxPlugin * self,
@@ -253,6 +280,16 @@ static void screen_brightness_linux_plugin_handle_method_call(
 
     if (strcmp(method, "setAutoReset") == 0) {
         screen_brightness_linux_plugin_handle_set_auto_reset_method_call(self, method_call);
+        return;
+    }
+
+    if (strcmp(method, "isAnimate") == 0) {
+        screen_brightness_linux_plugin_handle_is_animate_method_call(self, method_call);
+        return;
+    }
+
+    if (strcmp(method, "setAnimate") == 0) {
+        screen_brightness_linux_plugin_handle_set_animate_method_call(self, method_call);
         return;
     }
 
