@@ -140,4 +140,22 @@ class ScreenBrightness {
   /// having reset method.
   Future<void> setAutoReset(bool isAutoReset) =>
       _platform.setAutoReset(isAutoReset);
+
+  /// Returns boolean to identify will animate brightness transition
+  ///
+  /// This parameter is useful for user to determinate will there be animate
+  /// transition.
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
+  Future<bool> get isAnimate => _platform.isAnimate;
+
+  /// Set animate when brightness transition
+  ///
+  /// This method is useful for user change weather this plugin should animate
+  /// when brightness transition
+  ///
+  /// (iOS only) implemented in iOS only because only iOS native side does not
+  /// having reset method.
+  Future<void> setAnimate(bool isAnimate) => _platform.setAnimate(isAnimate);
 }

@@ -15,6 +15,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     var changedBrightness: Float?
     
     var isAutoReset: Bool = true
+    var isAnimate: Bool = true
     
     var brightnessPollingTimer: Timer?
     
@@ -65,6 +66,12 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
             
         case "setAutoReset":
             handleSetAutoResetMethodCall(call: call, result: result)
+
+        case "isAnimate":
+            handleIsAnimateMethodCall(result: result)
+
+        case "setAnimate":
+            handleSetAnimateMethodCall(call: call, result: result)
             
         default:
             result(FlutterMethodNotImplemented)
@@ -188,6 +195,20 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
         
         self.isAutoReset = isAutoReset
+        result(nil)
+    }
+
+    private func handleIsAnimateMethodCall(result: FlutterResult) {
+        result(isAnimate)
+    }
+
+    private func handleSetAnimateMethodCall(call: FlutterMethodCall, result: FlutterResult) {
+        guard let parameters = call.arguments as? Dictionary<String, Any>, let isAnimate = parameters["isAnimate"] as? Bool else {
+            result(FlutterError.init(code: "-2", message: "Unexpected error on null isAnimate", details: nil))
+            return
+        }
+
+        self.isAnimate = isAnimate
         result(nil)
     }
     

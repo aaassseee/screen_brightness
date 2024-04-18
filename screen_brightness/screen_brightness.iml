@@ -12,6 +12,12 @@
       <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/screen_brightness_ios/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/screen_brightness_ios/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/example/ios/.symlinks/plugins/screen_brightness_ios/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/screen_brightness_windows/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/screen_brightness_windows/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/screen_brightness_windows/build" />
+      <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/screen_brightness_windows/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/screen_brightness_windows/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/screen_brightness_windows/example/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />
