@@ -145,14 +145,15 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.0.1"
   screen_brightness_platform_interface:
     dependency: "direct main"
     description:
-      path: "../../screen_brightness_platform_interface"
-      relative: true
-    source: path
-    version: "1.0.0"
+      name: screen_brightness_platform_interface
+      sha256: "9f3ebf7f22d5487e7676fe9ddaf3fc55b6ff8057707cf6dc0121c7dfda346a16"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   sky_engine:
     dependency: transitive
     description: flutter
