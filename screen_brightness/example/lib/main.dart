@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
@@ -287,17 +285,26 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   bool isAutoReset = true;
+  bool isAnimate = true;
 
   @override
   void initState() {
     super.initState();
-    getAutoResetSetting();
+    getIsAutoResetSetting();
+    getIsAnimateSetting();
   }
 
-  Future<void> getAutoResetSetting() async {
+  Future<void> getIsAutoResetSetting() async {
     final isAutoReset = await ScreenBrightness.instance.isAutoReset;
     setState(() {
       this.isAutoReset = isAutoReset;
+    });
+  }
+
+  Future<void> getIsAnimateSetting() async {
+    final isAnimate = await ScreenBrightness.instance.isAnimate;
+    setState(() {
+      this.isAnimate = isAnimate;
     });
   }
 
@@ -310,18 +317,23 @@ class _SettingPageState extends State<SettingPage> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Auto Reset (iOS only)'),
+            title: const Text('Auto Reset'),
             trailing: Switch(
               value: isAutoReset,
-              onChanged: Platform.isIOS ||
-                      Platform.isWindows ||
-                      Platform.isMacOS ||
-                      Platform.isLinux
-                  ? (value) async {
-                      await ScreenBrightness.instance.setAutoReset(value);
-                      await getAutoResetSetting();
-                    }
-                  : null,
+              onChanged: (value) async {
+                await ScreenBrightness.instance.setAutoReset(value);
+                await getIsAutoResetSetting();
+              },
+            ),
+          ),
+          ListTile(
+            title: const Text('Animate'),
+            trailing: Switch(
+              value: isAnimate,
+              onChanged: (value) async {
+                await ScreenBrightness.instance.setAnimate(value);
+                await getIsAnimateSetting();
+              },
             ),
           )
         ],

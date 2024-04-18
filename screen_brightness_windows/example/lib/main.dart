@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
 
@@ -289,17 +287,26 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   bool isAutoReset = true;
+  bool isAnimate = true;
 
   @override
   void initState() {
     super.initState();
-    getAutoResetSetting();
+    getIsAutoResetSetting();
+    getIsAnimateSetting();
   }
 
-  Future<void> getAutoResetSetting() async {
+  Future<void> getIsAutoResetSetting() async {
     final isAutoReset = await ScreenBrightnessPlatform.instance.isAutoReset;
     setState(() {
       this.isAutoReset = isAutoReset;
+    });
+  }
+
+  Future<void> getIsAnimateSetting() async {
+    final isAnimate = await ScreenBrightnessPlatform.instance.isAnimate;
+    setState(() {
+      this.isAnimate = isAnimate;
     });
   }
 
@@ -315,16 +322,20 @@ class _SettingPageState extends State<SettingPage> {
             title: const Text('Auto Reset'),
             trailing: Switch(
               value: isAutoReset,
-              onChanged: Platform.isIOS ||
-                      Platform.isWindows ||
-                      Platform.isMacOS ||
-                      Platform.isLinux
-                  ? (value) async {
-                      await ScreenBrightnessPlatform.instance
-                          .setAutoReset(value);
-                      await getAutoResetSetting();
-                    }
-                  : null,
+              onChanged: (value) async {
+                await ScreenBrightnessPlatform.instance.setAutoReset(value);
+                await getIsAutoResetSetting();
+              },
+            ),
+          ),
+          ListTile(
+            title: const Text('Animate'),
+            trailing: Switch(
+              value: isAnimate,
+              onChanged: (value) async {
+                await ScreenBrightnessPlatform.instance.setAnimate(value);
+                await getIsAnimateSetting();
+              },
             ),
           )
         ],
