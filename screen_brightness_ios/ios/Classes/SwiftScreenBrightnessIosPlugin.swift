@@ -169,7 +169,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     }
 
     private func handleSetAnimateMethodCall(call: FlutterMethodCall, result: FlutterResult) {
-        guard let parameters = call.arguments as? Dictionary<String, Any>, let isAutoReset = parameters["isAnimate"] as? Bool else {
+        guard let parameters = call.arguments as? Dictionary<String, Any>, let isAnimate = parameters["isAnimate"] as? Bool else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null isAnimate", details: nil))
             return
         }

@@ -149,10 +149,9 @@ packages:
   screen_brightness_platform_interface:
     dependency: "direct main"
     description:
-      name: screen_brightness_platform_interface
-      sha256: e160b78f37bc093a6a66bfa118bb9266c36bfa3163bf976f94e0e5aa79977ff9
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../screen_brightness_platform_interface"
+      relative: true
+    source: path
     version: "1.0.0"
   sky_engine:
     dependency: transitive
