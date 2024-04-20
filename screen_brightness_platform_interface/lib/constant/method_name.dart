@@ -1,4 +1,5 @@
 const methodNameGetSystemScreenBrightness = 'getSystemScreenBrightness';
+const methodNameSetSystemScreenBrightness = 'setSystemScreenBrightness';
 const methodNameGetScreenBrightness = 'getScreenBrightness';
 const methodNameSetScreenBrightness = 'setScreenBrightness';
 const methodNameResetScreenBrightness = 'resetScreenBrightness';

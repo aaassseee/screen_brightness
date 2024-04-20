@@ -53,6 +53,17 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
     throw UnimplementedError('current brightness has not been implemented.');
   }
 
+  /// Set system brightness with double value.
+  ///
+  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
+  /// be throw.
+  ///
+  /// This method is useful for user to change system brightness.
+  Future<void> setSystemScreenBrightness(double brightness) async {
+    throw UnimplementedError(
+        'setSystemScreenBrightness(brightness) has not been implemented.');
+  }
+
   /// Set screen brightness with double value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
