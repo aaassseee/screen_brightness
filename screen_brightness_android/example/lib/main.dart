@@ -123,6 +123,16 @@ class ControllerPage extends StatefulWidget {
 }
 
 class _ControllerPageState extends State<ControllerPage> {
+  Future<void> setSystemBrightness(double brightness) async {
+    try {
+      await ScreenBrightnessPlatform.instance
+          .setSystemScreenBrightness(brightness);
+    } catch (e) {
+      debugPrint(e.toString());
+      throw 'Failed to set brightness';
+    }
+  }
+
   Future<void> setBrightness(double brightness) async {
     try {
       await ScreenBrightnessPlatform.instance.setScreenBrightness(brightness);
@@ -147,53 +157,78 @@ class _ControllerPageState extends State<ControllerPage> {
       appBar: AppBar(
         title: const Text('Controller'),
       ),
-      body: Center(
-        child: FutureBuilder<double>(
-          future: ScreenBrightnessPlatform.instance.current,
-          builder: (context, snapshot) {
-            double currentBrightness = 0;
-            if (snapshot.hasData) {
-              currentBrightness = snapshot.data!;
-            }
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FutureBuilder<double>(
+            future: ScreenBrightnessPlatform.instance.system,
+            builder: (context, snapshot) {
+              double systemBrightness = 0;
+              if (snapshot.hasData) {
+                systemBrightness = snapshot.data!;
+              }
 
-            return StreamBuilder<double>(
-              stream:
-                  ScreenBrightnessPlatform.instance.onCurrentBrightnessChanged,
-              builder: (context, snapshot) {
-                double changedBrightness = currentBrightness;
-                if (snapshot.hasData) {
-                  changedBrightness = snapshot.data!;
-                }
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('System brightness: $systemBrightness'),
+                  Slider.adaptive(
+                    value: systemBrightness,
+                    onChanged: (value) {
+                      setSystemBrightness(value);
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          FutureBuilder<double>(
+            future: ScreenBrightnessPlatform.instance.current,
+            builder: (context, snapshot) {
+              double currentBrightness = 0;
+              if (snapshot.hasData) {
+                currentBrightness = snapshot.data!;
+              }
 
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FutureBuilder<bool>(
-                      future: ScreenBrightnessPlatform.instance.hasChanged,
-                      builder: (context, snapshot) {
-                        return Text(
-                            'Brightness has changed via plugin: ${snapshot.data}');
-                      },
-                    ),
-                    Text('Current brightness: $changedBrightness'),
-                    Slider.adaptive(
-                      value: changedBrightness,
-                      onChanged: (value) {
-                        setBrightness(value);
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        resetBrightness();
-                      },
-                      child: const Text('reset brightness'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        ),
+              return StreamBuilder<double>(
+                stream: ScreenBrightnessPlatform
+                    .instance.onCurrentBrightnessChanged,
+                builder: (context, snapshot) {
+                  double changedBrightness = currentBrightness;
+                  if (snapshot.hasData) {
+                    changedBrightness = snapshot.data!;
+                  }
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FutureBuilder<bool>(
+                        future: ScreenBrightnessPlatform.instance.hasChanged,
+                        builder: (context, snapshot) {
+                          return Text(
+                              'Brightness has changed via plugin: ${snapshot.data}');
+                        },
+                      ),
+                      Text('Current brightness: $changedBrightness'),
+                      Slider.adaptive(
+                        value: changedBrightness,
+                        onChanged: (value) {
+                          setBrightness(value);
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          resetBrightness();
+                        },
+                        child: const Text('reset brightness'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }

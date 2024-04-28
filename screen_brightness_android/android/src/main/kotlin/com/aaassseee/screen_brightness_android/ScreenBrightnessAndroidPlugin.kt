@@ -1,10 +1,15 @@
 package com.aaassseee.screen_brightness_android
 
 import android.app.Activity
+import android.app.Instrumentation.ActivityResult
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import android.view.WindowManager
+import androidx.core.app.ActivityCompat.startActivityForResult
 import com.aaassseee.screen_brightness_android.stream_handler.CurrentBrightnessChangeStreamHandler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -13,6 +18,7 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugin.common.PluginRegistry
 import java.lang.reflect.Field
 import kotlin.math.sign
 import kotlin.properties.Delegates
@@ -104,6 +110,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "getSystemScreenBrightness" -> handleGetSystemBrightnessMethodCall(result)
+            "setSystemScreenBrightness" -> handleSetSystemBrightnessMethodCall(call, result)
             "getScreenBrightness" -> handleGetScreenBrightnessMethodCall(result)
             "setScreenBrightness" -> handleSetScreenBrightnessMethodCall(call, result)
             "resetScreenBrightness" -> handleResetScreenBrightnessMethodCall(result)
@@ -123,9 +130,57 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         ) / maximumBrightness
     }
 
+    private fun setSystemBrightness(context: Context, brightness: Float): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.System.canWrite(context)) {
+                Intent(
+                    Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                    Uri.parse("package:${context.packageName}")
+                ).let {
+                    it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(it)
+                }
+                return false
+            }
+        }
+
+        return Settings.System.putInt(
+            context.contentResolver,
+            Settings.System.SCREEN_BRIGHTNESS,
+            (maximumBrightness * brightness).toInt()
+        )
+    }
+
     private fun handleGetSystemBrightnessMethodCall(result: MethodChannel.Result) {
         result.success(systemBrightness)
     }
+
+    private fun handleSetSystemBrightnessMethodCall(
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
+        val activity = activity
+        if (activity == null) {
+            result.error("-10", "Unexpected error on activity binding", null)
+            return
+        }
+
+        val brightness: Float? = (call.argument("brightness") as? Double)?.toFloat()
+        if (brightness == null) {
+            result.error("-2", "Unexpected error on null brightness", null)
+            return
+        }
+
+        val isSet = setSystemBrightness(activity.applicationContext, brightness)
+        if (!isSet) {
+            result.error("-1", "Unable to change system brightness", null)
+            return
+        }
+
+        systemBrightness = brightness
+        result.success(null)
+    }
+
 
     private fun handleGetScreenBrightnessMethodCall(result: MethodChannel.Result) {
         val activity = activity

@@ -13,6 +13,7 @@ late StreamController<double> controller;
 class MockScreenBrightnessPlatform
     with MockPlatformInterfaceMixin
     implements ScreenBrightnessPlatform {
+  double _systemBrightness = systemBrightness;
   double _currentBrightness = systemBrightness;
   double? _changedBrightness;
 
@@ -20,10 +21,15 @@ class MockScreenBrightnessPlatform
   bool _isAnimate = true;
 
   @override
-  Future<double> get system => Future.value(systemBrightness);
+  Future<double> get system => Future.value(_systemBrightness);
 
   @override
   Future<double> get current => Future.value(_currentBrightness);
+
+  @override
+  Future<void> setSystemScreenBrightness(double brightness) async {
+    _systemBrightness = brightness;
+  }
 
   @override
   Future<void> setScreenBrightness(double brightness,
