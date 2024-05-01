@@ -45,6 +45,27 @@ class ScreenBrightness {
   /// Code: -9, Message: value returns null
   Future<double> get system => _platform.system;
 
+  /// Set system screen brightness with double value.
+  ///
+  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
+  /// be throw.
+  ///
+  /// This method is useful for user to change system screen brightness.
+  ///
+  /// When [_channel.invokeMethod] fails to set system screen brightness, it
+  /// throws [PlatformException] with code and message:
+  ///
+  /// Code: -1, Message: Unable to change system screen brightness
+  /// Failed to set system brightness
+  ///
+  /// Code: -2, Message: Unexpected error on null brightness
+  /// Cannot read parameter from method channel map, or parameter is null
+  ///
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
+  /// Unexpected error when getting activity, activity may be null
+  Future<void> setSystemScreenBrightness(double brightness) =>
+      _platform.setSystemScreenBrightness(brightness);
+
   /// Returns application screen brightness value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
@@ -69,27 +90,6 @@ class ScreenBrightness {
   /// Unexpected error when getting brightness from Setting using
   /// (Android) Settings.System.SCREEN_BRIGHTNESS
   Future<double> get application => _platform.application;
-
-  /// Set system screen brightness with double value.
-  ///
-  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
-  /// be throw.
-  ///
-  /// This method is useful for user to change system screen brightness.
-  ///
-  /// When [_channel.invokeMethod] fails to set system screen brightness, it
-  /// throws [PlatformException] with code and message:
-  ///
-  /// Code: -1, Message: Unable to change system screen brightness
-  /// Failed to set system brightness
-  ///
-  /// Code: -2, Message: Unexpected error on null brightness
-  /// Cannot read parameter from method channel map, or parameter is null
-  ///
-  /// (Android only) Code: -10, Message: Unexpected error on activity binding
-  /// Unexpected error when getting activity, activity may be null
-  Future<void> setSystemScreenBrightness(double brightness) =>
-      _platform.setSystemScreenBrightness(brightness);
 
   /// Set application screen brightness with double value.
   ///

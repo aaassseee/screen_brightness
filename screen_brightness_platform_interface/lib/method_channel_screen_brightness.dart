@@ -45,6 +45,34 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     return systemBrightness;
   }
 
+  /// Set system screen brightness with double value.
+  ///
+  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
+  /// be throw.
+  ///
+  /// This method is useful for user to change system screen brightness.
+  ///
+  /// When [_channel.invokeMethod] fails to set system screen brightness, it
+  /// throws [PlatformException] with code and message:
+  ///
+  /// Code: -1, Message: Unable to change system screen brightness
+  /// Failed to set system brightness
+  ///
+  /// Code: -2, Message: Unexpected error on null brightness
+  /// Cannot read parameter from method channel map, or parameter is null
+  ///
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
+  /// Unexpected error when getting activity, activity may be null
+  @override
+  Future<void> setSystemScreenBrightness(double brightness) async {
+    if (!brightness.isInRange(minBrightness, maxBrightness)) {
+      throw RangeError.range(brightness, minBrightness, maxBrightness);
+    }
+
+    await pluginMethodChannel.invokeMethod(
+        methodNameSetSystemScreenBrightness, {"brightness": brightness});
+  }
+
   /// Returns application screen brightness value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
@@ -81,34 +109,6 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     }
 
     return currentBrightness;
-  }
-
-  /// Set system screen brightness with double value.
-  ///
-  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
-  /// be throw.
-  ///
-  /// This method is useful for user to change system screen brightness.
-  ///
-  /// When [_channel.invokeMethod] fails to set system screen brightness, it
-  /// throws [PlatformException] with code and message:
-  ///
-  /// Code: -1, Message: Unable to change system screen brightness
-  /// Failed to set system brightness
-  ///
-  /// Code: -2, Message: Unexpected error on null brightness
-  /// Cannot read parameter from method channel map, or parameter is null
-  ///
-  /// (Android only) Code: -10, Message: Unexpected error on activity binding
-  /// Unexpected error when getting activity, activity may be null
-  @override
-  Future<void> setSystemScreenBrightness(double brightness) async {
-    if (!brightness.isInRange(minBrightness, maxBrightness)) {
-      throw RangeError.range(brightness, minBrightness, maxBrightness);
-    }
-
-    await pluginMethodChannel.invokeMethod(
-        methodNameSetSystemScreenBrightness, {"brightness": brightness});
   }
 
   /// Set application screen brightness with double value.
