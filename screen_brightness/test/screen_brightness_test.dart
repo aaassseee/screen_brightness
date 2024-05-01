@@ -24,7 +24,7 @@ class MockScreenBrightnessPlatform
   Future<double> get system => Future.value(_systemBrightness);
 
   @override
-  Future<double> get current => Future.value(_currentBrightness);
+  Future<double> get application => Future.value(_currentBrightness);
 
   @override
   Future<void> setSystemScreenBrightness(double brightness) async {
@@ -32,23 +32,24 @@ class MockScreenBrightnessPlatform
   }
 
   @override
-  Future<void> setScreenBrightness(double brightness,
+  Future<void> setApplicationScreenBrightness(double brightness,
       {bool animated = true}) async {
     _currentBrightness = brightness;
     _changedBrightness = brightness;
   }
 
   @override
-  Future<void> resetScreenBrightness() async {
+  Future<void> resetApplicationScreenBrightness() async {
     _currentBrightness = systemBrightness;
     _changedBrightness = null;
   }
 
   @override
-  Stream<double> get onCurrentBrightnessChanged => controller.stream;
+  Stream<double> get onApplicationBrightnessChanged => controller.stream;
 
   @override
-  Future<bool> get hasChanged async => _changedBrightness != null;
+  Future<bool> get hasApplicationScreenBrightnessChanged async =>
+      _changedBrightness != null;
 
   @override
   Future<bool> get isAutoReset async => _isAutoReset;

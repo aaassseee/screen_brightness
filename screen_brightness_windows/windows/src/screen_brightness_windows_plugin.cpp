@@ -60,7 +60,7 @@ namespace screen_brightness
 
 		const auto current_brightness_change_event_channel =
 			std::make_unique<flutter::EventChannel<flutter::EncodableValue>>(
-				registrar->messenger(), "github.com/aaassseee/screen_brightness/change",
+				registrar->messenger(), "github.com/aaassseee/screen_brightness/application_brightness_change",
 				&flutter::StandardMethodCodec::GetInstance());
 
 		plugin->current_brightness_change_stream_handler_ = new CurrentBrightnessChangeStreamHandler();

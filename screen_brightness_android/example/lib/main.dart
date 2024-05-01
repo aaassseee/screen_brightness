@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FutureBuilder<double>(
-              future: ScreenBrightnessPlatform.instance.current,
+              future: ScreenBrightnessPlatform.instance.application,
               builder: (context, snapshot) {
                 double currentBrightness = 0;
                 if (snapshot.hasData) {
@@ -79,7 +79,7 @@ class HomePage extends StatelessWidget {
 
                 return StreamBuilder<double>(
                   stream: ScreenBrightnessPlatform
-                      .instance.onCurrentBrightnessChanged,
+                      .instance.onApplicationBrightnessChanged,
                   builder: (context, snapshot) {
                     double changedBrightness = currentBrightness;
                     if (snapshot.hasData) {
@@ -135,7 +135,8 @@ class _ControllerPageState extends State<ControllerPage> {
 
   Future<void> setBrightness(double brightness) async {
     try {
-      await ScreenBrightnessPlatform.instance.setScreenBrightness(brightness);
+      await ScreenBrightnessPlatform.instance
+          .setApplicationScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
       throw 'Failed to set brightness';
@@ -144,7 +145,8 @@ class _ControllerPageState extends State<ControllerPage> {
 
   Future<void> resetBrightness() async {
     try {
-      await ScreenBrightnessPlatform.instance.resetScreenBrightness();
+      await ScreenBrightnessPlatform.instance
+          .resetApplicationScreenBrightness();
     } catch (e) {
       debugPrint(e.toString());
       throw 'Failed to reset brightness';
@@ -183,7 +185,7 @@ class _ControllerPageState extends State<ControllerPage> {
             },
           ),
           FutureBuilder<double>(
-            future: ScreenBrightnessPlatform.instance.current,
+            future: ScreenBrightnessPlatform.instance.application,
             builder: (context, snapshot) {
               double currentBrightness = 0;
               if (snapshot.hasData) {
@@ -192,7 +194,7 @@ class _ControllerPageState extends State<ControllerPage> {
 
               return StreamBuilder<double>(
                 stream: ScreenBrightnessPlatform
-                    .instance.onCurrentBrightnessChanged,
+                    .instance.onApplicationBrightnessChanged,
                 builder: (context, snapshot) {
                   double changedBrightness = currentBrightness;
                   if (snapshot.hasData) {
@@ -203,7 +205,8 @@ class _ControllerPageState extends State<ControllerPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       FutureBuilder<bool>(
-                        future: ScreenBrightnessPlatform.instance.hasChanged,
+                        future: ScreenBrightnessPlatform
+                            .instance.hasApplicationScreenBrightnessChanged,
                         builder: (context, snapshot) {
                           return Text(
                               'Brightness has changed via plugin: ${snapshot.data}');
@@ -259,25 +262,25 @@ class _RouteAwarePageState extends State<RouteAwarePage> with RouteAware {
   @override
   void didPush() {
     super.didPush();
-    ScreenBrightnessPlatform.instance.setScreenBrightness(0.7);
+    ScreenBrightnessPlatform.instance.setApplicationScreenBrightness(0.7);
   }
 
   @override
   void didPushNext() {
     super.didPushNext();
-    ScreenBrightnessPlatform.instance.resetScreenBrightness();
+    ScreenBrightnessPlatform.instance.resetApplicationScreenBrightness();
   }
 
   @override
   void didPop() {
     super.didPop();
-    ScreenBrightnessPlatform.instance.resetScreenBrightness();
+    ScreenBrightnessPlatform.instance.resetApplicationScreenBrightness();
   }
 
   @override
   void didPopNext() {
     super.didPopNext();
-    ScreenBrightnessPlatform.instance.setScreenBrightness(0.7);
+    ScreenBrightnessPlatform.instance.setApplicationScreenBrightness(0.7);
   }
 
   @override

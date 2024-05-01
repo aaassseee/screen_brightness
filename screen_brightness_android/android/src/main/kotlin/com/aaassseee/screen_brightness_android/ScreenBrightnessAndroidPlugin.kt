@@ -80,7 +80,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
 
         currentBrightnessChangeEventChannel = EventChannel(
             flutterPluginBinding.binaryMessenger,
-            "github.com/aaassseee/screen_brightness/change"
+            "github.com/aaassseee/screen_brightness/application_brightness_change"
         )
 
         try {
