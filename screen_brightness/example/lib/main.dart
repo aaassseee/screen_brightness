@@ -87,7 +87,7 @@ class HomePage extends StatelessWidget {
                     }
 
                     return Text(
-                        'Application screen brightness $changedApplicationBrightness');
+                        'Application brightness $changedApplicationBrightness');
                   },
                 );
               },
@@ -124,22 +124,31 @@ class ControllerPage extends StatefulWidget {
 }
 
 class _ControllerPageState extends State<ControllerPage> {
-  Future<void> setApplicationScreenBrightness(double brightness) async {
+  Future<void> setSystemBrightness(double brightness) async {
+    try {
+      await ScreenBrightness.instance.setSystemScreenBrightness(brightness);
+    } catch (e) {
+      debugPrint(e.toString());
+      throw 'Failed to set system brightness';
+    }
+  }
+
+  Future<void> setApplicationBrightness(double brightness) async {
     try {
       await ScreenBrightness.instance
           .setApplicationScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
-      throw 'Failed to set application screen brightness';
+      throw 'Failed to set application brightness';
     }
   }
 
-  Future<void> resetApplicationScreenBrightness() async {
+  Future<void> resetApplicationBrightness() async {
     try {
       await ScreenBrightness.instance.resetApplicationScreenBrightness();
     } catch (e) {
       debugPrint(e.toString());
-      throw 'Failed to reset application screen brightness';
+      throw 'Failed to reset application brightness';
     }
   }
 
@@ -149,54 +158,80 @@ class _ControllerPageState extends State<ControllerPage> {
       appBar: AppBar(
         title: const Text('Controller'),
       ),
-      body: Center(
-        child: FutureBuilder<double>(
-          future: ScreenBrightness.instance.application,
-          builder: (context, snapshot) {
-            double applicationBrightness = 0;
-            if (snapshot.hasData) {
-              applicationBrightness = snapshot.data!;
-            }
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FutureBuilder<double>(
+            future: ScreenBrightness.instance.system,
+            builder: (context, snapshot) {
+              double systemBrightness = 0;
+              if (snapshot.hasData) {
+                systemBrightness = snapshot.data!;
+              }
 
-            return StreamBuilder<double>(
-              stream: ScreenBrightness.instance.onApplicationBrightnessChanged,
-              builder: (context, snapshot) {
-                double changedApplicationBrightness = applicationBrightness;
-                if (snapshot.hasData) {
-                  changedApplicationBrightness = snapshot.data!;
-                }
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('System brightness: $systemBrightness'),
+                  Slider.adaptive(
+                    value: systemBrightness,
+                    onChanged: (value) {
+                      setSystemBrightness(value);
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          FutureBuilder<double>(
+            future: ScreenBrightness.instance.application,
+            builder: (context, snapshot) {
+              double applicationBrightness = 0;
+              if (snapshot.hasData) {
+                applicationBrightness = snapshot.data!;
+              }
 
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FutureBuilder<bool>(
-                      future: ScreenBrightness
-                          .instance.hasApplicationScreenBrightnessChanged,
-                      builder: (context, snapshot) {
-                        return Text(
-                            'Application brightness has changed via plugin: ${snapshot.data}');
-                      },
-                    ),
-                    Text(
-                        'Application screen brightness: $changedApplicationBrightness'),
-                    Slider.adaptive(
-                      value: changedApplicationBrightness,
-                      onChanged: (value) {
-                        setApplicationScreenBrightness(value);
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        resetApplicationScreenBrightness();
-                      },
-                      child: const Text('reset brightness'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        ),
+              return StreamBuilder<double>(
+                stream:
+                    ScreenBrightness.instance.onApplicationBrightnessChanged,
+                builder: (context, snapshot) {
+                  double changedApplicationBrightness = applicationBrightness;
+                  if (snapshot.hasData) {
+                    changedApplicationBrightness = snapshot.data!;
+                  }
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FutureBuilder<bool>(
+                        future: ScreenBrightness
+                            .instance.hasApplicationScreenBrightnessChanged,
+                        builder: (context, snapshot) {
+                          return Text(
+                              'Application brightness has changed via plugin: ${snapshot.data}');
+                        },
+                      ),
+                      Text(
+                          'Application brightness: $changedApplicationBrightness'),
+                      Slider.adaptive(
+                        value: changedApplicationBrightness,
+                        onChanged: (value) {
+                          setApplicationBrightness(value);
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          resetApplicationBrightness();
+                        },
+                        child: const Text('reset brightness'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }

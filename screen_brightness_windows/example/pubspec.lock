@@ -142,10 +142,9 @@ packages:
   screen_brightness_platform_interface:
     dependency: "direct main"
     description:
-      name: screen_brightness_platform_interface
-      sha256: "9f3ebf7f22d5487e7676fe9ddaf3fc55b6ff8057707cf6dc0121c7dfda346a16"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../screen_brightness_platform_interface"
+      relative: true
+    source: path
     version: "1.0.1"
   screen_brightness_windows:
     dependency: "direct main"

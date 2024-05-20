@@ -8,12 +8,12 @@
 import Cocoa
 import FlutterMacOS
 
-public class CurrentBrightnessChangeStreamHandler: BaseStreamHandler {
-    public func addCurrentBrightnessToEventSink(_ currentBrightness: Float) {
+public class ApplicationScreenBrightnessChangeStreamHandler: BaseStreamHandler {
+    public func addApplicationScreenBrightnessToEventSink(_ applicationScreenBrightness: Float) {
         guard let eventSink = eventSink else {
             return
         }
         
-        eventSink(Double(currentBrightness))
+        eventSink(Double(applicationScreenBrightness))
     }
 }

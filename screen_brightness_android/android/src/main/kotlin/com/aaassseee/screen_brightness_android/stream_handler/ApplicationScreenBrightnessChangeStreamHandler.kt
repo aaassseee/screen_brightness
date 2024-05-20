@@ -7,7 +7,7 @@ import android.os.Looper
 import android.provider.Settings
 import io.flutter.plugin.common.EventChannel
 
-class CurrentBrightnessChangeStreamHandler(
+class ApplicationScreenBrightnessChangeStreamHandler(
     private val context: Context,
     val onListenStart: ((eventSink: EventChannel.EventSink) -> Unit)?,
     val onChange: ((eventSink: EventChannel.EventSink) -> Unit)
