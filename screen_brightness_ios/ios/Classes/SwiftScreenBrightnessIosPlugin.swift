@@ -42,7 +42,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
             break;
 
         case "setSystemScreenBrightness":
-            handleSetSystemScreenBrightnessMethodCall(call, result: result)
+            handleSetSystemScreenBrightnessMethodCall(call: call, result: result)
             break;
 
         case "getApplicationScreenBrightness":
@@ -131,7 +131,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
 
         systemScreenBrightness = _systemScreenBrightness
         if (applicationScreenBrightness == nil) {
-            handleApplicationScreenBrightnessChanged(systemScreenBrightness)
+            handleApplicationScreenBrightnessChanged(_systemScreenBrightness)
         }
         result(nil)
     }

@@ -46,7 +46,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
             break;
 
         case "setSystemScreenBrightness":
-            handleSetSystemScreenBrightnessMethodCall(call, result: result)
+            handleSetSystemScreenBrightnessMethodCall(call: call, result: result)
             break;
 
         case "getApplicationScreenBrightness":
