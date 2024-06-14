@@ -5,7 +5,10 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     var methodChannel: FlutterMethodChannel?
     
     var applicationScreenBrightnessChangedEventChannel: FlutterEventChannel?
-    let applicationScreenBrightnessChangeStreamHandler: ApplicationScreenBrightnessChangeStreamHandler = ApplicationScreenBrightnessChangeStreamHandler()
+    let applicationScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler()
+    
+    var systemScreenBrightnessChangedEventChannel: FlutterEventChannel?
+    let systemScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler()
     
     var systemScreenBrightness: CGFloat?
     var applicationScreenBrightness: CGFloat?
@@ -26,6 +29,9 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         
         instance.applicationScreenBrightnessChangedEventChannel = FlutterEventChannel(name: "github.com/aaassseee/screen_brightness/application_brightness_change", binaryMessenger: registrar.messenger())
         instance.applicationScreenBrightnessChangedEventChannel!.setStreamHandler(instance.applicationScreenBrightnessChangeStreamHandler)
+        
+        instance.systemScreenBrightnessChangedEventChannel = FlutterEventChannel(name: "github.com/aaassseee/screen_brightness/system_brightness_changed", binaryMessenger: registrar.messenger())
+        instance.systemScreenBrightnessChangedEventChannel!.setStreamHandler(instance.systemScreenBrightnessChangeStreamHandler)
         
         registrar.addApplicationDelegate(instance)
     }
@@ -127,15 +133,19 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         }
 
         let _systemScreenBrightness = CGFloat(brightness.doubleValue)
-        setScreenBrightness(targetBrightness: _systemScreenBrightness, animated: isAnimate)
-
         systemScreenBrightness = _systemScreenBrightness
+        handleSystemScreenBrightnessChanged(_systemScreenBrightness)
         if (applicationScreenBrightness == nil) {
+            setScreenBrightness(targetBrightness: _systemScreenBrightness, animated: isAnimate)
             handleApplicationScreenBrightnessChanged(_systemScreenBrightness)
         }
         result(nil)
     }
 
+    private func handleSystemScreenBrightnessChanged(_ systemScreenBrightness: CGFloat) {
+        systemScreenBrightnessChangeStreamHandler.addScreenBrightnessToEventSink(systemScreenBrightness)
+    }
+    
     private func handleGetApplicationScreenBrightnessMethodCall(result: FlutterResult) {
         result(UIScreen.main.brightness)
     }
@@ -168,7 +178,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
     }
 
     private func handleApplicationScreenBrightnessChanged(_ applicationScreenBrightness: CGFloat) {
-        applicationScreenBrightnessChangeStreamHandler.addApplicationScreenBrightnessToEventSink(applicationScreenBrightness)
+        applicationScreenBrightnessChangeStreamHandler.addScreenBrightnessToEventSink(applicationScreenBrightness)
     }
 
     private func handleHasApplicationScreenBrightnessChangedMethodCall(result: FlutterResult) {
@@ -209,6 +219,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         }
         
         systemScreenBrightness = brightness
+        handleSystemScreenBrightnessChanged(brightness)
         if (applicationScreenBrightness == nil) {
             handleApplicationScreenBrightnessChanged(brightness)
         }
@@ -246,6 +257,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         
         NotificationCenter.default.removeObserver(self, name: UIScreen.brightnessDidChangeNotification, object: nil)
         systemScreenBrightness = UIScreen.main.brightness
+        handleSystemScreenBrightnessChanged(systemScreenBrightness!)
         if (applicationScreenBrightness == nil) {
             handleApplicationScreenBrightnessChanged(systemScreenBrightness!)
         }
@@ -263,5 +275,6 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         
         methodChannel?.setMethodCallHandler(nil)
         applicationScreenBrightnessChangedEventChannel?.setStreamHandler(nil)
+        systemScreenBrightnessChangedEventChannel?.setStreamHandler(nil)
     }
 }

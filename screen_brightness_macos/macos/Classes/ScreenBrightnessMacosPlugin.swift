@@ -9,7 +9,10 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     var methodChannel: FlutterMethodChannel?
     
     var applicationScreenBrightnessChangeEventChannel: FlutterEventChannel?
-    let applicationScreenBrightnessChangeStreamHandler: ApplicationScreenBrightnessChangeStreamHandler = ApplicationScreenBrightnessChangeStreamHandler()
+    let applicationScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler()
+    
+    var systemScreenBrightnessChangeEventChannel: FlutterEventChannel?
+    let systemScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler()
     
     var systemScreenBrightness: Float?
     var applicationScreenBrightness: Float?
@@ -26,6 +29,9 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         
         instance.applicationScreenBrightnessChangeEventChannel = FlutterEventChannel(name: "github.com/aaassseee/screen_brightness/application_brightness_change", binaryMessenger: registrar.messenger)
         instance.applicationScreenBrightnessChangeEventChannel!.setStreamHandler(instance.applicationScreenBrightnessChangeStreamHandler)
+        
+        instance.systemScreenBrightnessChangeEventChannel = FlutterEventChannel(name: "github.com/aaassseee/screen_brightness/system_brightness_change", binaryMessenger: registrar.messenger)
+        instance.systemScreenBrightnessChangeEventChannel!.setStreamHandler(instance.systemScreenBrightnessChangeStreamHandler)
     }
     
     override init() {
@@ -142,16 +148,21 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
 
         let _systemScreenBrightness = Float(brightness.doubleValue)
-
         do {
-            try setScreenBrightness(targetBrightness: _systemScreenBrightness)
+            if (applicationScreenBrightness == nil) {
+                try setScreenBrightness(targetBrightness: _systemScreenBrightness)
+                handleApplicationScreenBrightnessChanged(_systemScreenBrightness)
+            }
+            systemScreenBrightness = _systemScreenBrightness
+            handleSystemScreenBrightnessChanged(_systemScreenBrightness)
+            result(nil)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change system screen brightness", details: nil))
         }
-
-        systemScreenBrightness = _systemScreenBrightness
-        handleApplicationScreenBrightnessChanged(_systemScreenBrightness)
-        result(nil)
+    }
+    
+    private func handleSystemScreenBrightnessChanged(_ systemScreenBrightness: Float) {
+        systemScreenBrightnessChangeStreamHandler.addScreenBrightnessToEventSink(systemScreenBrightness)
     }
     
     private func handleGetApplicationScreenBrightnessMethodCall(result: FlutterResult) {
@@ -173,13 +184,12 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         
         do {
             try setScreenBrightness(targetBrightness: _applicationBrightness)
+            applicationScreenBrightness = _applicationBrightness
+            handleApplicationScreenBrightnessChanged(_applicationBrightness)
+            result(nil)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change application screen brightness", details: nil))
         }
-        
-        applicationScreenBrightness = _applicationBrightness
-        handleApplicationScreenBrightnessChanged(_applicationBrightness)
-        result(nil)
     }
     
     private func handleResetApplicationScreenBrightnessMethodCall(result: FlutterResult) {
@@ -190,17 +200,16 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         
         do {
             try setScreenBrightness(targetBrightness: systemScreenBrightness)
+            applicationScreenBrightness = nil
+            handleApplicationScreenBrightnessChanged(systemScreenBrightness)
+            result(nil)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change screen brightness", details: nil))
         }
-        
-        applicationScreenBrightness = nil
-        handleApplicationScreenBrightnessChanged(systemScreenBrightness)
-        result(nil)
     }
     
     private func handleApplicationScreenBrightnessChanged(_ applicationScreenBrightness: Float) {
-        applicationScreenBrightnessChangeStreamHandler.addApplicationScreenBrightnessToEventSink(applicationScreenBrightness)
+        applicationScreenBrightnessChangeStreamHandler.addScreenBrightnessToEventSink(applicationScreenBrightness)
     }
     
     private func handleHasApplicationScreenBrightnessChangedMethodCall(result: FlutterResult) {

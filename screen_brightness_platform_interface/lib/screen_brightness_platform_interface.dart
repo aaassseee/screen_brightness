@@ -56,6 +56,17 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
         'setSystemScreenBrightness(brightness) has not been implemented.');
   }
 
+  /// Returns stream with system screen brightness changes including
+  /// [ScreenBrightness.setSystemScreenBrightness], system control center or
+  /// system setting.
+  ///
+  /// This stream is useful for user to listen to system screen brightness
+  /// changes.
+  Stream<double> get onSystemScreenBrightnessChanged {
+    throw UnimplementedError(
+        'onApplicationBrightnessChanged has not been implemented.');
+  }
+
   /// Returns application screen brightness value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
@@ -95,7 +106,7 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   /// setting.
   ///
   /// This stream is useful for user to listen to brightness changes.
-  Stream<double> get onApplicationBrightnessChanged {
+  Stream<double> get onApplicationScreenBrightnessChanged {
     throw UnimplementedError(
         'onApplicationBrightnessChanged has not been implemented.');
   }

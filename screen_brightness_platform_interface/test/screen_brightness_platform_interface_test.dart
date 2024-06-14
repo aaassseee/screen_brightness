@@ -30,9 +30,11 @@ void main() {
     double? applicationBrightness;
     bool isAutoReset = true;
     bool isAnimate = true;
+    late MethodChannelScreenBrightness methodChannelScreenBrightness;
     const pluginEventChannelApplicationBrightnessChanged =
         MethodChannel(pluginEventChannelApplicationBrightnessChangedName);
-    late MethodChannelScreenBrightness methodChannelScreenBrightness;
+    const pluginEventChannelSystemBrightnessChanged =
+        MethodChannel(pluginEventChannelSystemBrightnessChangedName);
 
     setUp(() {
       systemBrightness = 0.5;
@@ -100,6 +102,29 @@ void main() {
 
         return null;
       });
+
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(pluginEventChannelSystemBrightnessChanged,
+              (call) async {
+        switch (call.method) {
+          case 'listen':
+            await TestDefaultBinaryMessengerBinding
+                .instance.defaultBinaryMessenger
+                .handlePlatformMessage(
+              pluginEventChannelSystemBrightnessChanged.name,
+              pluginEventChannelSystemBrightnessChanged.codec
+                  .encodeSuccessEnvelope(0.1.toDouble()),
+              (_) {},
+            );
+            break;
+
+          case 'cancel':
+          default:
+            return null;
+        }
+
+        return null;
+      });
     });
 
     tearDown(() {
@@ -108,6 +133,9 @@ void main() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
               pluginEventChannelApplicationBrightnessChanged, null);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+              pluginEventChannelSystemBrightnessChanged, null);
     });
 
     test('get platform instance', () {
@@ -152,6 +180,12 @@ void main() {
       }
 
       expect(error, isA<RangeError>());
+    });
+
+    test('on system screen brightness changed', () async {
+      final result = await methodChannelScreenBrightness
+          .onSystemScreenBrightnessChanged.first;
+      expect(result, 0.1);
     });
 
     test('get application screen brightness', () async {
@@ -257,6 +291,11 @@ void main() {
           throwsUnimplementedError);
     });
 
+    test('unimplemented onSystemScreenBrightnessChanged stream', () {
+      expect(() => platform.onSystemScreenBrightnessChanged,
+          throwsUnimplementedError);
+    });
+
     test('unimplemented application current brightness', () {
       expect(() => platform.application, throwsUnimplementedError);
     });
@@ -271,8 +310,8 @@ void main() {
           throwsUnimplementedError);
     });
 
-    test('unimplemented onApplicationBrightnessChanged stream', () {
-      expect(() => platform.onApplicationBrightnessChanged,
+    test('unimplemented onApplicationScreenBrightnessChanged stream', () {
+      expect(() => platform.onApplicationScreenBrightnessChanged,
           throwsUnimplementedError);
     });
 

@@ -8,9 +8,13 @@ import 'constant/plugin_channel.dart';
 
 /// Implementation of screen brightness platform interface
 class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
-  /// Private stream which is listened to event channel for preventing creating
-  /// new stream
-  Stream<double>? _onApplicationBrightnessChanged;
+  /// Private application screen brightness changed stream which is listened to
+  /// event channel for preventing creating new stream.
+  Stream<double>? _onApplicationScreenBrightnessChanged;
+
+  /// Private system screen brightness changed stream which is listened to event
+  /// channel for preventing creating new stream.
+  Stream<double>? _onSystemScreenBrightnessChanged;
 
   /// Returns system screen brightness.
   ///
@@ -71,6 +75,21 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
 
     await pluginMethodChannel.invokeMethod(
         methodNameSetSystemScreenBrightness, {"brightness": brightness});
+  }
+
+  /// Returns stream with system screen brightness changes including
+  /// [ScreenBrightness.setSystemScreenBrightness], system control center or
+  /// system setting.
+  ///
+  /// This stream is useful for user to listen to system screen brightness
+  /// changes.
+  @override
+  Stream<double> get onSystemScreenBrightnessChanged {
+    _onSystemScreenBrightnessChanged ??=
+        pluginEventChannelSystemBrightnessChanged
+            .receiveBroadcastStream()
+            .cast<double>();
+    return _onSystemScreenBrightnessChanged!;
   }
 
   /// Returns application screen brightness value.
@@ -163,6 +182,10 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         .invokeMethod(methodNameResetApplicationScreenBrightness);
   }
 
+  /// Old API on [onApplicationScreenBrightnessChanged]
+  Stream<double> get onApplicationBrightnessChanged =>
+      onApplicationScreenBrightnessChanged;
+
   /// Returns stream with application screen brightness changes including
   /// [ScreenBrightness.setApplicationScreenBrightness],
   /// [ScreenBrightness.resetApplicationScreenBrightness], system control center or system
@@ -170,12 +193,12 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   ///
   /// This stream is useful for user to listen to brightness changes.
   @override
-  Stream<double> get onApplicationBrightnessChanged {
-    _onApplicationBrightnessChanged ??=
+  Stream<double> get onApplicationScreenBrightnessChanged {
+    _onApplicationScreenBrightnessChanged ??=
         pluginEventChannelApplicationBrightnessChanged
             .receiveBroadcastStream()
             .cast<double>();
-    return _onApplicationBrightnessChanged!;
+    return _onApplicationScreenBrightnessChanged!;
   }
 
   /// Returns boolean to identify application screen brightness has changed by
