@@ -79,7 +79,7 @@ class HomePage extends StatelessWidget {
 
                 return StreamBuilder<double>(
                   stream: ScreenBrightnessPlatform
-                      .instance.onApplicationBrightnessChanged,
+                      .instance.onApplicationScreenBrightnessChanged,
                   builder: (context, snapshot) {
                     double changedApplicationBrightness = applicationBrightness;
                     if (snapshot.hasData) {
@@ -195,7 +195,7 @@ class _ControllerPageState extends State<ControllerPage> {
 
               return StreamBuilder<double>(
                 stream: ScreenBrightnessPlatform
-                    .instance.onApplicationBrightnessChanged,
+                    .instance.onApplicationScreenBrightnessChanged,
                 builder: (context, snapshot) {
                   double changedApplicationBrightness = applicationBrightness;
                   if (snapshot.hasData) {

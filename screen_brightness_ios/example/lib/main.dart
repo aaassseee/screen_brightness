@@ -70,49 +70,24 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FutureBuilder<double>(
-              future: ScreenBrightnessPlatform.instance.system,
-              builder: (context, snapshot) {
-                double systemScreenBrightness = 0;
-                if (snapshot.hasData) {
-                  systemScreenBrightness = snapshot.data!;
-                }
-
-                return StreamBuilder<double>(
-                  stream: ScreenBrightnessPlatform
-                      .instance.onSystemScreenBrightnessChanged,
-                  builder: (context, snapshot) {
-                    double changedSystemScreenBrightness =
-                        systemScreenBrightness;
-                    if (snapshot.hasData) {
-                      changedSystemScreenBrightness = snapshot.data!;
-                    }
-
-                    return Text(
-                        'System screen brightness $changedSystemScreenBrightness');
-                  },
-                );
-              },
-            ),
-            FutureBuilder<double>(
               future: ScreenBrightnessPlatform.instance.application,
               builder: (context, snapshot) {
-                double applicationScreenBrightness = 0;
+                double applicationBrightness = 0;
                 if (snapshot.hasData) {
-                  applicationScreenBrightness = snapshot.data!;
+                  applicationBrightness = snapshot.data!;
                 }
 
                 return StreamBuilder<double>(
                   stream: ScreenBrightnessPlatform
                       .instance.onApplicationScreenBrightnessChanged,
                   builder: (context, snapshot) {
-                    double changedApplicationScreenBrightness =
-                        applicationScreenBrightness;
+                    double changedApplicationBrightness = applicationBrightness;
                     if (snapshot.hasData) {
-                      changedApplicationScreenBrightness = snapshot.data!;
+                      changedApplicationBrightness = snapshot.data!;
                     }
 
                     return Text(
-                        'Application screen brightness $changedApplicationScreenBrightness');
+                        'Application brightness $changedApplicationBrightness');
                   },
                 );
               },
@@ -149,33 +124,33 @@ class ControllerPage extends StatefulWidget {
 }
 
 class _ControllerPageState extends State<ControllerPage> {
-  Future<void> setSystemScreenBrightness(double brightness) async {
+  Future<void> setSystemBrightness(double brightness) async {
     try {
       await ScreenBrightnessPlatform.instance
           .setSystemScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
-      throw 'Failed to set system screen brightness';
+      throw 'Failed to set system brightness';
     }
   }
 
-  Future<void> setApplicationScreenBrightness(double brightness) async {
+  Future<void> setApplicationBrightness(double brightness) async {
     try {
       await ScreenBrightnessPlatform.instance
           .setApplicationScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
-      throw 'Failed to set application screen brightness';
+      throw 'Failed to set application brightness';
     }
   }
 
-  Future<void> resetApplicationScreenBrightness() async {
+  Future<void> resetApplicationBrightness() async {
     try {
       await ScreenBrightnessPlatform.instance
           .resetApplicationScreenBrightness();
     } catch (e) {
       debugPrint(e.toString());
-      throw 'Failed to reset application screen brightness';
+      throw 'Failed to reset application brightness';
     }
   }
 
@@ -191,48 +166,40 @@ class _ControllerPageState extends State<ControllerPage> {
           FutureBuilder<double>(
             future: ScreenBrightnessPlatform.instance.system,
             builder: (context, snapshot) {
-              double systemScreenBrightness = snapshot.data ?? 0;
+              double systemBrightness = 0;
+              if (snapshot.hasData) {
+                systemBrightness = snapshot.data!;
+              }
 
-              return StreamBuilder<double>(
-                stream: ScreenBrightnessPlatform
-                    .instance.onSystemScreenBrightnessChanged,
-                builder: (context, snapshot) {
-                  double changedSystemScreenBrightness =
-                      snapshot.data ?? systemScreenBrightness;
-
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                          'System screen brightness: $changedSystemScreenBrightness'),
-                      Slider.adaptive(
-                        value: changedSystemScreenBrightness,
-                        onChanged: (value) {
-                          setSystemScreenBrightness(value);
-                        },
-                      ),
-                    ],
-                  );
-                },
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('System brightness: $systemBrightness'),
+                  Slider.adaptive(
+                    value: systemBrightness,
+                    onChanged: (value) {
+                      setSystemBrightness(value);
+                    },
+                  ),
+                ],
               );
             },
           ),
           FutureBuilder<double>(
             future: ScreenBrightnessPlatform.instance.application,
             builder: (context, snapshot) {
-              double applicationScreenBrightness = 0;
+              double applicationBrightness = 0;
               if (snapshot.hasData) {
-                applicationScreenBrightness = snapshot.data!;
+                applicationBrightness = snapshot.data!;
               }
 
               return StreamBuilder<double>(
                 stream: ScreenBrightnessPlatform
                     .instance.onApplicationScreenBrightnessChanged,
                 builder: (context, snapshot) {
-                  double changedApplicationScreenBrightness =
-                      applicationScreenBrightness;
+                  double changedApplicationBrightness = applicationBrightness;
                   if (snapshot.hasData) {
-                    changedApplicationScreenBrightness = snapshot.data!;
+                    changedApplicationBrightness = snapshot.data!;
                   }
 
                   return Column(
@@ -243,20 +210,20 @@ class _ControllerPageState extends State<ControllerPage> {
                             .instance.hasApplicationScreenBrightnessChanged,
                         builder: (context, snapshot) {
                           return Text(
-                              'Application screen brightness has changed via plugin: ${snapshot.data}');
+                              'Application brightness has changed via plugin: ${snapshot.data}');
                         },
                       ),
                       Text(
-                          'Application screen brightness: $changedApplicationScreenBrightness'),
+                          'Application brightness: $changedApplicationBrightness'),
                       Slider.adaptive(
-                        value: changedApplicationScreenBrightness,
+                        value: changedApplicationBrightness,
                         onChanged: (value) {
-                          setApplicationScreenBrightness(value);
+                          setApplicationBrightness(value);
                         },
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          resetApplicationScreenBrightness();
+                          resetApplicationBrightness();
                         },
                         child: const Text('reset brightness'),
                       ),

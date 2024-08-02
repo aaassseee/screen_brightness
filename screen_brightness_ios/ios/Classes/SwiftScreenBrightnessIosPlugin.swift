@@ -3,12 +3,12 @@ import UIKit
 
 public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
     var methodChannel: FlutterMethodChannel?
-    
-    var applicationScreenBrightnessChangedEventChannel: FlutterEventChannel?
-    let applicationScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler()
-    
+
     var systemScreenBrightnessChangedEventChannel: FlutterEventChannel?
     let systemScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler()
+
+    var applicationScreenBrightnessChangedEventChannel: FlutterEventChannel?
+    let applicationScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler()
     
     var systemScreenBrightness: CGFloat?
     var applicationScreenBrightness: CGFloat?
@@ -26,12 +26,12 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         let instance = SwiftScreenBrightnessIosPlugin()
         instance.methodChannel = FlutterMethodChannel(name: "github.com/aaassseee/screen_brightness", binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(instance, channel: instance.methodChannel!)
-        
-        instance.applicationScreenBrightnessChangedEventChannel = FlutterEventChannel(name: "github.com/aaassseee/screen_brightness/application_brightness_change", binaryMessenger: registrar.messenger())
-        instance.applicationScreenBrightnessChangedEventChannel!.setStreamHandler(instance.applicationScreenBrightnessChangeStreamHandler)
-        
+
         instance.systemScreenBrightnessChangedEventChannel = FlutterEventChannel(name: "github.com/aaassseee/screen_brightness/system_brightness_changed", binaryMessenger: registrar.messenger())
         instance.systemScreenBrightnessChangedEventChannel!.setStreamHandler(instance.systemScreenBrightnessChangeStreamHandler)
+
+        instance.applicationScreenBrightnessChangedEventChannel = FlutterEventChannel(name: "github.com/aaassseee/screen_brightness/application_brightness_changed", binaryMessenger: registrar.messenger())
+        instance.applicationScreenBrightnessChangedEventChannel!.setStreamHandler(instance.applicationScreenBrightnessChangeStreamHandler)
         
         registrar.addApplicationDelegate(instance)
     }

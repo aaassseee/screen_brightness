@@ -145,7 +145,7 @@ namespace screen_brightness
 	{
 		DWORD physical_monitor_array_size = 0;
 		HMONITOR monitor_handler = MonitorFromWindow(window_handler_, MONITOR_DEFAULTTOPRIMARY);
-		DWORD minimum_screen_brightness_ = 0, screen_brightness_ = 0, maximum_screen_brightness_ = 0;
+		DWORD minimum_brightness_ = 0, brightness_ = 0, maximum_brightness_ = 0;
 
 		if (!GetNumberOfPhysicalMonitorsFromHMONITOR(monitor_handler, &physical_monitor_array_size))
 		{
@@ -164,14 +164,14 @@ namespace screen_brightness
 			throw std::exception("Problem getting physical monitors");
 		}
 
-		if (!GetMonitorBrightness(physical_monitor->hPhysicalMonitor, &minimum_screen_brightness_, &screen_brightness_, &maximum_screen_brightness_))
+		if (!GetMonitorBrightness(physical_monitor->hPhysicalMonitor, &minimum_brightness_, &brightness_, &maximum_brightness_))
 		{
 			throw std::exception("Problem getting monitor brightness");
 		}
 
-		minimum_screen_brightness = minimum_screen_brightness_;
-		screen_brightness = screen_brightness_;
-		maximum_screen_brightness = maximum_screen_brightness_;
+		minimum_screen_brightness = minimum_brightness_;
+		screen_brightness = brightness_;
+		maximum_screen_brightness = maximum_brightness_;
 
 		DestroyPhysicalMonitors(physical_monitor_array_size, physical_monitor);
 
@@ -249,9 +249,13 @@ namespace screen_brightness
 		const long changed_brightness = GetScreenBrightnessValueByPercentage(brightness);
 		try
 		{
-			SetScreenBrightness(changed_brightness);
-			changed_screen_brightness_ = changed_brightness;
-			HandleCurrentBrightnessChanged(changed_brightness);
+			if (changed_screen_brightness_ == -1)
+			{
+				SetScreenBrightness(changed_brightness);
+				HandleCurrentBrightnessChanged(changed_brightness);
+			}
+			system_screen_brightness_ = changed_brightness;
+			
 			result->Success(nullptr);
 		}
 		catch (const std::exception& exception)

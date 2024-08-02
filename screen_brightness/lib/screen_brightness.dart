@@ -66,6 +66,14 @@ class ScreenBrightness {
   Future<void> setSystemScreenBrightness(double brightness) =>
       _platform.setSystemScreenBrightness(brightness);
 
+  /// Returns stream with system screen brightness changes including
+  /// [ScreenBrightness.setSystemScreenBrightness], system control center or
+  /// system setting.
+  ///
+  /// This stream is useful for user to listen to system brightness changes.
+  Stream<double> get onSystemScreenBrightnessChanged =>
+      _platform.onSystemScreenBrightnessChanged;
+
   /// Returns application screen brightness value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
@@ -133,14 +141,19 @@ class ScreenBrightness {
   Future<void> resetApplicationScreenBrightness() =>
       _platform.resetApplicationScreenBrightness();
 
+  /// This stream is useful for user to listen to brightness changes.
+  @Deprecated('Use onApplicationScreenBrightnessChanged instead, reason rename')
+  Stream<double> get onApplicationBrightnessChanged =>
+      onApplicationScreenBrightnessChanged;
+
   /// Returns stream with application screen brightness changes including
   /// [ScreenBrightness.setApplicationScreenBrightness],
-  /// [ScreenBrightness.resetApplicationScreenBrightness], system control center or system
-  /// setting.
+  /// [ScreenBrightness.resetApplicationScreenBrightness], system control center
+  /// or system setting.
   ///
-  /// This stream is useful for user to listen to brightness changes.
-  Stream<double> get onApplicationBrightnessChanged =>
-      _platform.onApplicationBrightnessChanged;
+  /// This stream is useful for user to listen to application brightness changes.
+  Stream<double> get onApplicationScreenBrightnessChanged =>
+      _platform.onApplicationScreenBrightnessChanged;
 
   /// Returns boolean to identify application screen brightness has changed by
   /// this plugin.

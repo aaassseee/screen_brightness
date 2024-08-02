@@ -4,7 +4,7 @@ const pluginMethodChannelName = 'github.com/aaassseee/screen_brightness';
 const pluginMethodChannel = MethodChannel(pluginMethodChannelName);
 
 const pluginEventChannelApplicationBrightnessChangedName =
-    'github.com/aaassseee/screen_brightness/application_brightness_change';
+    'github.com/aaassseee/screen_brightness/application_brightness_changed';
 const pluginEventChannelApplicationBrightnessChanged =
     EventChannel(pluginEventChannelApplicationBrightnessChangedName);
 

@@ -3,12 +3,15 @@ package com.aaassseee.screen_brightness_android
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
 import android.view.WindowManager
-import com.aaassseee.screen_brightness_android.stream_handler.ApplicationScreenBrightnessChangeStreamHandler
+import com.aaassseee.screen_brightness_android.stream_handler.ScreenBrightnessChangeStreamHandler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -32,11 +35,28 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
      */
     private lateinit var methodChannel: MethodChannel
 
+    private lateinit var systemScreenBrightnessChangedEventChannel: EventChannel
+
+    private var systemScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler? = null
+
     private lateinit var applicationScreenBrightnessChangedEventChannel: EventChannel
 
-    private var applicationScreenBrightnessChangeStreamHandler: ApplicationScreenBrightnessChangeStreamHandler? = null
+    private var applicationScreenBrightnessChangeStreamHandler: ScreenBrightnessChangeStreamHandler? = null
 
     private var activity: Activity? = null
+
+    private val contextObserver: ContentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) {
+            super.onChange(selfChange)
+            activity?.let {
+                systemScreenBrightness = getSystemBrightness(it)
+                systemScreenBrightnessChangeStreamHandler?.eventSink?.success(systemScreenBrightness)
+                if (applicationScreenBrightness == null) {
+                    applicationScreenBrightnessChangeStreamHandler?.eventSink?.success(systemScreenBrightness)
+                }
+            }
+        }
+    }
 
     /**
      * The value which will be init when this plugin is attached to the Flutter engine
@@ -69,15 +89,18 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         methodChannel = MethodChannel(
-            flutterPluginBinding.binaryMessenger,
-            "github.com/aaassseee/screen_brightness"
+            flutterPluginBinding.binaryMessenger, "github.com/aaassseee/screen_brightness"
         )
         methodChannel.setMethodCallHandler(this)
 
 
+        systemScreenBrightnessChangedEventChannel = EventChannel(
+            flutterPluginBinding.binaryMessenger, "github.com/aaassseee/screen_brightness/system_brightness_changed"
+        )
+
         applicationScreenBrightnessChangedEventChannel = EventChannel(
             flutterPluginBinding.binaryMessenger,
-            "github.com/aaassseee/screen_brightness/application_brightness_change"
+            "github.com/aaassseee/screen_brightness/application_brightness_changed"
         )
 
         try {
@@ -90,17 +113,15 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
+        binding.activity.contentResolver.registerContentObserver(
+            Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS),
+            false,
+            contextObserver,
+        )
+        systemScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler(null)
+        systemScreenBrightnessChangedEventChannel.setStreamHandler(systemScreenBrightnessChangeStreamHandler)
 
-        applicationScreenBrightnessChangeStreamHandler =
-            ApplicationScreenBrightnessChangeStreamHandler(
-                binding.activity,
-                onListenStart = null,
-                onChange = { eventSink ->
-                    systemScreenBrightness = getSystemBrightness(binding.activity)
-                    if (applicationScreenBrightness == null) {
-                        eventSink.success(systemScreenBrightness)
-                    }
-                })
+        applicationScreenBrightnessChangeStreamHandler = ScreenBrightnessChangeStreamHandler(null)
         applicationScreenBrightnessChangedEventChannel.setStreamHandler(applicationScreenBrightnessChangeStreamHandler)
     }
 
@@ -122,8 +143,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
 
     private fun getSystemBrightness(context: Context): Float {
         return Settings.System.getInt(
-            context.contentResolver,
-            Settings.System.SCREEN_BRIGHTNESS
+            context.contentResolver, Settings.System.SCREEN_BRIGHTNESS
         ) / maximumScreenBrightness
     }
 
@@ -131,8 +151,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.System.canWrite(context)) {
                 Intent(
-                    Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                    Uri.parse("package:${context.packageName}")
+                    Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:${context.packageName}")
                 ).let {
                     it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(it)
@@ -142,9 +161,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         }
 
         return Settings.System.putInt(
-            context.contentResolver,
-            Settings.System.SCREEN_BRIGHTNESS,
-            (maximumScreenBrightness * brightness).toInt()
+            context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, (maximumScreenBrightness * brightness).toInt()
         )
     }
 
@@ -153,8 +170,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     }
 
     private fun handleSetSystemBrightnessMethodCall(
-        call: MethodCall,
-        result: MethodChannel.Result
+        call: MethodCall, result: MethodChannel.Result
     ) {
         val activity = activity
         if (activity == null) {
@@ -175,9 +191,13 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         }
 
         systemScreenBrightness = brightness
+        handleSystemScreenBrightnessChanged(brightness)
         result.success(null)
     }
 
+    private fun handleSystemScreenBrightnessChanged(brightness: Float) {
+        systemScreenBrightnessChangeStreamHandler?.addScreenBrightnessToEventSink(brightness.toDouble())
+    }
 
     private fun handleGetApplicationScreenBrightnessMethodCall(result: MethodChannel.Result) {
         val activity = activity
@@ -211,8 +231,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     private fun getScreenMaximumBrightness(context: Context): Float {
         try {
             val powerManager: PowerManager =
-                context.getSystemService(Context.POWER_SERVICE) as PowerManager?
-                    ?: throw ClassNotFoundException()
+                context.getSystemService(Context.POWER_SERVICE) as PowerManager? ?: throw ClassNotFoundException()
             val fields: Array<Field> = powerManager.javaClass.declaredFields
             for (field in fields) {
                 if (field.name.equals("BRIGHTNESS_ON")) {
@@ -239,8 +258,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     }
 
     private fun handleSetApplicationScreenBrightnessMethodCall(
-        call: MethodCall,
-        result: MethodChannel.Result
+        call: MethodCall, result: MethodChannel.Result
     ) {
         val activity = activity
         if (activity == null) {
@@ -261,7 +279,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         }
 
         applicationScreenBrightness = brightness
-        handleCurrentBrightnessChanged(brightness)
+        handleApplicationScreenBrightnessChanged(brightness)
         result.success(null)
     }
 
@@ -272,20 +290,19 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             return
         }
 
-        val isSet =
-            setWindowsAttributesBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE)
+        val isSet = setWindowsAttributesBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE)
         if (!isSet) {
             result.error("-1", "Unable to change screen brightness", null)
             return
         }
 
         applicationScreenBrightness = null
-        handleCurrentBrightnessChanged(systemScreenBrightness)
+        handleApplicationScreenBrightnessChanged(systemScreenBrightness)
         result.success(null)
     }
 
-    private fun handleCurrentBrightnessChanged(currentBrightness: Float) {
-        applicationScreenBrightnessChangeStreamHandler?.addCurrentBrightnessToEventSink(currentBrightness.toDouble())
+    private fun handleApplicationScreenBrightnessChanged(brightness: Float) {
+        applicationScreenBrightnessChangeStreamHandler?.addScreenBrightnessToEventSink(brightness.toDouble())
     }
 
     private fun handleHasApplicationScreenBrightnessChangedMethodCall(result: MethodChannel.Result) {
@@ -331,13 +348,18 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     }
 
     override fun onDetachedFromActivity() {
+        activity?.contentResolver?.unregisterContentObserver(contextObserver)
         activity = null
+        systemScreenBrightnessChangedEventChannel.setStreamHandler(null)
+        systemScreenBrightnessChangeStreamHandler = null
         applicationScreenBrightnessChangedEventChannel.setStreamHandler(null)
         applicationScreenBrightnessChangeStreamHandler = null
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         methodChannel.setMethodCallHandler(null)
+        systemScreenBrightnessChangedEventChannel.setStreamHandler(null)
+        systemScreenBrightnessChangeStreamHandler = null
         applicationScreenBrightnessChangedEventChannel.setStreamHandler(null)
         applicationScreenBrightnessChangeStreamHandler = null
     }
