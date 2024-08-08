@@ -199,7 +199,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             result.success(brightness)
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
-            result.error("-11", "Could not found system setting screen brightness value", null)
+            result.error("-11", "Could not found application screen brightness", null)
             return
         }
     }
@@ -239,7 +239,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
 
         val isSet = setWindowsAttributesBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE)
         if (!isSet) {
-            result.error("-1", "Unable to change screen brightness", null)
+            result.error("-1", "Unable to reset screen brightness", null)
             return
         }
 
