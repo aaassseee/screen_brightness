@@ -227,8 +227,9 @@ namespace screen_brightness
 
 		try
 		{
-			GetScreenBrightness(minimum_screen_brightness_, application_screen_brightness_, maximum_screen_brightness_);
-			result->Success(GetScreenBrightnessPercentage(application_screen_brightness_));
+		    long application_screen_brightness = -1;
+			GetScreenBrightness(minimum_screen_brightness_, application_screen_brightness, maximum_screen_brightness_);
+			result->Success(GetScreenBrightnessPercentage(application_screen_brightness));
 		}
 		catch (const std::exception& exception)
 		{
