@@ -201,7 +201,7 @@ namespace screen_brightness
 
 	void ScreenBrightnessWindowsPlugin::HandleSystemScreenBrightnessChanged(const long brightness)
 	{
-		if (system_screen_brightness_changed_stream_handler_ == nullptr)
+		if (system_screen_brightness_changed_stream_handler_ == nullptr || brightness == -1)
 		{
 			return;
 		}
@@ -343,60 +343,67 @@ namespace screen_brightness
 
 	std::optional<LRESULT> ScreenBrightnessWindowsPlugin::HandleWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
-		if (!is_auto_reset_)
-		{
-			return std::nullopt;
-		}
-
 		switch (message)
 		{
 		case WM_SIZE:
 			switch (wParam)
 			{
 			case SIZE_MINIMIZED:
-			    if (system_screen_brightness_ == -1)
+			    if (!is_auto_reset_)
 			    {
-			        break;
+					return std::nullopt;
 			    }
-				SetScreenBrightness(system_screen_brightness_);
+
+				OnApplicationPause();
 				break;
 
 			case SIZE_MAXIMIZED:
 			case SIZE_RESTORED:
-			    if (application_screen_brightness_ == -1)
+				if (!is_auto_reset_)
                 {
-                    break;
+					return std::nullopt;
                 }
-				SetScreenBrightness(application_screen_brightness_);
+
+				GetScreenBrightness(minimum_screen_brightness_, system_screen_brightness_, maximum_screen_brightness_);
+				HandleSystemScreenBrightnessChanged(system_screen_brightness_);
+				if (application_screen_brightness_ == -1)
+				{
+					HandleApplicationScreenBrightnessChanged(system_screen_brightness_);
+				}
+				
+				OnApplicationResume();
 				break;
 			}
 			break;
 
 		case WM_DESTROY:
-		    if (system_screen_brightness_ == -1)
-        	{
-        	    break;
-        	}
-			SetScreenBrightness(system_screen_brightness_);
+		case WM_CLOSE:
+			OnApplicationPause();
 			break;
 
 		case WM_ACTIVATEAPP:
+			if (!is_auto_reset_)
+			{
+				return std::nullopt;
+			}
+
 			bool is_activate = bool(wParam);
 			if (is_activate)
             {
-                if (application_screen_brightness_ == -1)
-                {
-                    break;
-                }
-                SetScreenBrightness(application_screen_brightness_);
-                break;
-            }
+				GetScreenBrightness(minimum_screen_brightness_, system_screen_brightness_, maximum_screen_brightness_);
+				HandleSystemScreenBrightnessChanged(system_screen_brightness_);
+				if (application_screen_brightness_ == -1)
+				{
+					HandleApplicationScreenBrightnessChanged(system_screen_brightness_);
+				}
 
-            if (application_screen_brightness_ == -1)
-            {
+				OnApplicationResume();
                 break;
             }
-			SetScreenBrightness(system_screen_brightness_);
+            else
+            {
+				OnApplicationPause();
+            }
 			break;
 		}
 
@@ -443,6 +450,11 @@ namespace screen_brightness
 
 	void ScreenBrightnessWindowsPlugin::SetScreenBrightness(const long screen_brightness)
 	{
+		if (screen_brightness < 0)
+		{
+			return;
+		}
+
 		DWORD physical_monitor_array_size = 0;
 		HMONITOR monitor_handler = MonitorFromWindow(window_handler_, MONITOR_DEFAULTTOPRIMARY);
 
@@ -486,6 +498,24 @@ namespace screen_brightness
 	long ScreenBrightnessWindowsPlugin::GetScreenBrightnessValueByPercentage(const double percentage) const
 	{
 		return static_cast<long>((percentage * (maximum_screen_brightness_ - minimum_screen_brightness_)) + minimum_screen_brightness_);
+	}
+
+	void ScreenBrightnessWindowsPlugin::OnApplicationPause() {
+		if (system_screen_brightness_ == -1)
+		{
+			return;
+		}
+
+		SetScreenBrightness(system_screen_brightness_);
+	}
+
+	void ScreenBrightnessWindowsPlugin::OnApplicationResume() {
+		if (application_screen_brightness_ == -1)
+		{
+			return;
+		}
+
+		SetScreenBrightness(application_screen_brightness_);
 	}
 }
 

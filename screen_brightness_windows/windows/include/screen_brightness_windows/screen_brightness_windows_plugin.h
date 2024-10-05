@@ -102,6 +102,10 @@ namespace screen_brightness
 		[[nodiscard]] double GetScreenBrightnessPercentage(long screen_brightness) const;
 
 		[[nodiscard]] long GetScreenBrightnessValueByPercentage(double percentage) const;
+
+		void OnApplicationPause();
+
+		void OnApplicationResume();
 	};
 }
 
