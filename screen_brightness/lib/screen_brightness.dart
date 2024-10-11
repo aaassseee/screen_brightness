@@ -37,7 +37,7 @@ class ScreenBrightness {
   /// after calling [resetApplicationScreenBrightness]
   ///
   /// Platform difference:
-  /// (macOS)(Windows): return initial brightness
+  /// (iOS)(macOS)(Windows): return initial brightness
   ///
   /// When [_channel.invokeMethod] fails to get system screen brightness, it
   /// throws [PlatformException] with code and message:
@@ -97,7 +97,56 @@ class ScreenBrightness {
   /// screen brightness value
   /// Unexpected error when getting brightness from Setting using
   /// (Android) Settings.System.SCREEN_BRIGHTNESS
+  @Deprecated('refactored to application (will be remove after version 2.1.0)')
+  Future<double> get current => application;
+
+  /// Returns application screen brightness value.
+  ///
+  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
+  /// be throw.
+  ///
+  /// This parameter is useful for user to get application screen brightness
+  /// value after calling [setApplicationScreenBrightness]
+  ///
+  /// Calling this method after calling [resetApplicationScreenBrightness] may return wrong
+  /// value in iOS because UIScreen.main.brightness returns old brightness value
+  ///
+  /// When [_channel.invokeMethod] fails to get application screen brightness,
+  /// it throws [PlatformException] with code and message:
+  ///
+  /// Code: -9, Message: value returns null
+  ///
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
+  /// Unexpected error when getting activity, activity may be null
+  ///
+  /// (Android only) (macOS only) Code: -11, Message: Could not found system
+  /// screen brightness value
+  /// Unexpected error when getting brightness from Setting using
+  /// (Android) Settings.System.SCREEN_BRIGHTNESS
   Future<double> get application => _platform.application;
+
+  /// Set application screen brightness with double value.
+  ///
+  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
+  /// be throw.
+  ///
+  /// This method is useful for user to change application screen brightness.
+  ///
+  /// When [_channel.invokeMethod] fails to set application screen brightness,
+  /// it throws [PlatformException] with code and message:
+  ///
+  /// Code: -1, Message: Unable to change application screen brightness
+  /// Failed to set brightness
+  ///
+  /// Code: -2, Message: Unexpected error on null brightness
+  /// Cannot read parameter from method channel map, or parameter is null
+  ///
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
+  /// Unexpected error when getting activity, activity may be null
+  @Deprecated(
+      'refactored to setApplicationScreenBrightness (will be remove after version 2.1.0)')
+  Future<void> setScreenBrightness(double brightness) =>
+      setApplicationScreenBrightness(brightness);
 
   /// Set application screen brightness with double value.
   ///
@@ -138,12 +187,40 @@ class ScreenBrightness {
   ///
   /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
+  @Deprecated(
+      'refactored to resetScreenBrightness (will be remove after version 2.1.0)')
+  Future<void> resetScreenBrightness() => resetApplicationScreenBrightness();
+
+  /// Reset application screen brightness with (Android) -1 or (iOS)system
+  /// brightness value.
+  ///
+  /// This method is useful for user to reset application screen brightness
+  /// when user leave the page which has change the application screen
+  /// brightness value.
+  ///
+  /// When [_channel.invokeMethod] fails to get application screen brightness,
+  /// it throws [PlatformException] with code and message:
+  ///
+  /// Code: -1, Message: Unable to reset application screen brightness
+  /// Failed to reset application screen brightness
+  ///
+  /// Code: -2, Message: Unexpected error on null brightness
+  /// System brightness in plugin is null
+  ///
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
+  /// Unexpected error when getting activity, activity may be null
   Future<void> resetApplicationScreenBrightness() =>
       _platform.resetApplicationScreenBrightness();
 
-  /// This stream is useful for user to listen to brightness changes.
-  @Deprecated('Use onApplicationScreenBrightnessChanged instead, reason rename')
-  Stream<double> get onApplicationBrightnessChanged =>
+  /// Returns stream with application screen brightness changes including
+  /// [ScreenBrightness.setApplicationScreenBrightness],
+  /// [ScreenBrightness.resetApplicationScreenBrightness], system control center
+  /// or system setting.
+  ///
+  /// This stream is useful for user to listen to application brightness changes.
+  @Deprecated(
+      'refactored to onApplicationScreenBrightnessChanged (will be remove after version 2.1.0)')
+  Stream<double> get onCurrentBrightnessChanged =>
       onApplicationScreenBrightnessChanged;
 
   /// Returns stream with application screen brightness changes including
@@ -154,6 +231,16 @@ class ScreenBrightness {
   /// This stream is useful for user to listen to application brightness changes.
   Stream<double> get onApplicationScreenBrightnessChanged =>
       _platform.onApplicationScreenBrightnessChanged;
+
+  /// Returns boolean to identify application screen brightness has changed by
+  /// this plugin.
+  ///
+  /// e.g
+  /// [ScreenBrightness.setApplicationScreenBrightness] will make this true
+  /// [ScreenBrightness.resetApplicationScreenBrightness] will make this false
+  @Deprecated(
+      'refactored to hasApplicationScreenBrightnessChanged (will be remove after version 2.1.0)')
+  Future<bool> get hasChanged => hasApplicationScreenBrightnessChanged;
 
   /// Returns boolean to identify application screen brightness has changed by
   /// this plugin.
