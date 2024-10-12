@@ -8,7 +8,7 @@ import 'package:screen_brightness_platform_interface/screen_brightness_platform_
 
 const double systemBrightness = 0.5;
 
-late StreamController<double> applicationScreenBrightnessController;
+late StreamController<double> screenBrightnessController;
 
 late StreamController<double> systemScreenBrightnessController;
 
@@ -47,12 +47,12 @@ class MockScreenBrightnessPlatform
   }
 
   @override
-  Stream<double> get onApplicationScreenBrightnessChanged =>
-      applicationScreenBrightnessController.stream;
-
-  @override
   Stream<double> get onSystemScreenBrightnessChanged =>
       systemScreenBrightnessController.stream;
+
+  @override
+  Stream<double> get onApplicationScreenBrightnessChanged =>
+      screenBrightnessController.stream;
 
   @override
   Future<bool> get hasApplicationScreenBrightnessChanged async =>
@@ -95,8 +95,18 @@ void main() {
     expect(await screenBrightness.system, targetBrightness);
   });
 
+  test('get current screen brightness', () async {
+    expect(await screenBrightness.current, systemBrightness);
+  });
+
   test('get application screen brightness', () async {
     expect(await screenBrightness.application, systemBrightness);
+  });
+
+  test('set screen brightness with valid number', () async {
+    const targetBrightness = 0.1;
+    await screenBrightness.setScreenBrightness(targetBrightness);
+    expect(await screenBrightness.current, targetBrightness);
   });
 
   test('set application screen brightness with valid number', () async {
@@ -105,34 +115,66 @@ void main() {
     expect(await screenBrightness.application, targetBrightness);
   });
 
+  test('reset screen brightness', () async {
+    await screenBrightness.resetScreenBrightness();
+    expect(await screenBrightness.current, systemBrightness);
+  });
+
   test('reset application screen brightness', () async {
     await screenBrightness.resetApplicationScreenBrightness();
     expect(await screenBrightness.application, systemBrightness);
   });
 
-  group('on application screen brightness changed stream', () {
+  group('on screen brightness changed stream', () {
     setUp(() {
-      applicationScreenBrightnessController = StreamController<double>();
+      screenBrightnessController = StreamController<double>();
     });
 
     tearDown(() {
-      applicationScreenBrightnessController.close();
+      screenBrightnessController.close();
     });
 
-    test('receive values', () async {
+    test('on screen brightness receive values', () async {
+      final queue =
+          StreamQueue<double>(screenBrightness.onCurrentBrightnessChanged);
+
+      screenBrightnessController.add(0.2);
+      expect(await queue.next, 0.2);
+
+      screenBrightnessController.add(systemBrightness);
+      expect(await queue.next, systemBrightness);
+
+      screenBrightnessController.add(0);
+      expect(await queue.next, 0);
+
+      screenBrightnessController.add(1);
+      expect(await queue.next, 1);
+    });
+  });
+
+  group('on application screen brightness changed stream', () {
+    setUp(() {
+      screenBrightnessController = StreamController<double>();
+    });
+
+    tearDown(() {
+      screenBrightnessController.close();
+    });
+
+    test('on application screen brightness receive values', () async {
       final queue = StreamQueue<double>(
           screenBrightness.onApplicationScreenBrightnessChanged);
 
-      applicationScreenBrightnessController.add(0.2);
+      screenBrightnessController.add(0.2);
       expect(await queue.next, 0.2);
 
-      applicationScreenBrightnessController.add(systemBrightness);
+      screenBrightnessController.add(systemBrightness);
       expect(await queue.next, systemBrightness);
 
-      applicationScreenBrightnessController.add(0);
+      screenBrightnessController.add(0);
       expect(await queue.next, 0);
 
-      applicationScreenBrightnessController.add(1);
+      screenBrightnessController.add(1);
       expect(await queue.next, 1);
     });
   });
@@ -146,7 +188,7 @@ void main() {
       systemScreenBrightnessController.close();
     });
 
-    test('receive values', () async {
+    test('on system screen brightness receive values', () async {
       final queue =
           StreamQueue<double>(screenBrightness.onSystemScreenBrightnessChanged);
 
@@ -162,6 +204,19 @@ void main() {
       systemScreenBrightnessController.add(1);
       expect(await queue.next, 1);
     });
+  });
+
+  test('has screen brightness changed', () async {
+    expect(await screenBrightness.hasChanged, false);
+
+    await screenBrightness.setScreenBrightness(0.1);
+    expect(await screenBrightness.hasChanged, true);
+
+    await screenBrightness.setScreenBrightness(systemBrightness);
+    expect(await screenBrightness.hasChanged, true);
+
+    await screenBrightness.resetScreenBrightness();
+    expect(await screenBrightness.hasChanged, false);
   });
 
   test('has application screen brightness changed', () async {
