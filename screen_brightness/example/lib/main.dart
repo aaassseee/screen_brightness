@@ -170,26 +170,27 @@ class _ControllerPageState extends State<ControllerPage> {
               }
 
               return StreamBuilder<double>(
-                  stream:
-                      ScreenBrightness.instance.onSystemScreenBrightnessChanged,
-                  builder: (context, snapshot) {
-                    double changedSystemBrightness = systemBrightness;
-                    if (snapshot.hasData) {
-                      changedSystemBrightness = snapshot.data!;
-                    }
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('System brightness: $changedSystemBrightness'),
-                        Slider.adaptive(
-                          value: changedSystemBrightness,
-                          onChanged: (value) {
-                            setSystemBrightness(value);
-                          },
-                        ),
-                      ],
-                    );
-                  });
+                stream:
+                    ScreenBrightness.instance.onSystemScreenBrightnessChanged,
+                builder: (context, snapshot) {
+                  double changedSystemBrightness = systemBrightness;
+                  if (snapshot.hasData) {
+                    changedSystemBrightness = snapshot.data!;
+                  }
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('System brightness: $changedSystemBrightness'),
+                      Slider.adaptive(
+                        value: changedSystemBrightness,
+                        onChanged: (value) {
+                          setSystemBrightness(value);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
           FutureBuilder<double>(
