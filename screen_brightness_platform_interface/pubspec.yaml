@@ -1,6 +1,6 @@
 name: screen_brightness_platform_interface
 description: A common platform interface for the screen_brightness plugin
-version: 1.0.1
+version: 2.0.0
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness_platform_interface
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues

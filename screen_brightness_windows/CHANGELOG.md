@@ -1,3 +1,8 @@
+## 2.0.0
+
+* support changing system brightness [#31](https://github.com/aaassseee/screen_brightness/issues/31) [#32](https://github.com/aaassseee/screen_brightness/issues/32)
+* fix dependency constraint not up-to-date problem [#30](https://github.com/aaassseee/screen_brightness/issues/30) [#33](https://github.com/aaassseee/screen_brightness/issues/33)
+
 ## 1.0.1
 
 * added animate boolean
