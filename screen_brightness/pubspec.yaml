@@ -1,6 +1,6 @@
 name: screen_brightness
 description: A Plugin for controlling screen brightness with application life cycle reset implemented
-version: 1.0.1
+version: 2.0.0
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
@@ -17,11 +17,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  screen_brightness_platform_interface: ">=1.0.0 <2.0.0"
-  screen_brightness_android: ">=1.0.0 <2.0.0"
-  screen_brightness_ios: ">=1.0.0 <2.0.0"
-  screen_brightness_macos: ">=1.0.0 <2.0.0"
-  screen_brightness_windows: ">=1.0.0 <2.0.0"
+  screen_brightness_platform_interface: ">=2.0.0 <3.0.0"
+  screen_brightness_android: ">=2.0.0 <3.0.0"
+  screen_brightness_ios: ">=2.0.0 <3.0.0"
+  screen_brightness_macos: ">=2.0.0 <3.0.0"
+  screen_brightness_windows: ">=2.0.0 <3.0.0"
 
 dev_dependencies:
   flutter_test:
@@ -30,17 +30,17 @@ dev_dependencies:
   plugin_platform_interface: ">=2.0.0 <3.0.0"
   async: ">=2.0.0 <3.0.0"
 
-dependency_overrides:
-  screen_brightness_platform_interface:
-    path: ../screen_brightness_platform_interface/
-  screen_brightness_android:
-    path: ../screen_brightness_android
-  screen_brightness_ios:
-    path: ../screen_brightness_ios
-  screen_brightness_macos:
-    path: ../screen_brightness_macos
-  screen_brightness_windows:
-    path: ../screen_brightness_windows
+#dependency_overrides:
+#  screen_brightness_platform_interface:
+#    path: ../screen_brightness_platform_interface/
+#  screen_brightness_android:
+#    path: ../screen_brightness_android
+#  screen_brightness_ios:
+#    path: ../screen_brightness_ios
+#  screen_brightness_macos:
+#    path: ../screen_brightness_macos
+#  screen_brightness_windows:
+#    path: ../screen_brightness_windows
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
