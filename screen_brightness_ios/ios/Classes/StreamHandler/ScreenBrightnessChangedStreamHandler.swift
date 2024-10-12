@@ -9,12 +9,12 @@ import Foundation
 import Flutter
 import UIKit
 
-public class CurrentBrightnessChangeStreamHandler: BaseStreamHandler {
-    public func addCurrentBrightnessToEventSink(_ currentBrightness: CGFloat) {
+public class ScreenBrightnessChangedStreamHandler: BaseStreamHandler {
+    public func addScreenBrightnessToEventSink(_ screenBrightness: CGFloat) {
         guard let eventSink = eventSink else {
             return
         }
         
-        eventSink(Double(currentBrightness))
+        eventSink(Double(screenBrightness))
     }
 }

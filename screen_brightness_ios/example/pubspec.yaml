@@ -26,9 +26,9 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ">=3.0.0 <4.0.0"
 
-#dependency_overrides:
-#  screen_brightness_platform_interface:
-#    path: ../../screen_brightness_platform_interface/
+dependency_overrides:
+  screen_brightness_platform_interface:
+    path: ../../screen_brightness_platform_interface/
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -3,7 +3,7 @@
 
 #include <flutter_plugin_registrar.h>
 
-#include "../include/screen_brightness_windows/current_brightness_change_stream_handler.h"
+#include "../include/screen_brightness_windows/screen_brightness_changed_stream_handler.h"
 
 #include <flutter/plugin_registrar_windows.h>
 
@@ -41,49 +41,47 @@ namespace screen_brightness
 
 		HWND window_handler_ = nullptr;
 
-		long system_brightness_ = -1;
+        int window_proc_id_ = -1;
 
-		long minimum_brightness_ = -1;
+		ScreenBrightnessChangedStreamHandler* system_screen_brightness_changed_stream_handler_ = nullptr;
 
-		long maximum_brightness_ = -1;
+		ScreenBrightnessChangedStreamHandler* application_screen_brightness_changed_stream_handler_ = nullptr;
 
-		long current_brightness_ = -1;
+		long minimum_screen_brightness_ = -1;
 
-		long changed_brightness_ = -1;
+		long maximum_screen_brightness_ = -1;
+
+		long system_screen_brightness_ = -1;
+
+		long application_screen_brightness_ = -1;
 
 		bool is_auto_reset_ = true;
 
 		bool is_animate_ = true;
 
-		CurrentBrightnessChangeStreamHandler* current_brightness_change_stream_handler_ = nullptr;
-
-		int window_proc_id_ = -1;
-
 		// Called when a method is called on this plugin's channel from Dart.
 		void HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue>& method_call,
 			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
-		void GetBrightness(long& minimum_brightness, long& brightness, long& maximum_brightness);
+		void HandleGetSystemScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const;
 
-		void SetBrightness(long brightness);
-
-		[[nodiscard]] double GetBrightnessPercentage(long brightness) const;
-
-		[[nodiscard]] long GetBrightnessValueByPercentage(double percentage) const;
-
-		void HandleGetSystemBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const;
-
-		void HandleGetScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-
-		void HandleSetScreenBrightnessMethodCall(
+		void HandleSetSystemScreenBrightnessMethodCall(
 			const flutter::MethodCall<flutter::EncodableValue>& call,
 			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
-		void HandleResetScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+		void HandleSystemScreenBrightnessChanged(long brightness);
 
-		void HandleCurrentBrightnessChanged(long brightness);
+		void HandleGetApplicationScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
-		void HandleHasChangedMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const;
+		void HandleSetApplicationScreenBrightnessMethodCall(
+			const flutter::MethodCall<flutter::EncodableValue>& call,
+			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+		void HandleResetApplicationScreenBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+		void HandleApplicationScreenBrightnessChanged(long brightness);
+
+		void HandleHasApplicationScreenBrightnessChangedMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) const;
 
 		void HandleIsAutoResetMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
@@ -96,6 +94,18 @@ namespace screen_brightness
 			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
 		std::optional<LRESULT> HandleWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+		void GetScreenBrightness(long& minimum_screen_brightness, long& screen_brightness, long& maximum_screen_brightness);
+
+		void SetScreenBrightness(long screen_brightness);
+
+		[[nodiscard]] double GetScreenBrightnessPercentage(long screen_brightness) const;
+
+		[[nodiscard]] long GetScreenBrightnessValueByPercentage(double percentage) const;
+
+		void OnApplicationPause();
+
+		void OnApplicationResume();
 	};
 }
 

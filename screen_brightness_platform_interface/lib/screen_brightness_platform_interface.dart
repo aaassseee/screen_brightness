@@ -31,103 +31,126 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  /// Returns system screen brightness which is set when application is started.
+  /// Returns system screen brightness.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
   ///
-  /// This parameter is useful for user to get screen brightness value after
-  /// calling [resetScreenBrightness]
+  /// This parameter is useful for user to get system screen brightness value
+  /// after calling [setSystemScreenBrightness]
+  ///
+  /// This parameter is useful for user to get system screen brightness value
+  /// after calling [resetApplicationScreenBrightness]
   Future<double> get system async {
     throw UnimplementedError('system brightness has not been implemented.');
   }
 
-  /// Returns current screen brightness which is current screen brightness value.
+  /// Set system screen brightness with double value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
   ///
-  /// This parameter is useful for user to get screen brightness value after
-  /// calling [setScreenBrightness]
-  Future<double> get current async {
-    throw UnimplementedError('current brightness has not been implemented.');
+  /// This method is useful for user to change system screen brightness.
+  Future<void> setSystemScreenBrightness(double brightness) async {
+    throw UnimplementedError(
+        'setSystemScreenBrightness(brightness) has not been implemented.');
   }
 
-  /// Set screen brightness with double value.
+  /// Returns stream with system screen brightness changes including
+  /// [ScreenBrightness.setSystemScreenBrightness], system control center or
+  /// system setting.
+  ///
+  /// This stream is useful for user to listen to system screen brightness
+  /// changes.
+  Stream<double> get onSystemScreenBrightnessChanged {
+    throw UnimplementedError(
+        'onApplicationBrightnessChanged has not been implemented.');
+  }
+
+  /// Returns application screen brightness value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
   ///
-  /// This method is useful for user to change screen brightness.
-  Future<void> setScreenBrightness(double brightness) async {
+  /// This parameter is useful for user to get application screen brightness
+  /// value after calling [setApplicationScreenBrightness]
+  Future<double> get application async {
     throw UnimplementedError(
-        'setScreenBrightness(brightness) has not been implemented.');
+        'application brightness has not been implemented.');
   }
 
-  /// Reset screen brightness with (Android)-1 or (iOS)system brightness value.
+  /// Set application screen brightness with double value.
   ///
-  /// This method is useful for user to reset screen brightness when user leave
-  /// the page which has change the brightness value.
-  Future<void> resetScreenBrightness() async {
+  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
+  /// be throw.
+  ///
+  /// This method is useful for user to change application screen brightness.
+  Future<void> setApplicationScreenBrightness(double brightness) async {
     throw UnimplementedError(
-        'resetScreenBrightness() has not been implemented.');
+        'setApplicationScreenBrightness(brightness) has not been implemented.');
   }
 
-  /// Returns stream with screen brightness changes including
-  /// [ScreenBrightness.setScreenBrightness],
-  /// [ScreenBrightness.resetScreenBrightness], system control center or system
+  /// Reset application screen brightness with (Android) -1 or (iOS)system
+  /// brightness value.
+  ///
+  /// This method is useful for user to reset application screen brightness
+  /// when user leave the page which has change the brightness value.
+  Future<void> resetApplicationScreenBrightness() async {
+    throw UnimplementedError(
+        'resetApplicationScreenBrightness() has not been implemented.');
+  }
+
+  /// Returns stream with application screen brightness changes including
+  /// [ScreenBrightness.setApplicationScreenBrightness],
+  /// [ScreenBrightness.resetApplicationScreenBrightness], system control center or system
   /// setting.
   ///
   /// This stream is useful for user to listen to brightness changes.
-  Stream<double> get onCurrentBrightnessChanged {
+  Stream<double> get onApplicationScreenBrightnessChanged {
     throw UnimplementedError(
-        'onCurrentBrightnessChanged has not been implemented.');
+        'onApplicationBrightnessChanged has not been implemented.');
   }
 
-  /// Returns boolean to identify brightness has changed with this plugin.
+  /// Returns boolean to identify application screen brightness has changed by
+  /// this plugin.
   ///
   /// e.g
-  /// [ScreenBrightness.setScreenBrightness] will make this true
-  /// [ScreenBrightness.resetScreenBrightness] will make this false
-  Future<bool> get hasChanged {
-    throw UnimplementedError('hasChanged has not been implemented.');
+  /// [ScreenBrightness.setApplicationScreenBrightness] will make this true
+  /// [ScreenBrightness.resetApplicationScreenBrightness] will make this false
+  Future<bool> get hasApplicationScreenBrightnessChanged {
+    throw UnimplementedError(
+        'hasApplicationScreenBrightnessChanged has not been implemented.');
   }
 
-  /// Returns boolean to identify will auto reset when application lifecycle
-  /// changed.
+  /// Returns boolean to identify will auto reset to system brightness when
+  /// application lifecycle changed.
   ///
   /// This parameter is useful for user to determinate current state of auto reset.
-  ///
-  /// (iOS only) implemented in iOS only because only iOS native side does not
-  /// having reset method.
   Future<bool> get isAutoReset async {
-    throw UnimplementedError(
-        'isAutoResetWithLifecycleChange has not been implemented.');
+    throw UnimplementedError('isAutoReset has not been implemented.');
   }
 
   /// Set auto reset when application lifecycle changed
   ///
-  /// This method is useful for user change weather this plugin should auto reset
-  /// brightness when application lifecycle changed.
-  ///
-  /// (iOS only) implemented in iOS only because only iOS native side does not
-  /// having reset method.
+  /// This method is useful for user change whether this plugin should auto reset
+  /// to system brightness when application lifecycle changed.
   Future<void> setAutoReset(bool isAutoReset) async {
     throw UnimplementedError('setAutoReset has not been implemented.');
   }
 
-  /// Returns boolean to identify will animate brightness transition
+  /// Returns boolean to identify will animate when application screen brightness
+  /// change.
   ///
-  /// This parameter is useful for user to determinate will there be animate
-  /// transition.
+  /// This parameter is useful for user to determinate will there be animation
+  /// transition when application screen brightness changed.
   Future<bool> get isAnimate async {
     throw UnimplementedError('isAnimate has not been implemented.');
   }
 
-  /// Set animate when brightness transition
+  /// Set will animate when application screen brightness changed.
   ///
-  /// This method is useful for user change weather this plugin should animate
-  /// when brightness transition
+  /// This method is useful for user change whether this plugin should animate
+  /// when application screen brightness changed.
   Future<void> setAnimate(bool isAnimate) async {
     throw UnimplementedError('setAnimate has not been implemented.');
   }
