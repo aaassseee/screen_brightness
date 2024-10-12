@@ -1,9 +1,14 @@
 const methodNameGetSystemScreenBrightness = 'getSystemScreenBrightness';
-const methodNameGetScreenBrightness = 'getScreenBrightness';
-const methodNameSetScreenBrightness = 'setScreenBrightness';
-const methodNameResetScreenBrightness = 'resetScreenBrightness';
+const methodNameSetSystemScreenBrightness = 'setSystemScreenBrightness';
+const methodNameGetApplicationScreenBrightness =
+    'getApplicationScreenBrightness';
+const methodNameSetApplicationScreenBrightness =
+    'setApplicationScreenBrightness';
+const methodNameResetApplicationScreenBrightness =
+    'resetApplicationScreenBrightness';
 
-const methodNameHasChanged = 'hasChanged';
+const methodNameHasApplicationScreenBrightnessChanged =
+    'hasApplicationScreenBrightnessChanged';
 
 const methodNameIsAutoReset = 'isAutoReset';
 const methodNameSetAutoReset = 'setAutoReset';
