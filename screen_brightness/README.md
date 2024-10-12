@@ -20,91 +20,116 @@ latest_version:\
 ```dart
 Future<double> get systemBrightness async {
   try {
-    return await ScreenBrightness().system;
+    return await ScreenBrightness.instance.system;
   } catch (e) {
     print(e);
     throw 'Failed to get system brightness';
   }
 }
 ```
-#### Current brightness
+#### Set system brightness
 ```dart
-Future<double> get currentBrightness async {
+  Future<void> setSystemBrightness(double brightness) async {
   try {
-    return await ScreenBrightness().current;
+    await ScreenBrightness.instance.setSystemScreenBrightness(brightness);
   } catch (e) {
-    print(e);
-    throw 'Failed to get current brightness';
+    debugPrint(e.toString());
+    throw 'Failed to set system brightness';
   }
 }
 ```
-#### Set brightness
+#### Application brightness
 ```dart
-Future<void> setBrightness(double brightness) async {
+Future<double> get applicationBrightness async {
   try {
-    await ScreenBrightness().setScreenBrightness(brightness);
+    return await ScreenBrightness.instance.application;
   } catch (e) {
     print(e);
-    throw 'Failed to set brightness';
+    throw 'Failed to get application brightness';
   }
 }
 ```
-#### Reset brightness
+#### Set application brightness
 ```dart
-Future<void> resetBrightness() async {
+Future<void> setApplicationBrightness(double brightness) async {
   try {
-    await ScreenBrightness().resetScreenBrightness();
+    await ScreenBrightness.instance
+        .setApplicationScreenBrightness(brightness);
   } catch (e) {
-    print(e);
-    throw 'Failed to reset brightness';
+    debugPrint(e.toString());
+    throw 'Failed to set application brightness';
   }
 }
 ```
-
-#### Current brightness changed stream
+#### Reset application brightness
+```dart
+  Future<void> resetApplicationBrightness() async {
+  try {
+    await ScreenBrightness.instance.resetApplicationScreenBrightness();
+  } catch (e) {
+    debugPrint(e.toString());
+    throw 'Failed to reset application brightness';
+  }
+}
+```
+#### System brightness changed stream
 ```dart
 @override
 Widget build(BuildContext context) {
   return StreamBuilder<double>(
-    stream: ScreenBrightness().onCurrentBrightnessChanged,
+    stream:
+    ScreenBrightness.instance.onSystemScreenBrightnessChanged,
     builder: (context, snapshot) {
-      double changedBrightness = currentBrightness;
+      double changedSystemBrightness = systemBrightness;
       if (snapshot.hasData) {
-        changedBrightness = snapshot.data!;
+        changedSystemBrightness = snapshot.data!;
       }
-        
-      return Text('current brightness $changedBrightness');
+      
+      return Text('system brightness $changedSystemBrightness');;
     },
   );
 }
 ```
+#### Application brightness changed stream
+```dart
+@override
+Widget build(BuildContext context) {
+  return StreamBuilder<double>(
+    stream:
+    ScreenBrightness.instance.onApplicationScreenBrightnessChanged,
+    builder: (context, snapshot) {
+      double changedApplicationBrightness = applicationBrightness;
+      if (snapshot.hasData) {
+        changedApplicationBrightness = snapshot.data!;
+      }
 
-#### Has changed
+      return Text('application brightness $changedApplicationBrightness');;
+    },
+  );
+}
+```
+#### Has application brightness changed
 ```dart
 @override
 Widget build(BuildContext context) {
   return FutureBuilder<bool>(
-    future: ScreenBrightness().hasChanged,
+    future: ScreenBrightness.instance.hasApplicationScreenBrightnessChanged,
     builder: (context, snapshot) {
       return Text(
-          'Brightness has changed via plugin: ${snapshot.data}');
+          'Application brightness has changed via plugin: ${snapshot.data}');
     },
   );
 }
 ```
 
-#### Auto reset (iOS only) (experiment feature things maybe weird)
+#### Auto reset
 ```dart
 bool isAutoReset = true;
 
-Future<void> getAutoResetSetting() async {
-  if (!Platform.isIOS) {
-    return;
-  }
-
-  final _isAutoReset = await ScreenBrightness().isAutoReset;
+Future<void> getIsAutoResetSetting() async {
+  final isAutoReset = await ScreenBrightness.instance.isAutoReset;
   setState(() {
-    isAutoReset = _isAutoReset;
+    this.isAutoReset = isAutoReset;
   });
 }
 
@@ -112,11 +137,9 @@ Future<void> getAutoResetSetting() async {
 Widget build(BuildContext context) {
   return Switch(
     value: isAutoReset,
-    onChanged: !Platform.isIOS
-        ? null
-        : (value) async {
-      await ScreenBrightness().setAutoReset(value);
-      await getAutoResetSetting();
+    onChanged: (value) async {
+      await ScreenBrightness.instance.setAutoReset(value);
+      await getIsAutoResetSetting();
     },
   );
 }
