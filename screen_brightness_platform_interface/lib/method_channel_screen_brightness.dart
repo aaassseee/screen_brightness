@@ -8,22 +8,30 @@ import 'constant/plugin_channel.dart';
 
 /// Implementation of screen brightness platform interface
 class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
-  /// Private stream which is listened to event channel for preventing
-  Stream<double>? _onCurrentBrightnessChanged;
+  /// Private application screen brightness changed stream which is listened to
+  /// event channel for preventing creating new stream.
+  Stream<double>? _onApplicationScreenBrightnessChanged;
 
-  /// Returns system screen brightness which is set when application is started.
+  /// Private system screen brightness changed stream which is listened to event
+  /// channel for preventing creating new stream.
+  Stream<double>? _onSystemScreenBrightnessChanged;
+
+  /// Returns system screen brightness.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
   ///
-  /// This parameter is useful for user to get screen brightness value after
-  /// calling [resetScreenBrightness]
+  /// This parameter is useful for user to get system screen brightness value
+  /// after calling [setSystemScreenBrightness]
+  ///
+  /// This parameter is useful for user to get system screen brightness value
+  /// after calling [resetApplicationScreenBrightness]
   ///
   /// Platform difference:
-  /// (macOS): return initial brightness
+  /// (macOS)(Windows): return initial brightness
   ///
-  /// When [_channel.invokeMethod] fails to get current brightness, it throws
-  /// [PlatformException] with code and message:
+  /// When [_channel.invokeMethod] fails to get system screen brightness, it
+  /// throws [PlatformException] with code and message:
   ///
   /// Code: -9, Message: value returns null
   @override
@@ -41,19 +49,62 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     return systemBrightness;
   }
 
-  /// Returns current screen brightness which is current screen brightness value.
+  /// Set system screen brightness with double value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
   ///
-  /// This parameter is useful for user to get screen brightness value after
-  /// calling [setScreenBrightness]
+  /// This method is useful for user to change system screen brightness.
   ///
-  /// Calling this method after calling [resetScreenBrightness] may return wrong
+  /// When [_channel.invokeMethod] fails to set system screen brightness, it
+  /// throws [PlatformException] with code and message:
+  ///
+  /// Code: -1, Message: Unable to change system screen brightness
+  /// Failed to set system brightness
+  ///
+  /// Code: -2, Message: Unexpected error on null brightness
+  /// Cannot read parameter from method channel map, or parameter is null
+  ///
+  /// (Android only) Code: -10, Message: Unexpected error on activity binding
+  /// Unexpected error when getting activity, activity may be null
+  @override
+  Future<void> setSystemScreenBrightness(double brightness) async {
+    if (!brightness.isInRange(minBrightness, maxBrightness)) {
+      throw RangeError.range(brightness, minBrightness, maxBrightness);
+    }
+
+    await pluginMethodChannel.invokeMethod(
+        methodNameSetSystemScreenBrightness, {"brightness": brightness});
+  }
+
+  /// Returns stream with system screen brightness changes including
+  /// [ScreenBrightness.setSystemScreenBrightness], system control center or
+  /// system setting.
+  ///
+  /// This stream is useful for user to listen to system screen brightness
+  /// changes.
+  @override
+  Stream<double> get onSystemScreenBrightnessChanged {
+    _onSystemScreenBrightnessChanged ??=
+        pluginEventChannelSystemBrightnessChanged
+            .receiveBroadcastStream()
+            .cast<double>();
+    return _onSystemScreenBrightnessChanged!;
+  }
+
+  /// Returns application screen brightness value.
+  ///
+  /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
+  /// be throw.
+  ///
+  /// This parameter is useful for user to get application screen brightness
+  /// value after calling [setApplicationScreenBrightness]
+  ///
+  /// Calling this method after calling [resetApplicationScreenBrightness] may return wrong
   /// value in iOS because UIScreen.main.brightness returns old brightness value
   ///
-  /// When [_channel.invokeMethod] fails to get current brightness, it throws
-  /// [PlatformException] with code and message:
+  /// When [_channel.invokeMethod] fails to get application screen brightness,
+  /// it throws [PlatformException] with code and message:
   ///
   /// Code: -9, Message: value returns null
   ///
@@ -61,13 +112,13 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// Unexpected error when getting activity, activity may be null
   ///
   /// (Android only) (macOS only) Code: -11, Message: Could not found system
-  /// setting screen brightness value
+  /// screen brightness value
   /// Unexpected error when getting brightness from Setting using
   /// (Android) Settings.System.SCREEN_BRIGHTNESS
   @override
-  Future<double> get current async {
+  Future<double> get application async {
     final currentBrightness = await pluginMethodChannel
-        .invokeMethod<double>(methodNameGetScreenBrightness);
+        .invokeMethod<double>(methodNameGetApplicationScreenBrightness);
     if (currentBrightness == null) {
       throw PlatformException(code: "-9", message: "value returns null");
     }
@@ -79,17 +130,17 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     return currentBrightness;
   }
 
-  /// Set screen brightness with double value.
+  /// Set application screen brightness with double value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will
   /// be throw.
   ///
-  /// This method is useful for user to change screen brightness.
+  /// This method is useful for user to change application screen brightness.
   ///
-  /// When [_channel.invokeMethod] fails to get current brightness, it throws
-  /// [PlatformException] with code and message:
+  /// When [_channel.invokeMethod] fails to set application screen brightness,
+  /// it throws [PlatformException] with code and message:
   ///
-  /// Code: -1, Message: Unable to change screen brightness
+  /// Code: -1, Message: Unable to change application screen brightness
   /// Failed to set brightness
   ///
   /// Code: -2, Message: Unexpected error on null brightness
@@ -98,25 +149,27 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   @override
-  Future<void> setScreenBrightness(double brightness) async {
+  Future<void> setApplicationScreenBrightness(double brightness) async {
     if (!brightness.isInRange(minBrightness, maxBrightness)) {
       throw RangeError.range(brightness, minBrightness, maxBrightness);
     }
 
     await pluginMethodChannel.invokeMethod(
-        methodNameSetScreenBrightness, {"brightness": brightness});
+        methodNameSetApplicationScreenBrightness, {"brightness": brightness});
   }
 
-  /// Reset screen brightness with (Android)-1 or (iOS)system brightness value.
+  /// Reset application screen brightness with (Android) -1 or (iOS)system
+  /// brightness value.
   ///
-  /// This method is useful for user to reset screen brightness when user leave
-  /// the page which has change the brightness value.
+  /// This method is useful for user to reset application screen brightness
+  /// when user leave the page which has change the application screen
+  /// brightness value.
   ///
-  /// When [_channel.invokeMethod] fails to get current brightness, it throws
-  /// [PlatformException] with code and message:
+  /// When [_channel.invokeMethod] fails to get application screen brightness,
+  /// it throws [PlatformException] with code and message:
   ///
-  /// Code: -1, Message: Unable to change screen brightness
-  /// Failed to reset brightness
+  /// Code: -1, Message: Unable to reset application screen brightness
+  /// Failed to reset application screen brightness
   ///
   /// Code: -2, Message: Unexpected error on null brightness
   /// System brightness in plugin is null
@@ -124,37 +177,45 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   @override
-  Future<void> resetScreenBrightness() async {
-    await pluginMethodChannel.invokeMethod(methodNameResetScreenBrightness);
+  Future<void> resetApplicationScreenBrightness() async {
+    await pluginMethodChannel
+        .invokeMethod(methodNameResetApplicationScreenBrightness);
   }
 
-  /// Returns stream with screen brightness changes including
-  /// [ScreenBrightness.setScreenBrightness],
-  /// [ScreenBrightness.resetScreenBrightness], system control center or system
+  /// Old API on [onApplicationScreenBrightnessChanged]
+  Stream<double> get onApplicationBrightnessChanged =>
+      onApplicationScreenBrightnessChanged;
+
+  /// Returns stream with application screen brightness changes including
+  /// [ScreenBrightness.setApplicationScreenBrightness],
+  /// [ScreenBrightness.resetApplicationScreenBrightness], system control center or system
   /// setting.
   ///
   /// This stream is useful for user to listen to brightness changes.
   @override
-  Stream<double> get onCurrentBrightnessChanged {
-    _onCurrentBrightnessChanged ??= pluginEventChannelCurrentBrightnessChange
-        .receiveBroadcastStream()
-        .cast<double>();
-    return _onCurrentBrightnessChanged!;
+  Stream<double> get onApplicationScreenBrightnessChanged {
+    _onApplicationScreenBrightnessChanged ??=
+        pluginEventChannelApplicationBrightnessChanged
+            .receiveBroadcastStream()
+            .cast<double>();
+    return _onApplicationScreenBrightnessChanged!;
   }
 
-  /// Returns boolean to identify brightness has changed with this plugin.
+  /// Returns boolean to identify application screen brightness has changed by
+  /// this plugin.
   ///
   /// e.g
-  /// [ScreenBrightness.setScreenBrightness] will make this true
-  /// [ScreenBrightness.resetScreenBrightness] will make this false
+  /// [ScreenBrightness.setApplicationScreenBrightness] will make this true
+  /// [ScreenBrightness.resetApplicationScreenBrightness] will make this false
   @override
-  Future<bool> get hasChanged async {
-    return await pluginMethodChannel.invokeMethod<bool>(methodNameHasChanged) ??
+  Future<bool> get hasApplicationScreenBrightnessChanged async {
+    return await pluginMethodChannel.invokeMethod<bool>(
+            methodNameHasApplicationScreenBrightnessChanged) ??
         false;
   }
 
-  /// Returns boolean to identify will auto reset when application lifecycle
-  /// changed.
+  /// Returns boolean to identify will auto reset to system brightness when
+  /// application lifecycle changed.
   ///
   /// This parameter is useful for user to determinate current state of auto reset.
   ///
@@ -169,8 +230,8 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
 
   /// Set auto reset when application lifecycle changed
   ///
-  /// This method is useful for user change weather this plugin should auto reset
-  /// brightness when application lifecycle changed.
+  /// This method is useful for user change whether this plugin should auto reset
+  /// to system brightness when application lifecycle changed.
   ///
   /// (iOS only) implemented in iOS only because only iOS native side does not
   /// having reset method.
@@ -180,10 +241,11 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         .invokeMethod(methodNameSetAutoReset, {"isAutoReset": isAutoReset});
   }
 
-  /// Returns boolean to identify will animate brightness transition
+  /// Returns boolean to identify will animate when application screen brightness
+  /// changed.
   ///
-  /// This parameter is useful for user to determinate will there be animate
-  /// transition.
+  /// This parameter is useful for user to determinate will there be animation
+  /// transition when application screen brightness changed.
   ///
   /// (iOS only) implemented in iOS only because only iOS native side does not
   /// having reset method.
@@ -193,10 +255,10 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         true;
   }
 
-  /// Set animate when brightness transition
+  /// Set will animate when application screen brightness changed.
   ///
-  /// This method is useful for user change weather this plugin should animate
-  /// when brightness transition
+  /// This method is useful for user change whether this plugin should animate
+  /// when application screen brightness changed.
   ///
   /// (iOS only) implemented in iOS only because only iOS native side does not
   /// having reset method.
