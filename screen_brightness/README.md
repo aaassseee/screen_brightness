@@ -15,6 +15,11 @@ Add the following lines in your pubspec.yaml file
 latest_version:\
 [![pub package](https://img.shields.io/pub/v/screen_brightness.svg)](https://pub.dartlang.org/packages/screen_brightness)
 
+To adjust the system brightness on Android, add the following permission in your `AndroidManifest.xml` file
+```xml
+<uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
+```
+
 ### API
 #### System brightness
 ```dart
