@@ -1,3 +1,7 @@
+## 2.0.0+2
+
+* update README.md
+
 ## 2.0.0+1
 
 * update README.md
