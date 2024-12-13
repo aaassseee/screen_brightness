@@ -81,7 +81,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// returns true or false
   @override
   Future<bool> checkSystemCanWrite() async {
-    await pluginMethodChannel.invokeMethod(
+    return await pluginMethodChannel.invokeMethod(
         methodNameCheckSystemCanWrite);
   }
   
