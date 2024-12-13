@@ -30,9 +30,9 @@ dev_dependencies:
   plugin_platform_interface: ">=2.0.0 <3.0.0"
   async: ">=2.0.0 <3.0.0"
 
-#dependency_overrides:
-#  screen_brightness_platform_interface:
-#    path: ../screen_brightness_platform_interface/
+dependency_overrides:
+  screen_brightness_platform_interface:
+    path: ../screen_brightness_platform_interface/
 #  screen_brightness_android:
 #    path: ../screen_brightness_android
 #  screen_brightness_ios:
