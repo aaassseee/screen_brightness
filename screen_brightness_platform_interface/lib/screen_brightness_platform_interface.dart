@@ -58,7 +58,7 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
 
   /// Check modify system settings
   /// returns true or false
-  Future<bool> checkSystemCanWrite(double brightness) async {
+  Future<bool> checkSystemCanWrite() async {
     throw UnimplementedError(
         'checkSystemCanWrite() has not been implemented.');
   }
