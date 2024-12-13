@@ -1,6 +1,6 @@
 ## 2.0.1
 
-* fix call HandleWindowProc will lead to crash [#38](https://github.com/aaassseee/screen_brightness/issues/388)
+* fix call HandleWindowProc will lead to crash [#38](https://github.com/aaassseee/screen_brightness/issues/38)
 
 ## 2.0.0
 
