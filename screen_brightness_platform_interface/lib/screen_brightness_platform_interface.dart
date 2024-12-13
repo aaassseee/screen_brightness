@@ -56,6 +56,13 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
         'setSystemScreenBrightness(brightness) has not been implemented.');
   }
 
+  /// Check modify system settings
+  /// returns true or false
+  Future<bool> checkSystemCanWrite(double brightness) async {
+    throw UnimplementedError(
+        'checkSystemCanWrite() has not been implemented.');
+  }
+
   /// Returns stream with system screen brightness changes including
   /// [ScreenBrightness.setSystemScreenBrightness], system control center or
   /// system setting.
