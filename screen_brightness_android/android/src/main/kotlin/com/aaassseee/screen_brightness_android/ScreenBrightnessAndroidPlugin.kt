@@ -129,6 +129,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         when (call.method) {
             "getSystemScreenBrightness" -> handleGetSystemScreenBrightnessMethodCall(result)
             "setSystemScreenBrightness" -> handleSetSystemScreenBrightnessMethodCall(call, result)
+            "checkSystemCanWrite" -> checkSystemCanWrite(result)
             "getApplicationScreenBrightness" -> handleGetApplicationScreenBrightnessMethodCall(result)
             "setApplicationScreenBrightness" -> handleSetApplicationScreenBrightnessMethodCall(call, result)
             "resetApplicationScreenBrightness" -> handleResetApplicationScreenBrightnessMethodCall(result)
@@ -333,6 +334,18 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         return Settings.System.putInt(
             context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, (maximumScreenBrightness * brightness).toInt()
         )
+    }
+
+    private fun checkSystemCanWrite(result: MethodChannel.Result): Boolean {
+        val context = activity.applicationContext
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val canWrite = Settings.System.canWrite(context)
+            result.success(canWrite)
+            canWrite
+        } else {
+            result.success(true)
+            true
+        }
     }
 
     private fun getScreenMaximumBrightness(context: Context): Float {
