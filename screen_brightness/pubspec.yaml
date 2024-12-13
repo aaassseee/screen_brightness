@@ -2,7 +2,7 @@ name: screen_brightness
 description: A Plugin for controlling screen brightness with application life cycle reset implemented
 version: 2.0.1
 homepage: https://github.com/bugrevealingbme/screen_brightness
-repository: https://github.com/bugrevealingbme/screen_brightness/tree/master/screen_brightness
+repository: https://github.com/bugrevealingbme/screen_brightness/tree/patch-1/screen_brightness
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
 
 topics:
