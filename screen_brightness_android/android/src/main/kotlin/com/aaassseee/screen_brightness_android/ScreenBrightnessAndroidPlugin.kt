@@ -129,7 +129,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         when (call.method) {
             "getSystemScreenBrightness" -> handleGetSystemScreenBrightnessMethodCall(result)
             "setSystemScreenBrightness" -> handleSetSystemScreenBrightnessMethodCall(call, result)
-            "checkSystemCanWrite" -> checkSystemCanWrite(result)
+            "isSystemSettingPermissionGranted" -> isSystemSettingPermissionGranted(result)
             "getApplicationScreenBrightness" -> handleGetApplicationScreenBrightnessMethodCall(result)
             "setApplicationScreenBrightness" -> handleSetApplicationScreenBrightnessMethodCall(call, result)
             "resetApplicationScreenBrightness" -> handleResetApplicationScreenBrightnessMethodCall(result)
@@ -336,7 +336,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         )
     }
 
-    private fun checkSystemCanWrite(result: MethodChannel.Result): Boolean {
+    private fun isSystemSettingPermissionGranted(result: MethodChannel.Result): Boolean {
         val context = activity.applicationContext
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val canWrite = Settings.System.canWrite(context)
