@@ -80,9 +80,9 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   /// Check modify system settings
   /// returns true or false
   @override
-  Future<bool> checkSystemCanWrite() async {
+  Future<bool> isSystemSettingPermissionGranted() async {
     return await pluginMethodChannel.invokeMethod(
-        methodNameCheckSystemCanWrite);
+        methodNameIsSystemSettingPermissionGranted);
   }
   
   /// Returns stream with system screen brightness changes including
