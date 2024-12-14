@@ -47,8 +47,8 @@ class ScreenBrightness {
 
   /// Check modify system settings
   /// returns true or false
-  Future<bool> checkSystemCanWrite() =>
-      _platform.checkSystemCanWrite();
+  Future<bool> isSystemSettingPermissionGranted() =>
+      _platform.isSystemSettingPermissionGranted();
   
   /// Set system screen brightness with double value.
   ///
