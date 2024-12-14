@@ -338,13 +338,11 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
 
     private fun isSystemSettingPermissionGranted(result: MethodChannel.Result): Boolean {
         val context = activity.applicationContext
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val canWrite = Settings.System.canWrite(context)
             result.success(canWrite)
-            canWrite
         } else {
             result.success(true)
-            true
         }
     }
 
