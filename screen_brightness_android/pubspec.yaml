@@ -1,8 +1,8 @@
 name: screen_brightness_android
 description: The Android federated plugin implementation of screen_brightness.
 version: 2.0.0
-homepage: https://github.com/bugrevealingbme/screen_brightness
-repository: https://github.com/bugrevealingbme/screen_brightness/tree/patch-1/screen_brightness_android
+homepage: https://github.com/aaassseee/screen_brightness
+repository: https://github.com/aaassseee/screen_brightness/tree/patch-1/screen_brightness_android
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
 
 topics:
@@ -25,8 +25,8 @@ dev_dependencies:
   flutter_lints: ">=3.0.0 <4.0.0"
 
 dependency_overrides:
-  screen_brightness_platform_interface:
-    path: ../screen_brightness_platform_interface/
+#  screen_brightness_platform_interface:
+#    path: ../screen_brightness_platform_interface/
 
 flutter:
   plugin:
