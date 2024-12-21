@@ -23,6 +23,7 @@ class MockScreenBrightnessPlatform
 
   bool _isAutoReset = true;
   bool _isAnimate = true;
+  final _canChangeSystemBrightness = true;
 
   @override
   Future<double> get system => Future.value(_systemBrightness);
@@ -75,6 +76,10 @@ class MockScreenBrightnessPlatform
   Future<void> setAnimate(bool isAnimate) async {
     _isAnimate = isAnimate;
   }
+
+  @override
+  Future<bool> get canChangeSystemBrightness async =>
+      _canChangeSystemBrightness;
 }
 
 void main() {
@@ -252,5 +257,9 @@ void main() {
 
     await screenBrightness.setAnimate(true);
     expect(await screenBrightness.isAnimate, true);
+  });
+
+  test('can change system brightness', () async {
+    expect(await screenBrightness.canChangeSystemBrightness, true);
   });
 }

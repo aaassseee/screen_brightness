@@ -151,6 +151,12 @@ namespace screen_brightness
 			return;
 		}
 
+		if (method_call.method_name() == "canChangeSystemBrightness")
+        {
+        	HandleCanChangeSystemBrightnessMethodCall(std::move(result));
+        	return;
+        }
+
 		result->NotImplemented();
 	}
 
@@ -339,6 +345,11 @@ namespace screen_brightness
 
 		is_animate_ = is_animate;
 		result->Success(nullptr);
+	}
+
+	void ScreenBrightnessWindowsPlugin::HandleCanChangeSystemBrightnessMethodCall(const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	{
+		result->Success(true);
 	}
 
 	std::optional<LRESULT> ScreenBrightnessWindowsPlugin::HandleWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
