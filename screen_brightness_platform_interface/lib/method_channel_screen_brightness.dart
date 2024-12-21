@@ -267,4 +267,11 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
     await pluginMethodChannel
         .invokeMethod(methodNameSetAnimate, {"isAnimate": isAnimate});
   }
+
+  /// Return can change system screen brightness
+  @override
+  Future<bool> get canChangeSystemBrightness async {
+    return await pluginMethodChannel
+        .invokeMethod(methodNameCanChangeSystemBrightness);
+  }
 }

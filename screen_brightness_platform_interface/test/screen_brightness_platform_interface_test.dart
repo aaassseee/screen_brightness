@@ -30,6 +30,7 @@ void main() {
     double? applicationBrightness;
     bool isAutoReset = true;
     bool isAnimate = true;
+    bool canChangeSystemBrightness = true;
     late MethodChannelScreenBrightness methodChannelScreenBrightness;
     const pluginEventChannelApplicationBrightnessChanged =
         MethodChannel(pluginEventChannelApplicationBrightnessChangedName);
@@ -75,6 +76,9 @@ void main() {
 
           case methodNameSetAnimate:
             isAnimate = call.arguments['isAnimate'];
+
+          case methodNameCanChangeSystemBrightness:
+            return canChangeSystemBrightness;
         }
 
         return null;
@@ -277,6 +281,15 @@ void main() {
       await methodChannelScreenBrightness.setAnimate(true);
       expect(await methodChannelScreenBrightness.isAnimate, true);
     });
+
+    test('can change system brightness', () async {
+      expect(
+          await methodChannelScreenBrightness.canChangeSystemBrightness, true);
+
+      canChangeSystemBrightness = false;
+      expect(
+          await methodChannelScreenBrightness.canChangeSystemBrightness, false);
+    });
   });
 
   group('mock unimplemented platform interface test', () {
@@ -334,6 +347,11 @@ void main() {
 
     test('unimplemented set animate', () {
       expect(() => platform.setAnimate(true), throwsUnimplementedError);
+    });
+
+    test('unimplemented can change system brightness', () {
+      expect(
+          () => platform.canChangeSystemBrightness, throwsUnimplementedError);
     });
   });
 }

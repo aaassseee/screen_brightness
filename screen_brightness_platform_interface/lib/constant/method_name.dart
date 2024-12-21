@@ -15,3 +15,5 @@ const methodNameSetAutoReset = 'setAutoReset';
 
 const methodNameIsAnimate = 'isAnimate';
 const methodNameSetAnimate = 'setAnimate';
+
+const methodNameCanChangeSystemBrightness = 'canChangeSystemBrightness';

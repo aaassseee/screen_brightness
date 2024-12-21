@@ -147,6 +147,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             "setAutoReset" -> handleSetAutoResetMethodCall(call, result)
             "isAnimate" -> handleIsAnimateMethodCall(result)
             "setAnimate" -> handleSetAnimateMethodCall(call, result)
+            "canChangeSystemBrightness" -> handleCanChangeSystemBrightness(result)
             else -> result.notImplemented()
         }
     }
@@ -296,6 +297,16 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         result.success(null)
     }
 
+    private fun handleCanChangeSystemBrightness(result: MethodChannel.Result) {
+        val activity = activity
+        if (activity == null) {
+            result.error("-10", "Unexpected error on activity binding", null)
+            return
+        }
+
+        result.success(canWriteSystemSetting(activity.applicationContext))
+    }
+
     override fun onDetachedFromActivityForConfigChanges() {
         activity = null
     }
@@ -349,15 +360,15 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
 
     private fun setSystemScreenBrightness(context: Context, brightness: Float): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.System.canWrite(context)) {
+            if (!canWriteSystemSetting(context)) {
                 Intent(
                     Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:${context.packageName}")
                 ).let {
                     it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(it)
                 }
-                return false
             }
+            return false
         }
 
         return Settings.System.putInt(
@@ -424,6 +435,14 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             true
         } catch (e: Exception) {
             false
+        }
+    }
+
+    private fun canWriteSystemSetting(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.System.canWrite(context)
+        } else {
+            true
         }
     }
 

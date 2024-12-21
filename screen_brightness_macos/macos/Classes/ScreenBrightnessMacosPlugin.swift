@@ -83,6 +83,9 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         case "setAnimate":
             handleSetAnimateMethodCall(call: call, result: result)
 
+        case "canChangeSystemBrightness"
+            handleCanChangeSystemBrightnessMethodCall(result: result)
+
         default:
             result(FlutterMethodNotImplemented)
             break;
@@ -198,6 +201,10 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
 
         self.isAnimate = isAnimate
         result(nil)
+    }
+
+    private func handleCanChangeSystemBrightnessMethodCall(result: FlutterResult) {
+        result(true)
     }
     
     @objc public func applicationWillResignActive(notification: Notification) {

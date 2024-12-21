@@ -337,12 +337,14 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   bool isAutoReset = true;
   bool isAnimate = true;
+  bool canChangeSystemBrightness = true;
 
   @override
   void initState() {
     super.initState();
     getIsAutoResetSetting();
     getIsAnimateSetting();
+    getCanChangeSystemBrightness();
   }
 
   Future<void> getIsAutoResetSetting() async {
@@ -356,6 +358,14 @@ class _SettingPageState extends State<SettingPage> {
     final isAnimate = await ScreenBrightnessPlatform.instance.isAnimate;
     setState(() {
       this.isAnimate = isAnimate;
+    });
+  }
+
+  Future<void> getCanChangeSystemBrightness() async {
+    final canChangeSystemBrightness =
+        await ScreenBrightnessPlatform.instance.canChangeSystemBrightness;
+    setState(() {
+      this.canChangeSystemBrightness = canChangeSystemBrightness;
     });
   }
 
@@ -386,7 +396,14 @@ class _SettingPageState extends State<SettingPage> {
                 await getIsAnimateSetting();
               },
             ),
-          )
+          ),
+          ListTile(
+            title: const Text('Can change system brightness'),
+            trailing: Switch(
+              value: canChangeSystemBrightness,
+              onChanged: (value) {},
+            ),
+          ),
         ],
       ),
     );
