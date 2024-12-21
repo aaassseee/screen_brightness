@@ -93,6 +93,8 @@ namespace screen_brightness
 		void HandleSetAnimateMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call,
 			std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
+		void HandleCanChangeSystemBrightnessMethodCall(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
 		std::optional<LRESULT> HandleWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 		void GetScreenBrightness(long& minimum_screen_brightness, long& screen_brightness, long& maximum_screen_brightness);

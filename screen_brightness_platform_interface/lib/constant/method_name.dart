@@ -1,6 +1,5 @@
 const methodNameGetSystemScreenBrightness = 'getSystemScreenBrightness';
 const methodNameSetSystemScreenBrightness = 'setSystemScreenBrightness';
-const methodNameIsSystemSettingPermissionGranted = 'isSystemSettingPermissionGranted';
 const methodNameGetApplicationScreenBrightness =
     'getApplicationScreenBrightness';
 const methodNameSetApplicationScreenBrightness =
@@ -16,3 +15,5 @@ const methodNameSetAutoReset = 'setAutoReset';
 
 const methodNameIsAnimate = 'isAnimate';
 const methodNameSetAnimate = 'setAnimate';
+
+const methodNameCanChangeSystemBrightness = 'canChangeSystemBrightness';

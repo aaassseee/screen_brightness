@@ -77,14 +77,6 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         methodNameSetSystemScreenBrightness, {"brightness": brightness});
   }
 
-  /// Check modify system settings
-  /// returns true or false
-  @override
-  Future<bool> isSystemSettingPermissionGranted() async {
-    return await pluginMethodChannel.invokeMethod(
-        methodNameIsSystemSettingPermissionGranted);
-  }
-  
   /// Returns stream with system screen brightness changes including
   /// [ScreenBrightness.setSystemScreenBrightness], system control center or
   /// system setting.
@@ -274,5 +266,12 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   Future<void> setAnimate(bool isAnimate) async {
     await pluginMethodChannel
         .invokeMethod(methodNameSetAnimate, {"isAnimate": isAnimate});
+  }
+
+  /// Return can change system screen brightness
+  @override
+  Future<bool> get canChangeSystemBrightness async {
+    return await pluginMethodChannel
+        .invokeMethod(methodNameCanChangeSystemBrightness);
   }
 }

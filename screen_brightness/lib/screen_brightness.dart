@@ -45,11 +45,10 @@ class ScreenBrightness {
   /// Code: -9, Message: value returns null
   Future<double> get system => _platform.system;
 
-  /// Check modify system settings
-  /// returns true or false
-  Future<bool> isSystemSettingPermissionGranted() =>
-      _platform.isSystemSettingPermissionGranted();
-  
+  /// Return can change system screen brightness
+  Future<bool> get canChangeSystemBrightness =>
+      _platform.canChangeSystemBrightness;
+
   /// Set system screen brightness with double value.
   ///
   /// The value should be within 0.0 - 1.0. Otherwise, [RangeError.range] will

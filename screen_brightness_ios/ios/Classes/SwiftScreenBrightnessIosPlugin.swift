@@ -79,6 +79,9 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         case "setAnimate":
             handleSetAnimateMethodCall(call: call, result: result)
 
+        case "canChangeSystemBrightness"
+            handleCanChangeSystemBrightnessMethodCall(result: result)
+
         default:
             result(FlutterMethodNotImplemented)
             break;
@@ -179,6 +182,10 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
 
         self.isAnimate = isAnimate
         result(nil)
+    }
+
+    private func handleCanChangeSystemBrightnessMethodCall(result: FlutterResult) {
+        result(true)
     }
     
     public func applicationWillResignActive(_ application: UIApplication) {

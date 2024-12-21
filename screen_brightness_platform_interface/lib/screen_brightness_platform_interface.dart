@@ -56,13 +56,6 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
         'setSystemScreenBrightness(brightness) has not been implemented.');
   }
 
-  /// Check modify system settings
-  /// returns true or false
-  Future<bool> isSystemSettingPermissionGranted() async {
-    throw UnimplementedError(
-        'isSystemSettingPermissionGranted() has not been implemented.');
-  }
-
   /// Returns stream with system screen brightness changes including
   /// [ScreenBrightness.setSystemScreenBrightness], system control center or
   /// system setting.
@@ -160,5 +153,11 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   /// when application screen brightness changed.
   Future<void> setAnimate(bool isAnimate) async {
     throw UnimplementedError('setAnimate has not been implemented.');
+  }
+
+  /// Return can change system screen brightness
+  Future<bool> get canChangeSystemBrightness async {
+    throw UnimplementedError(
+        'canChangeSystemBrightness() has not been implemented.');
   }
 }
