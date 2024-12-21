@@ -403,7 +403,7 @@ class _SettingPageState extends State<SettingPage> {
               value: canChangeSystemBrightness,
               onChanged: (value) {},
             ),
-          )
+          ),
         ],
       ),
     );
