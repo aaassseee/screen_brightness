@@ -333,29 +333,17 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     }
 
     private fun getSystemScreenBrightness(context: Context): Float {
-//        return Settings.System.getInt(
-//            context.contentResolver, Settings.System.SCREEN_BRIGHTNESS
-//        ) / maximumScreenBrightness
-
         val brightness = Settings.System.getInt(
             context.contentResolver,
             Settings.System.SCREEN_BRIGHTNESS
         ).toFloat()
 
-        return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                Settings.System.getFloat(
-                    context.contentResolver,
-                    "screen_brightness_float"
-                )
-            }
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> convertLinearToGamma(
-                brightness,
-                minimumScreenBrightness,
-                maximumScreenBrightness
-            )
-            else -> norm(minimumScreenBrightness, maximumScreenBrightness, brightness)
-        }
+        // Normalize to the range [0, 1]
+        val userPerceptionBrightness = MathUtils.norm(0f, 161f, brightness)
+
+        // Convert from user-perception to linear scale
+        val floatBrightness = BrightnessUtils.convertLinearToGamma(userPerceptionBrightness)
+        return floatBrightness
     }
 
     private fun setSystemScreenBrightness(context: Context, brightness: Float): Boolean {
@@ -367,12 +355,23 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
                     it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(it)
                 }
+                return false
             }
-            return false
         }
 
+        val linearBrightness =
+            MathUtils.norm(0f, 1f, brightness)
+
+        // Convert from linear to user-perception scale
+        val userPerceptionBrightness = BrightnessUtils.convertGammaToLinear(linearBrightness)
+
+        // Interpolate to the range [0, 255]
+        val intBrightness =
+            Math.round(MathUtils.lerp(0f, 161f, userPerceptionBrightness))
         return Settings.System.putInt(
-            context.contentResolver, Settings.System.SCREEN_BRIGHTNESS, (maximumScreenBrightness * brightness).toInt()
+            context.contentResolver,
+            Settings.System.SCREEN_BRIGHTNESS,
+            intBrightness
         )
     }
 
@@ -444,38 +443,5 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         } else {
             true
         }
-    }
-
-    private fun norm(start: Float, stop: Float, value: Float): Float {
-        return (value - start) / (stop - start)
-    }
-
-    private fun lerp(start: Float, stop: Float, amount: Float): Float {
-        return start + (stop - start) * amount
-    }
-
-    private fun convertLinearToGamma(
-        brightness: Float,
-        minimumBrightness: Float,
-        maximumBrightness: Float
-    ): Float {
-        val gammaSpaceMax = 1023f
-        val r = 0.5f
-        val a = 0.17883277f
-        val b = 0.28466892f
-        val c = 0.55991073f
-
-        val normalizedVal: Float = norm(minimumBrightness, maximumBrightness, brightness) * 12
-        val ret: Float = if (normalizedVal <= 1f) {
-            sqrt(normalizedVal) * r
-        } else {
-            a * ln(normalizedVal - b) + c
-        }
-
-        // HLG is normalized to the range [0, 12], so we need to re-normalize to the range [0, 1]
-        // in order to derive the correct setting value.
-        // HLG is normalized to the range [0, 12], so we need to re-normalize to the range [0, 1]
-        // in order to derive the correct setting value.
-        return round(lerp(0f, gammaSpaceMax, ret)) / gammaSpaceMax
     }
 }

@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.aaassseee.screen_brightness_example">
+  <uses-permission
+          android:name="android.permission.WRITE_SETTINGS"
+          tools:ignore="ProtectedPermissions"/>
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="screen_brightness_example">
