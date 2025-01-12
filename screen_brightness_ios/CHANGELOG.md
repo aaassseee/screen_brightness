@@ -1,3 +1,7 @@
+## 2.1.0
+
+* added canChangeSystemBrightness for user to check if system brightness is changeable
+
 ## 2.0.0
 
 * support changing system brightness [#31](https://github.com/aaassseee/screen_brightness/issues/31) [#32](https://github.com/aaassseee/screen_brightness/issues/32)

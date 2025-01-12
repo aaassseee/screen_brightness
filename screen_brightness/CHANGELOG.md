@@ -1,19 +1,23 @@
+## 2.1.0
+
+* added canChangeSystemBrightness for user to check if system brightness is changeable
+
 ## 2.0.1
 
-* [Windows] fix call HandleWindowProc will lead to crash [#38](https://github.com/aaassseee/screen_brightness/issues/38)
+* [Windows] fixed call HandleWindowProc will lead to crash [#38](https://github.com/aaassseee/screen_brightness/issues/38)
 
 ## 2.0.0+2
 
-* update README.md
+* updated README.md
 
 ## 2.0.0+1
 
-* update README.md
+* updated README.md
 
 ## 2.0.0
 
 * support changing system brightness [#31](https://github.com/aaassseee/screen_brightness/issues/31) [#32](https://github.com/aaassseee/screen_brightness/issues/32)
-* fix dependency constraint not up-to-date problem [#30](https://github.com/aaassseee/screen_brightness/issues/30) [#33](https://github.com/aaassseee/screen_brightness/issues/33)
+* fixed dependency constraint not up-to-date problem [#30](https://github.com/aaassseee/screen_brightness/issues/30) [#33](https://github.com/aaassseee/screen_brightness/issues/33)
 
 ## 1.0.1
 
@@ -31,11 +35,11 @@
 
 ## 0.2.2
 
-* add Windows support
+* added Windows support
 
 ## 0.2.1
 
-* add macOS support
+* added macOS support
 
 ## 0.2.0
 
@@ -85,7 +89,7 @@
 
 ## 0.0.2
 
-* Updated pubspec.yaml with more project information
+* updated pubspec.yaml with more project information
 
 ## 0.0.1
 
