@@ -269,6 +269,12 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   }
 
   /// Return can change system screen brightness
+  ///
+  /// This parameter is useful for user to determinate user can change system
+  /// brightness.
+  ///
+  /// (Android only) implemented in Android only because only Android needs
+  /// permission to change the screen brightness
   @override
   Future<bool> get canChangeSystemBrightness async {
     return await pluginMethodChannel
