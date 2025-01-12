@@ -145,42 +145,42 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.0.1"
+    version: "2.1.0"
   screen_brightness_android:
     dependency: "direct overridden"
     description:
       path: "../../screen_brightness_android"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "2.1.0"
   screen_brightness_ios:
     dependency: "direct overridden"
     description:
       path: "../../screen_brightness_ios"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "2.1.0"
   screen_brightness_macos:
     dependency: "direct overridden"
     description:
       path: "../../screen_brightness_macos"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "2.1.0"
   screen_brightness_platform_interface:
     dependency: "direct overridden"
     description:
       path: "../../screen_brightness_platform_interface"
       relative: true
     source: path
-    version: "2.0.0"
+    version: "2.1.0"
   screen_brightness_windows:
     dependency: "direct overridden"
     description:
       path: "../../screen_brightness_windows"
       relative: true
     source: path
-    version: "2.0.1"
+    version: "2.1.0"
   sky_engine:
     dependency: transitive
     description: flutter
