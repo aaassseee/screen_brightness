@@ -79,7 +79,7 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         case "setAnimate":
             handleSetAnimateMethodCall(call: call, result: result)
 
-        case "canChangeSystemBrightness"
+        case "canChangeSystemBrightness":
             handleCanChangeSystemBrightnessMethodCall(result: result)
 
         default:
