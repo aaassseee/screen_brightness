@@ -154,4 +154,13 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   Future<void> setAnimate(bool isAnimate) async {
     throw UnimplementedError('setAnimate has not been implemented.');
   }
+
+  /// Return can change system screen brightness
+  ///
+  /// This parameter is useful for user to determinate user can change system
+  /// brightness.
+  Future<bool> get canChangeSystemBrightness async {
+    throw UnimplementedError(
+        'canChangeSystemBrightness has not been implemented.');
+  }
 }
