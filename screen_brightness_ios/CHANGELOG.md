@@ -1,3 +1,7 @@
+## 2.1.1
+
+* fixed iOS compile errors [#43](https://github.com/aaassseee/screen_brightness/issues/43)
+
 ## 2.1.0
 
 * added canChangeSystemBrightness for user to check if system brightness is changeable
