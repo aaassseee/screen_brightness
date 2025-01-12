@@ -1,6 +1,6 @@
 name: screen_brightness_macos
 description: The macOS federated plugin implementation of the screen_brightness.
-version: 2.1.0
+version: 2.1.1
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness_macos
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
