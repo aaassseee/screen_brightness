@@ -337,8 +337,8 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
                     it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(it)
                 }
+                return false
             }
-            return false
         }
 
         return Settings.System.putInt(
