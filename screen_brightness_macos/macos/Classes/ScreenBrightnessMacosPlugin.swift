@@ -83,7 +83,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         case "setAnimate":
             handleSetAnimateMethodCall(call: call, result: result)
 
-        case "canChangeSystemBrightness"
+        case "canChangeSystemBrightness":
             handleCanChangeSystemBrightnessMethodCall(result: result)
 
         default:
