@@ -17,8 +17,13 @@ latest_version:\
 
 To adjust the system brightness on Android, add the following permission in your `AndroidManifest.xml` file
 ```xml
+<!-- You must also ensure that the `xmlns:tools="http://schemas.android.com/tools"` namespace has been 
+    added to your <manifest> tag
+-->
 <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
 ```
+
+
 
 ### API
 #### System brightness
