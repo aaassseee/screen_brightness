@@ -1,3 +1,8 @@
+## 2.1.2
+
+* updated README about permission on system brightness with Android [#47](https://github.com/aaassseee/screen_brightness/issues/47)
+* changed with using application as mush as possible in Android [#45](https://github.com/aaassseee/screen_brightness/issues/45)
+
 ## 2.1.1
 
 * fixed iOS and macOS compile errors [#43](https://github.com/aaassseee/screen_brightness/issues/43)
