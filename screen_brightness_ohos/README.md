@@ -1,16 +1,8 @@
-# screen_brightness_ohos
+# screen_brightness_ios
 
-A new Flutter project.
+The ohos federated plugin implementation of the [screen_brightness](https://pub.dev/packages/screen_brightness).
 
-## Getting Started
+## Usage
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This package is [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin), which means you can simply use `screen_brightness`
+normally. This package will be automatically included in your app when you do.
