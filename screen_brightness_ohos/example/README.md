@@ -1,6 +1,6 @@
-# example
+# screen_brightness_ohos_example
 
-A new Flutter project.
+Demonstrates how to use the screen_brightness_ohos_example plugin.
 
 ## Getting Started
 
