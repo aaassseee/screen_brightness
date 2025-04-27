@@ -13,7 +13,7 @@ The iOS federated plugin implementation of the screen_brightness.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Jack Liu' => 'ywp033319@gmail.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'screen_brightness_ios/Sources/screen_brightness_ios/**/*.swift'
   s.dependency 'Flutter'
   s.platform = :ios, '9.0'
   s.resource_bundles = {'screen_brightness_ios_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
