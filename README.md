@@ -14,7 +14,8 @@ A Plugin for controlling screen brightness with application life cycle set and r
 | [screen_brightness_android](./screen_brightness_android)                       | [![pub package](https://img.shields.io/pub/v/screen_brightness_android.svg)](https://pub.dartlang.org/packages/screen_brightness_android)                       |
 | [screen_brightness_ios](./screen_brightness_ios)                               | [![pub package](https://img.shields.io/pub/v/screen_brightness_ios.svg)](https://pub.dartlang.org/packages/screen_brightness_ios)                               |
 | [screen_brightness_macos](./screen_brightness_macos)                           | [![pub package](https://img.shields.io/pub/v/screen_brightness_macos.svg)](https://pub.dartlang.org/packages/screen_brightness_macos)                           |
-| [screen_brightness_windows](./screen_brightness_windows)                           | [![pub package](https://img.shields.io/pub/v/screen_brightness_windows.svg)](https://pub.dartlang.org/packages/screen_brightness_windows)                         |
+| [screen_brightness_windows](./screen_brightness_windows)                       | [![pub package](https://img.shields.io/pub/v/screen_brightness_windows.svg)](https://pub.dartlang.org/packages/screen_brightness_windows)                       |
+| [screen_brightness_ohos](./screen_brightness_ohos)                             | [![pub package](https://img.shields.io/pub/v/screen_brightness_ohos.svg)](https://pub.dartlang.org/packages/screen_brightness_ohos)                             |
 
 ## Maintainer
 
