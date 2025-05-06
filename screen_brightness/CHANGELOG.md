@@ -1,3 +1,8 @@
+## 2.1.3
+
+* added ohos support [by ErBWs](https://github.com/ErBWs)
+* updated resetScreenBrightness deprecated message to correct new method name [by cmenkemeller](https://github.com/cmenkemeller)
+
 ## 2.1.2
 
 * updated README about permission on system brightness with Android [#47](https://github.com/aaassseee/screen_brightness/issues/47)
