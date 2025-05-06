@@ -188,7 +188,7 @@ class ScreenBrightness {
   /// (Android only) Code: -10, Message: Unexpected error on activity binding
   /// Unexpected error when getting activity, activity may be null
   @Deprecated(
-      'refactored to resetScreenBrightness (will be remove after version 2.1.0)')
+      'refactored to resetApplicationScreenBrightness (will be remove after version 2.1.0)')
   Future<void> resetScreenBrightness() => resetApplicationScreenBrightness();
 
   /// Reset application screen brightness with (Android) -1 or (iOS)system
