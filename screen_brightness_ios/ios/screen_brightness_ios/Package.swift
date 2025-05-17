@@ -1,3 +1,5 @@
+// swift-tools-version: 5.4
+
 import PackageDescription
 
 let package = Package(
@@ -6,7 +8,7 @@ let package = Package(
         .iOS("9.0"),
     ],
     products: [
-        .library(name: "screen_brightness_ios", targets: ["screen_brightness_ios"])
+        .library(name: "screen-brightness-ios", targets: ["screen_brightness_ios"])
     ],
     dependencies: [],
     targets: [
