@@ -1,7 +1,7 @@
 import Flutter
 import UIKit
 
-public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
+public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
     var methodChannel: FlutterMethodChannel?
 
     var systemScreenBrightnessChangedEventChannel: FlutterEventChannel?
@@ -21,9 +21,9 @@ public class SwiftScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApp
         queue.maxConcurrentOperationCount = 1
         return queue
     }()
-    
+
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let instance = SwiftScreenBrightnessIosPlugin()
+        let instance = ScreenBrightnessIosPlugin()
         instance.methodChannel = FlutterMethodChannel(name: "github.com/aaassseee/screen_brightness", binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(instance, channel: instance.methodChannel!)
 
