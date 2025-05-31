@@ -1,6 +1,6 @@
 name: screen_brightness_ios
 description: The iOS federated plugin implementation of the screen_brightness.
-version: 2.1.1
+version: 2.1.2
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness_ios
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
