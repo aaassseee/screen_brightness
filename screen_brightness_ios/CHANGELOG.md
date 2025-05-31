@@ -1,3 +1,7 @@
+## 2.1.2
+
+* support SMP [#56](https://github.com/aaassseee/screen_brightness/issues/56)
+
 ## 2.1.1
 
 * fixed iOS compile errors [#43](https://github.com/aaassseee/screen_brightness/issues/43)

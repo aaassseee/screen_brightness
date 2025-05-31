@@ -1,3 +1,7 @@
+## 2.1.4
+
+* support SMP [#56](https://github.com/aaassseee/screen_brightness/issues/56)
+
 ## 2.1.3
 
 * added ohos support [by ErBWs](https://github.com/ErBWs)
