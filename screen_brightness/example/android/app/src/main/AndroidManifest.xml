@@ -1,5 +1,14 @@
+  <!-- SCREEN_BRIGHTNESS - NOTE: the xmlns:tools namespace attribute must be added to the manifest tag because it is used
+       within the uses-permissions line we need to add to adjust system brightness
+       add `xmlns:tools="http://schemas.android.com/tools"` to the <manifest> tag
+ -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   package="com.aaassseee.screen_brightness_example">
+
+  <!-- SCREEN_BRIGHTNESS - The following needs to be added in order to adjust the system brightness -->
+  <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
+
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="screen_brightness_example">
@@ -9,7 +18,8 @@
       android:launchMode="singleTop"
       android:name=".MainActivity"
       android:theme="@style/LaunchTheme"
-      android:windowSoftInputMode="adjustResize">
+      android:windowSoftInputMode="adjustResize"
+      android:exported="true">
       <!-- Specifies an Android theme to apply to this Activity as soon as
            the Android process has started. This theme is visible to the user
            while the Flutter UI initializes. After that, this theme continues

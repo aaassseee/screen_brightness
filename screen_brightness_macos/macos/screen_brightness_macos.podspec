@@ -13,7 +13,7 @@ The macOS federated plugin implementation of the screen_brightness.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Jack Liu' => 'ywp033319@gmail.com' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  s.source_files     = 'screen_brightness_macos/Sources/screen_brightness_macos/**/*.swift'
   s.dependency 'FlutterMacOS'
 
   s.platform = :osx, '10.11'

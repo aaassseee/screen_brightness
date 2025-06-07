@@ -70,22 +70,24 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FutureBuilder<double>(
-              future: ScreenBrightness.instance.current,
+              future: ScreenBrightness.instance.application,
               builder: (context, snapshot) {
-                double currentBrightness = 0;
+                double applicationBrightness = 0;
                 if (snapshot.hasData) {
-                  currentBrightness = snapshot.data!;
+                  applicationBrightness = snapshot.data!;
                 }
 
                 return StreamBuilder<double>(
-                  stream: ScreenBrightness.instance.onCurrentBrightnessChanged,
+                  stream: ScreenBrightness
+                      .instance.onApplicationScreenBrightnessChanged,
                   builder: (context, snapshot) {
-                    double changedBrightness = currentBrightness;
+                    double changedApplicationBrightness = applicationBrightness;
                     if (snapshot.hasData) {
-                      changedBrightness = snapshot.data!;
+                      changedApplicationBrightness = snapshot.data!;
                     }
 
-                    return Text('current brightness $changedBrightness');
+                    return Text(
+                        'Application brightness $changedApplicationBrightness');
                   },
                 );
               },
@@ -122,21 +124,31 @@ class ControllerPage extends StatefulWidget {
 }
 
 class _ControllerPageState extends State<ControllerPage> {
-  Future<void> setBrightness(double brightness) async {
+  Future<void> setSystemBrightness(double brightness) async {
     try {
-      await ScreenBrightness.instance.setScreenBrightness(brightness);
+      await ScreenBrightness.instance.setSystemScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
-      throw 'Failed to set brightness';
+      throw 'Failed to set system brightness';
     }
   }
 
-  Future<void> resetBrightness() async {
+  Future<void> setApplicationBrightness(double brightness) async {
     try {
-      await ScreenBrightness.instance.resetScreenBrightness();
+      await ScreenBrightness.instance
+          .setApplicationScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
-      throw 'Failed to reset brightness';
+      throw 'Failed to set application brightness';
+    }
+  }
+
+  Future<void> resetApplicationBrightness() async {
+    try {
+      await ScreenBrightness.instance.resetApplicationScreenBrightness();
+    } catch (e) {
+      debugPrint(e.toString());
+      throw 'Failed to reset application brightness';
     }
   }
 
@@ -146,52 +158,90 @@ class _ControllerPageState extends State<ControllerPage> {
       appBar: AppBar(
         title: const Text('Controller'),
       ),
-      body: Center(
-        child: FutureBuilder<double>(
-          future: ScreenBrightness.instance.current,
-          builder: (context, snapshot) {
-            double currentBrightness = 0;
-            if (snapshot.hasData) {
-              currentBrightness = snapshot.data!;
-            }
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FutureBuilder<double>(
+            future: ScreenBrightness.instance.system,
+            builder: (context, snapshot) {
+              double systemBrightness = 0;
+              if (snapshot.hasData) {
+                systemBrightness = snapshot.data!;
+              }
 
-            return StreamBuilder<double>(
-              stream: ScreenBrightness.instance.onCurrentBrightnessChanged,
-              builder: (context, snapshot) {
-                double changedBrightness = currentBrightness;
-                if (snapshot.hasData) {
-                  changedBrightness = snapshot.data!;
-                }
+              return StreamBuilder<double>(
+                stream:
+                    ScreenBrightness.instance.onSystemScreenBrightnessChanged,
+                builder: (context, snapshot) {
+                  double changedSystemBrightness = systemBrightness;
+                  if (snapshot.hasData) {
+                    changedSystemBrightness = snapshot.data!;
+                  }
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('System brightness: $changedSystemBrightness'),
+                      Slider.adaptive(
+                        value: changedSystemBrightness,
+                        onChanged: (value) {
+                          setSystemBrightness(value);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+          FutureBuilder<double>(
+            future: ScreenBrightness.instance.application,
+            builder: (context, snapshot) {
+              double applicationBrightness = 0;
+              if (snapshot.hasData) {
+                applicationBrightness = snapshot.data!;
+              }
 
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FutureBuilder<bool>(
-                      future: ScreenBrightness.instance.hasChanged,
-                      builder: (context, snapshot) {
-                        return Text(
-                            'Brightness has changed via plugin: ${snapshot.data}');
-                      },
-                    ),
-                    Text('Current brightness: $changedBrightness'),
-                    Slider.adaptive(
-                      value: changedBrightness,
-                      onChanged: (value) {
-                        setBrightness(value);
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        resetBrightness();
-                      },
-                      child: const Text('reset brightness'),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        ),
+              return StreamBuilder<double>(
+                stream: ScreenBrightness
+                    .instance.onApplicationScreenBrightnessChanged,
+                builder: (context, snapshot) {
+                  double changedApplicationBrightness = applicationBrightness;
+                  if (snapshot.hasData) {
+                    changedApplicationBrightness = snapshot.data!;
+                  }
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FutureBuilder<bool>(
+                        future: ScreenBrightness
+                            .instance.hasApplicationScreenBrightnessChanged,
+                        builder: (context, snapshot) {
+                          return Text(
+                              'Application brightness has changed via plugin: ${snapshot.data}');
+                        },
+                      ),
+                      Text(
+                          'Application brightness: $changedApplicationBrightness'),
+                      Slider.adaptive(
+                        value: changedApplicationBrightness,
+                        onChanged: (value) {
+                          setApplicationBrightness(value);
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          resetApplicationBrightness();
+                        },
+                        child: const Text('reset brightness'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -222,25 +272,25 @@ class _RouteAwarePageState extends State<RouteAwarePage> with RouteAware {
   @override
   void didPush() {
     super.didPush();
-    ScreenBrightness.instance.setScreenBrightness(0.7);
+    ScreenBrightness.instance.setApplicationScreenBrightness(0.7);
   }
 
   @override
   void didPushNext() {
     super.didPushNext();
-    ScreenBrightness.instance.resetScreenBrightness();
+    ScreenBrightness.instance.resetApplicationScreenBrightness();
   }
 
   @override
   void didPop() {
     super.didPop();
-    ScreenBrightness.instance.resetScreenBrightness();
+    ScreenBrightness.instance.resetApplicationScreenBrightness();
   }
 
   @override
   void didPopNext() {
     super.didPopNext();
-    ScreenBrightness.instance.setScreenBrightness(0.7);
+    ScreenBrightness.instance.setApplicationScreenBrightness(0.7);
   }
 
   @override
@@ -286,12 +336,14 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   bool isAutoReset = true;
   bool isAnimate = true;
+  bool canChangeSystemBrightness = true;
 
   @override
   void initState() {
     super.initState();
     getIsAutoResetSetting();
     getIsAnimateSetting();
+    getCanChangeSystemBrightness();
   }
 
   Future<void> getIsAutoResetSetting() async {
@@ -305,6 +357,14 @@ class _SettingPageState extends State<SettingPage> {
     final isAnimate = await ScreenBrightness.instance.isAnimate;
     setState(() {
       this.isAnimate = isAnimate;
+    });
+  }
+
+  Future<void> getCanChangeSystemBrightness() async {
+    final canChangeSystemBrightness =
+        await ScreenBrightness.instance.canChangeSystemBrightness;
+    setState(() {
+      this.canChangeSystemBrightness = canChangeSystemBrightness;
     });
   }
 
@@ -335,7 +395,14 @@ class _SettingPageState extends State<SettingPage> {
                 await getIsAnimateSetting();
               },
             ),
-          )
+          ),
+          ListTile(
+            title: const Text('Can change system brightness'),
+            trailing: Switch(
+              value: canChangeSystemBrightness,
+              onChanged: (value) {},
+            ),
+          ),
         ],
       ),
     );

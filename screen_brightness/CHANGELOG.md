@@ -1,3 +1,42 @@
+## 2.1.4
+
+* support SMP [#56](https://github.com/aaassseee/screen_brightness/issues/56)
+
+## 2.1.3
+
+* added ohos support [by ErBWs](https://github.com/ErBWs)
+* updated resetScreenBrightness deprecated message to correct new method name [by cmenkemeller](https://github.com/cmenkemeller)
+
+## 2.1.2
+
+* updated README about permission on system brightness with Android [#47](https://github.com/aaassseee/screen_brightness/issues/47)
+* changed with using application as mush as possible in Android [#45](https://github.com/aaassseee/screen_brightness/issues/45)
+
+## 2.1.1
+
+* fixed iOS and macOS compile errors [#43](https://github.com/aaassseee/screen_brightness/issues/43)
+
+## 2.1.0
+
+* added canChangeSystemBrightness for user to check if system brightness is changeable
+
+## 2.0.1
+
+* [Windows] fixed call HandleWindowProc will lead to crash [#38](https://github.com/aaassseee/screen_brightness/issues/38)
+
+## 2.0.0+2
+
+* updated README.md
+
+## 2.0.0+1
+
+* updated README.md
+
+## 2.0.0
+
+* support changing system brightness [#31](https://github.com/aaassseee/screen_brightness/issues/31) [#32](https://github.com/aaassseee/screen_brightness/issues/32)
+* fixed dependency constraint not up-to-date problem [#30](https://github.com/aaassseee/screen_brightness/issues/30) [#33](https://github.com/aaassseee/screen_brightness/issues/33)
+
 ## 1.0.1
 
 * added animate boolean
@@ -14,11 +53,11 @@
 
 ## 0.2.2
 
-* add Windows support
+* added Windows support
 
 ## 0.2.1
 
-* add macOS support
+* added macOS support
 
 ## 0.2.0
 
@@ -68,7 +107,7 @@
 
 ## 0.0.2
 
-* Updated pubspec.yaml with more project information
+* updated pubspec.yaml with more project information
 
 ## 0.0.1
 
