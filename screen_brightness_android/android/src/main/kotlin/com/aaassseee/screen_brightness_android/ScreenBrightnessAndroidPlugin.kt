@@ -51,10 +51,14 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         override fun onChange(selfChange: Boolean) {
             super.onChange(selfChange)
             context?.let {
-                systemScreenBrightness = getSystemScreenBrightness(it)
-                systemScreenBrightnessChangedStreamHandler?.eventSink?.success(systemScreenBrightness)
-                if (applicationScreenBrightness == null) {
-                    applicationScreenBrightnessChangedStreamHandler?.eventSink?.success(systemScreenBrightness)
+                try {
+                    systemScreenBrightness = getSystemScreenBrightness(it)
+                    systemScreenBrightnessChangedStreamHandler?.eventSink?.success(systemScreenBrightness)
+                    if (applicationScreenBrightness == null) {
+                        applicationScreenBrightnessChangedStreamHandler?.eventSink?.success(systemScreenBrightness)
+                    }
+                } catch (e: Settings.SettingNotFoundException) {
+                    e.printStackTrace()
                 }
             }
         }
