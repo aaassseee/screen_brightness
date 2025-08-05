@@ -1,3 +1,7 @@
+## 2.1.2
+
+* fixed crash when getting system brightness on custom ROM [#67](https://github.com/aaassseee/screen_brightness/pull/67)
+
 ## 2.1.1
 
 * use application context as much as possible

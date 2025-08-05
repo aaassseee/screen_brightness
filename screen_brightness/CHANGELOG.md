@@ -1,3 +1,11 @@
+## 2.1.6
+
+* [ohos] migrate to new project structure [#71](https://github.com/aaassseee/screen_brightness/pull/71)
+
+## 2.1.5
+
+* fixed crash when getting system brightness on custom ROM [#67](https://github.com/aaassseee/screen_brightness/pull/67)
+
 ## 2.1.4
 
 * support SMP [#56](https://github.com/aaassseee/screen_brightness/issues/56)
