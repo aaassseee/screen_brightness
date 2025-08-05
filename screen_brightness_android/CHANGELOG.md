@@ -1,3 +1,15 @@
+## 2.1.2
+
+* fixed crash when getting system brightness on custom ROM [#67](https://github.com/aaassseee/screen_brightness/pull/67)
+
+## 2.1.1
+
+* use application context as much as possible
+
+## 2.1.0
+
+* added canChangeSystemBrightness for user to check if system brightness is changeable
+
 ## 2.0.0
 
 * support changing system brightness [#31](https://github.com/aaassseee/screen_brightness/issues/31) [#32](https://github.com/aaassseee/screen_brightness/issues/32)

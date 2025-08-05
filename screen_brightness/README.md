@@ -17,8 +17,13 @@ latest_version:\
 
 To adjust the system brightness on Android, add the following permission in your `AndroidManifest.xml` file
 ```xml
+<!-- You must also ensure that the `xmlns:tools="http://schemas.android.com/tools"` namespace has been 
+    added to your <manifest> tag
+-->
 <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
 ```
+
+
 
 ### API
 #### System brightness
@@ -90,7 +95,7 @@ Widget build(BuildContext context) {
         changedSystemBrightness = snapshot.data!;
       }
       
-      return Text('system brightness $changedSystemBrightness');;
+      return Text('system brightness $changedSystemBrightness');
     },
   );
 }
@@ -108,7 +113,7 @@ Widget build(BuildContext context) {
         changedApplicationBrightness = snapshot.data!;
       }
 
-      return Text('application brightness $changedApplicationBrightness');;
+      return Text('application brightness $changedApplicationBrightness');
     },
   );
 }
@@ -150,9 +155,29 @@ Widget build(BuildContext context) {
 }
 ```
 
+#### Can change system brightness
+```dart
+
+bool canChangeSystemBrightness = true;
+
+Future<void> getCanChangeSystemBrightness() async {
+  final canChangeSystemBrightness = await ScreenBrightness.instance.canChangeSystemBrightness;
+  setState(() {
+    this.canChangeSystemBrightness = canChangeSystemBrightness;
+  });
+}
+
+@override
+Widget build(BuildContext context) {
+  return Switch(
+    value: canChangeSystemBrightness,
+    onChanged: (value) {},
+  );
+}
+```
+
 ### Usage
 
-* DON'T use didChangeAppLifecycleState to set or reset brightness because this plugin already implemented this function.
 * You may also use this plugin with [wakelock](https://pub.dev/packages/wakelock) to prevent screen sleep
 
 ## Maintainer

@@ -70,3 +70,9 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 .idea/git_toolbox_prj.xml
+screen_brightness_ohos/ohos/libs/flutter.har
+screen_brightness_ohos/ohos/obfuscation-rules.txt
+screen_brightness_ohos/ohos/oh-package-lock.json5
+.idea/screen_brightness.iml
+.idea/modules.xml
+.idea/misc.xml

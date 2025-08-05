@@ -1,0 +1,14 @@
+{
+  "modelVersion": "5.0.0",
+  "name": "screen_brightness_ohos_example",
+  "version": "1.0.0",
+  "description": "Demonstrates how to use the screen_brightness_ohos_example plugin.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hypium": "1.0.6"
+  },
+  "overrides": {}
+}

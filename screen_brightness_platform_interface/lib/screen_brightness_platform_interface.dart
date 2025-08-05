@@ -156,8 +156,11 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
   }
 
   /// Return can change system screen brightness
+  ///
+  /// This parameter is useful for user to determinate user can change system
+  /// brightness.
   Future<bool> get canChangeSystemBrightness async {
     throw UnimplementedError(
-        'canChangeSystemBrightness() has not been implemented.');
+        'canChangeSystemBrightness has not been implemented.');
   }
 }
