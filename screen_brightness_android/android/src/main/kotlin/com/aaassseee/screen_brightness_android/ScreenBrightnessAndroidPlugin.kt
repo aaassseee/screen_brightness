@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.database.ContentObserver
-import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -22,6 +21,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import java.lang.reflect.Field
 import kotlin.math.sign
 import kotlin.properties.Delegates
+import androidx.core.net.toUri
 
 /**
  * ScreenBrightnessAndroidPlugin setting screen brightness
@@ -336,7 +336,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!canWriteSystemSetting(context)) {
                 Intent(
-                    Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:${context.packageName}")
+                    Settings.ACTION_MANAGE_WRITE_SETTINGS, "package:${context.packageName}".toUri()
                 ).let {
                     it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context.startActivity(it)
@@ -363,7 +363,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             }
 
             return 255.0f
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return 255.0f
         }
     }
@@ -374,7 +374,7 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             layoutParams.screenBrightness = brightness
             activity!!.window.attributes = layoutParams
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
