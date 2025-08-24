@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
-    <file type="web" url="file://$PROJECT_DIR$/../../Flutter/packages/flutter_tools/gradle" />
+    <file type="web" url="file://$PROJECT_DIR$/Flutter/packages/flutter_tools/gradle" />
     <file type="web" url="file://$PROJECT_DIR$/screen_brightness_android/android" />
     <file type="web" url="file://$PROJECT_DIR$/screen_brightness_android/example/android" />
+    <file type="web" url="file://$PROJECT_DIR$/Library/Flutter/packages/flutter_tools/gradle" />
     <type id="android" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Android API 34, extension level 7 Platform" project-jdk-type="Android SDK" />
