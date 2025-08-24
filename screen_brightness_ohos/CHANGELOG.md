@@ -1,4 +1,4 @@
-## 2.1.2
+## 2.1.2-dev.1
 
 * migrate to new project structure (only work after OHOS Flutter version 3.27.0)[#71](https://github.com/aaassseee/screen_brightness/pull/71)
 
