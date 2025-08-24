@@ -9,8 +9,7 @@
 /.clang-format
 /.clang-tidy
 **/.test
-/package.json
-/package-lock.json
+*.har
 **/BuildProfile.ets
 **/oh-package-lock.json5
 
