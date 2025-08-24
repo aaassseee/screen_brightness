@@ -6,9 +6,15 @@
   "main": "",
   "author": "",
   "license": "",
-  "dependencies": {},
+  "dependencies": {
+    "@ohos/flutter_ohos": "file:./har/flutter.har"
+  },
   "devDependencies": {
     "@ohos/hypium": "1.0.6"
   },
-  "overrides": {}
+  "overrides": {
+    "@ohos/flutter_ohos": "file:./har/flutter.har",
+    "screen_brightness_ohos": "file:./har/screen_brightness_ohos.har",
+    "@ohos/flutter_module": "file:./entry"
+  }
 }
