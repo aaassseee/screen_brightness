@@ -1,3 +1,7 @@
+## 2.1.7-dev.1
+
+* [OHOS] migrate to new project structure (only work after OHOS Flutter version 3.27.0)[#71](https://github.com/aaassseee/screen_brightness/pull/71)
+
 ## 2.1.7
 
 * [Android] upgrade Android SDK version AGP (8.6.1), Kotlin (1.9.22), Gradle (8.7) [#74](https://github.com/aaassseee/screen_brightness/pull/74)
