@@ -18,6 +18,12 @@ let package = Package(
             resources: [
                 .process("PrivacyInfo.xcprivacy"),
             ]
+        ),
+        .testTarget(
+            name: "screen_brightness_ios_tests",
+            dependencies: [
+                "screen_brightness_ios"
+            ]
         )
     ]
 )
