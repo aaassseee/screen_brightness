@@ -5,5 +5,7 @@
   "main": "",
   "author": "",
   "license": "",
-  "dependencies": {}
+  "dependencies": {
+    "screen_brightness_ohos": "file:../har/screen_brightness_ohos.har"
+  }
 }

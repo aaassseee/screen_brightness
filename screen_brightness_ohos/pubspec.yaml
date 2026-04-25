@@ -1,6 +1,6 @@
 name: screen_brightness_ohos
 description: The ohos federated plugin implementation of screen_brightness.
-version: 2.1.1
+version: 2.1.2
 homepage: https://github.com/aaassseee/screen_brightness
 repository: https://github.com/aaassseee/screen_brightness/tree/master/screen_brightness_ohos
 issue_tracker: https://github.com/aaassseee/screen_brightness/issues
@@ -12,7 +12,7 @@ topics:
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0"
+  flutter: ">=3.22.1-ohos-1.0.4"
 
 dependencies:
   flutter:

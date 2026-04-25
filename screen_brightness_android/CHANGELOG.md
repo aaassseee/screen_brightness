@@ -1,3 +1,7 @@
+## 2.1.3
+
+* upgrade Android SDK version AGP (8.6.1), Kotlin (1.9.22), Gradle (8.7) [#74](https://github.com/aaassseee/screen_brightness/pull/74)
+
 ## 2.1.2
 
 * fixed crash when getting system brightness on custom ROM [#67](https://github.com/aaassseee/screen_brightness/pull/67)
