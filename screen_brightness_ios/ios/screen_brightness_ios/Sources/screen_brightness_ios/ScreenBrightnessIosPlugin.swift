@@ -1,7 +1,7 @@
 import Flutter
 import UIKit
 
-public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
+public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDelegate {
     var registrar: FlutterPluginRegistrar
     var methodChannel: FlutterMethodChannel?
 
@@ -24,8 +24,8 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }()
 
     init(registrar: FlutterPluginRegistrar) {
-        super.init()
         self.registrar = registrar
+        super.init()
         systemScreenBrightness = currentScreen?.brightness ?? UIScreen.main.brightness
     }
 
@@ -41,13 +41,11 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         instance.applicationScreenBrightnessChangedEventChannel!.setStreamHandler(instance.applicationScreenBrightnessChangedStreamHandler)
         
         registrar.addApplicationDelegate(instance)
+        registrar.addSceneDelegate(instance)
     }
 
     private var currentScreen: UIScreen? {
-        if #available(iOS 13.0, *) {
-            return registrar.viewController?.view.window?.windowScene?.screen
-        }
-        return UIScreen.main
+        return registrar.viewController?.view.window?.windowScene?.screen
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -197,7 +195,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         result(true)
     }
     
-    public func applicationWillResignActive(_ application: UIApplication) {
+    public func sceneWillResignActive(_ scene: UIScene) {
         guard isAutoReset else {
             return
         }
@@ -206,7 +204,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         NotificationCenter.default.addObserver(self, selector: #selector(onSystemScreenBrightnessChanged), name: UIScreen.brightnessDidChangeNotification, object: nil)
     }
     
-    public func applicationDidBecomeActive(_ application: UIApplication) {
+    public func sceneDidBecomeActive(_ scene: UIScene) {
         guard isAutoReset else {
             return
         }
@@ -221,8 +219,8 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         onApplicationResume()
     }
     
-    public func applicationWillTerminate(_ application: UIApplication) {
-        onApplicationPause()
+    public func sceneDidDisconnect(_ scene: UIScene) {
+        onApplicationTerminate()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -293,5 +291,13 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         }
         
         setScreenBrightness(targetBrightness: applicationScreenBrightness, animated: isAnimate, duration: 0.5)
+    }
+    
+    func onApplicationTerminate() {
+        guard let systemScreenBrightness = systemScreenBrightness else {
+            return
+        }
+        
+        UIScreen.main.brightness = systemScreenBrightness;
     }
 }
