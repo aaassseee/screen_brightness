@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "screen_brightness_ios",
     platforms: [
-        .iOS("9.0"),
+        .iOS("13.0"),
     ],
     products: [
         .library(name: "screen-brightness-ios", targets: ["screen_brightness_ios"])
@@ -17,6 +17,12 @@ let package = Package(
             dependencies: [],
             resources: [
                 .process("PrivacyInfo.xcprivacy"),
+            ]
+        ),
+        .testTarget(
+            name: "screen_brightness_ios_tests",
+            dependencies: [
+                "screen_brightness_ios"
             ]
         )
     ]

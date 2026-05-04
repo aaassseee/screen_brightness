@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'screen_brightness_ios'
-  s.version          = '0.1.0'
+  s.version          = '2.1.2'
   s.summary          = 'The iOS federated plugin implementation of the screen_brightness.'
   s.description      = <<-DESC
 The iOS federated plugin implementation of the screen_brightness.
@@ -16,7 +16,7 @@ The iOS federated plugin implementation of the screen_brightness.
   s.source_files = 'screen_brightness_ios/Sources/screen_brightness_ios/**/*.swift'
   s.resource_bundles = {'screen_brightness_ios_privacy' => ['screen_brightness_ios/Sources/screen_brightness_ios/PrivacyInfo.xcprivacy']}
   s.dependency 'Flutter'
-  s.platform = :ios, '9.0'
+  s.platform = :ios, '13.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
