@@ -1,3 +1,7 @@
+## 2.1.1
+
+* update flutter_lints constraints (>=6.0.0 <7.0.0)
+
 ## 2.1.0
 
 * added canChangeSystemBrightness for user to check if system brightness is changeable
