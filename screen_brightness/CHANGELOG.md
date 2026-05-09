@@ -1,6 +1,9 @@
 ## 2.1.8
 
-* bump version
+* update dependencies
+  * bump federated plugin constraints
+  * bump `flutter_lints` constraint
+  * [Example/Android] bump `compileSdk`/`targetSdk` to 36, AGP to 8.13.2, Kotlin to 2.3.21
 
 ## 2.1.7
 
