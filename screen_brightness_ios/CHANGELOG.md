@@ -1,3 +1,9 @@
+## 2.1.3
+
+* support UIScene (multi-window) lifecycle
+* bump minimum iOS version to 13.0
+* add iOS native plugin tests
+
 ## 2.1.2
 
 * support SMP [#56](https://github.com/aaassseee/screen_brightness/issues/56)
