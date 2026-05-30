@@ -80,6 +80,14 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         case "setAutoReset":
             handleSetAutoResetMethodCall(call: call, result: result)
 
+        case "isAutoBrightness":
+            // iOS does not expose system adaptive brightness to apps; respond with true by default
+            result(true)
+
+        case "setAutoBrightness":
+            // no-op on iOS
+            result(nil)
+
         case "isAnimate":
             handleIsAnimateMethodCall(result: result)
 

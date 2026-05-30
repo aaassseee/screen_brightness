@@ -77,6 +77,14 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         case "setAutoReset":
             handleSetAutoResetMethodCall(call: call, result: result)
 
+        case "isAutoBrightness":
+            // macOS does not expose automatic brightness toggle via public API in this plugin; return true by default
+            result(true)
+
+        case "setAutoBrightness":
+            // no-op on macOS
+            result(nil)
+
         case "isAnimate":
             handleIsAnimateMethodCall(result: result)
 

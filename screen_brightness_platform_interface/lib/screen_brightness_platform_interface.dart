@@ -138,6 +138,22 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
     throw UnimplementedError('setAutoReset has not been implemented.');
   }
 
+  /// Returns boolean to identify whether system automatic/adaptive brightness is enabled.
+  ///
+  /// On platforms that don't support querying this setting this should return
+  /// a reasonable default (most platforms return true).
+  Future<bool> get isAutoBrightness async {
+    throw UnimplementedError('isAutoBrightness has not been implemented.');
+  }
+
+  /// Set system automatic/adaptive brightness on or off when supported by the platform.
+  ///
+  /// On Android this will toggle Settings.System.SCREEN_BRIGHTNESS_MODE.
+  /// On unsupported platforms this may be a no-op.
+  Future<void> setAutoBrightness(bool isAutoBrightness) async {
+    throw UnimplementedError('setAutoBrightness has not been implemented.');
+  }
+
   /// Returns boolean to identify will animate when application screen brightness
   /// change.
   ///

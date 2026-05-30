@@ -241,6 +241,23 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
         .invokeMethod(methodNameSetAutoReset, {"isAutoReset": isAutoReset});
   }
 
+  /// Returns boolean to identify whether system automatic/adaptive brightness is enabled.
+  ///
+  /// On platforms that don't support querying this setting this should return
+  /// a reasonable default (most platforms return true).
+  @override
+  Future<bool> get isAutoBrightness async {
+    return await pluginMethodChannel.invokeMethod<bool>(methodNameIsAutoBrightness) ??
+        true;
+  }
+
+  /// Set system automatic/adaptive brightness on or off when supported by the platform.
+  @override
+  Future<void> setAutoBrightness(bool isAutoBrightness) async {
+    await pluginMethodChannel
+        .invokeMethod(methodNameSetAutoBrightness, {"isAutoBrightness": isAutoBrightness});
+  }
+
   /// Returns boolean to identify will animate when application screen brightness
   /// changed.
   ///

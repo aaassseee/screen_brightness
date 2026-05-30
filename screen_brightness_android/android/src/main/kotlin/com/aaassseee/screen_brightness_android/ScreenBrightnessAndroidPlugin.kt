@@ -143,6 +143,8 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             "hasApplicationScreenBrightnessChanged" -> handleHasApplicationScreenBrightnessChangedMethodCall(result)
             "isAutoReset" -> handleIsAutoResetMethodCall(result)
             "setAutoReset" -> handleSetAutoResetMethodCall(call, result)
+            "isAutoBrightness" -> handleIsAutoBrightnessMethodCall(result)
+            "setAutoBrightness" -> handleSetAutoBrightnessMethodCall(call, result)
             "isAnimate" -> handleIsAnimateMethodCall(result)
             "setAnimate" -> handleSetAnimateMethodCall(call, result)
             "canChangeSystemBrightness" -> handleCanChangeSystemBrightness(result)
@@ -277,6 +279,50 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         }
 
         this.isAutoReset = isAutoReset
+        result.success(null)
+    }
+
+    private fun handleIsAutoBrightnessMethodCall(result: MethodChannel.Result) {
+        val ctx = context
+        if (ctx == null) {
+            result.error("-10", "Unexpected error on activity binding", null)
+            return
+        }
+        try {
+            val mode = Settings.System.getInt(ctx.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE)
+            result.success(mode == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+        } catch (e: Settings.SettingNotFoundException) {
+            result.error("-2", "Unexpected error on reading auto brightness", null)
+        }
+    }
+
+    private fun handleSetAutoBrightnessMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        val isAuto: Boolean? = call.argument("isAutoBrightness") as? Boolean
+        val ctx = context
+        if (isAuto == null) {
+            result.error("-2", "Unexpected error on null isAutoBrightness", null)
+            return
+        }
+        if (ctx == null) {
+            result.error("-10", "Unexpected error on activity binding", null)
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !canWriteSystemSetting(ctx)) {
+            Intent(
+                Settings.ACTION_MANAGE_WRITE_SETTINGS, "package:${ctx.packageName}".toUri()
+            ).let {
+                it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                ctx.startActivity(it)
+            }
+            result.success(null)
+            return
+        }
+        val mode = if (isAuto) Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC else Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+        val isSet = Settings.System.putInt(ctx.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, mode)
+        if (!isSet) {
+            result.error("-1", "Unable to change auto brightness mode", null)
+            return
+        }
         result.success(null)
     }
 

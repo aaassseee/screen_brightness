@@ -139,6 +139,20 @@ namespace screen_brightness
 			return;
 		}
 
+		if (method_call.method_name() == "isAutoBrightness")
+		{
+			// Windows does not expose a simple API for adaptive brightness across all systems in this plugin.
+			result->Success(true);
+			return;
+		}
+
+		if (method_call.method_name() == "setAutoBrightness")
+		{
+			// no-op: accept the request but do not change system settings in this plugin implementation
+			result->Success(nullptr);
+			return;
+		}
+
 		if (method_call.method_name() == "isAnimate")
 		{
 			HandleIsAnimateMethodCall(std::move(result));
