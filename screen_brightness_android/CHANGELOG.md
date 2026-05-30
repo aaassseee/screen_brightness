@@ -1,3 +1,7 @@
+## 2.1.5
+
+* Added AGP9 support
+
 ## 2.1.4
 
 * upgrade Android SDK version AGP (8.13.2), Kotlin (2.3.21), Gradle (8.14.4)
