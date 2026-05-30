@@ -1,3 +1,7 @@
+## 2.1.9
+
+* [Android] Add AGP9 support
+
 ## 2.1.8
 
 * update dependencies
