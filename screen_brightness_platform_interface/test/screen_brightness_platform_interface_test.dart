@@ -368,6 +368,14 @@ void main() {
       expect(() => platform.setAnimate(true), throwsUnimplementedError);
     });
 
+    test('unimplemented is auto brightness', () {
+      expect(() => platform.isAutoBrightness, throwsUnimplementedError);
+    });
+
+    test('unimplemented set auto brightness', () {
+      expect(() => platform.setAutoBrightness(true), throwsUnimplementedError);
+    });
+
     test('unimplemented can change system brightness', () {
       expect(
           () => platform.canChangeSystemBrightness, throwsUnimplementedError);
