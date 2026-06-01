@@ -145,14 +145,14 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.1.8"
+    version: "2.1.9"
   screen_brightness_android:
     dependency: "direct overridden"
     description:
       path: "../../screen_brightness_android"
       relative: true
     source: path
-    version: "2.1.4"
+    version: "2.1.5"
   screen_brightness_ios:
     dependency: "direct overridden"
     description:
@@ -168,12 +168,11 @@ packages:
     source: path
     version: "2.1.2"
   screen_brightness_ohos:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: screen_brightness_ohos
-      sha256: "33f495741d5aa53104d3f5875dcb4b6a119f29ef595be17129ee03a5b78e76a9"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../screen_brightness_ohos"
+      relative: true
+    source: path
     version: "2.1.3"
   screen_brightness_platform_interface:
     dependency: "direct overridden"
@@ -260,4 +259,4 @@ packages:
     version: "15.1.0"
 sdks:
   dart: ">=3.10.0-0 <4.0.0"
-  flutter: ">=3.27.4-ohos-1.0.5"
+  flutter: ">=3.18.0-18.0.pre.54"

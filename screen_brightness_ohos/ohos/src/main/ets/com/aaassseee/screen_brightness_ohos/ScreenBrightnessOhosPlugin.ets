@@ -64,6 +64,12 @@ export default class ScreenBrightnessOhosPlugin implements FlutterPlugin, Method
       case "setAnimate":
         this.handleSetAnimateMethodCall(call, result);
         break;
+      case "isAutoBrightness":
+        this.handleIsAutoBrightnessMethodCall(result);
+        break;
+      case "setAutoBrightness":
+        this.handleSetAutoBrightnessMethodCall(call, result);
+        break;
       case "canChangeSystemBrightness":
         this.handleCanChangeSystemBrightness(result);
         break;
@@ -208,5 +214,16 @@ export default class ScreenBrightnessOhosPlugin implements FlutterPlugin, Method
 
   private handleCanChangeSystemBrightness(result: MethodResult): void {
     result.success(false);
+  }
+
+  private handleIsAutoBrightnessMethodCall(result: MethodResult): void {
+    // OHOS does not expose an API for automatic/adaptive brightness in this plugin.
+    // Return null to indicate unknown/unsupported.
+    result.success(null);
+  }
+
+  private handleSetAutoBrightnessMethodCall(call: MethodCall, result: MethodResult): void {
+    // no-op: accept the request but do not change system settings in this plugin implementation
+    result.success(null);
   }
 }
