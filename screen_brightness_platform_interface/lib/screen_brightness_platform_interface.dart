@@ -138,11 +138,10 @@ abstract class ScreenBrightnessPlatform extends PlatformInterface {
     throw UnimplementedError('setAutoReset has not been implemented.');
   }
 
-  /// Returns boolean to identify whether system automatic/adaptive brightness is enabled.
+  /// Returns boolean (nullable) to identify whether system automatic/adaptive brightness is enabled.
   ///
-  /// On platforms that don't support querying this setting this should return
-  /// a reasonable default (most platforms return true).
-  Future<bool> get isAutoBrightness async {
+  /// On platforms that don't support querying this setting this may return null.
+  Future<bool?> get isAutoBrightness async {
     throw UnimplementedError('isAutoBrightness has not been implemented.');
   }
 

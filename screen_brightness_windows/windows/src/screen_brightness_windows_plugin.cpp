@@ -141,15 +141,13 @@ namespace screen_brightness
 
 		if (method_call.method_name() == "isAutoBrightness")
 		{
-			// Windows does not expose a simple API for adaptive brightness across all systems in this plugin.
-			result->Success(true);
+			HandleIsAutoBrightnessMethodCall(std::move(result));
 			return;
 		}
 
 		if (method_call.method_name() == "setAutoBrightness")
 		{
-			// no-op: accept the request but do not change system settings in this plugin implementation
-			result->Success(nullptr);
+			HandleSetAutoBrightnessMethodCall(method_call, std::move(result));
 			return;
 		}
 
@@ -344,6 +342,19 @@ namespace screen_brightness
 		const bool is_auto_reset = std::get<bool>(args.at(flutter::EncodableValue("isAutoReset")));
 
 		is_auto_reset_ = is_auto_reset;
+		result->Success(nullptr);
+	}
+
+	void ScreenBrightnessWindowsPlugin::HandleIsAutoBrightnessMethodCall(const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	{
+		// Windows does not expose a simple API for adaptive brightness across all systems in this plugin.
+		// Unknown/unsupported on some systems: return null to indicate unknown.
+		result->Success(nullptr);
+	}
+
+	void ScreenBrightnessWindowsPlugin::HandleSetAutoBrightnessMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call, const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	{
+		// no-op: accept the request but do not change system settings in this plugin implementation
 		result->Success(nullptr);
 	}
 

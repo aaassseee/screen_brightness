@@ -81,12 +81,10 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
             handleSetAutoResetMethodCall(call: call, result: result)
 
         case "isAutoBrightness":
-            // iOS does not expose system adaptive brightness to apps; respond with true by default
-            result(true)
+            handleIsAutoBrightnessMethodCall(result: result)
 
         case "setAutoBrightness":
-            // no-op on iOS
-            result(nil)
+            handleSetAutoBrightnessMethodCall(call: call, result: result)
 
         case "isAnimate":
             handleIsAnimateMethodCall(result: result)
@@ -182,6 +180,16 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         }
         
         self.isAutoReset = isAutoReset
+        result(nil)
+    }
+
+    private func handleIsAutoBrightnessMethodCall(result: FlutterResult) {
+        // iOS does not expose system adaptive brightness to apps; respond with true by default
+        result(nil)
+    }
+
+    private func handleSetAutoBrightnessMethodCall(call: FlutterMethodCall, result: FlutterResult) {
+        // no-op on iOS
         result(nil)
     }
 
