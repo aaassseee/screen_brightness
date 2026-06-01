@@ -271,4 +271,14 @@ void main() {
   test('can change system brightness', () async {
     expect(await screenBrightness.canChangeSystemBrightness, true);
   });
+
+  test('is auto brightness', () async {
+    expect(await screenBrightness.isAutoBrightness, true);
+
+    await screenBrightness.setAutoBrightness(false);
+    expect(await screenBrightness.isAutoBrightness, false);
+
+    await screenBrightness.setAutoBrightness(true);
+    expect(await screenBrightness.isAutoBrightness, true);
+  });
 }
