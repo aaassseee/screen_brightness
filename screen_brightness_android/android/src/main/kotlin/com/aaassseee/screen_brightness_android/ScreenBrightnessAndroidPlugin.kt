@@ -416,10 +416,11 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     }
 
     private fun setWindowsAttributesBrightness(brightness: Float): Boolean {
+        val act = activity ?: return false
         return try {
-            val layoutParams: WindowManager.LayoutParams = activity!!.window.attributes
+            val layoutParams: WindowManager.LayoutParams = act.window.attributes
             layoutParams.screenBrightness = brightness
-            activity!!.window.attributes = layoutParams
+            act.window.attributes = layoutParams
             true
         } catch (_: Exception) {
             false
