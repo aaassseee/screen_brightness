@@ -149,14 +149,15 @@ export default class ScreenBrightnessOhosPlugin implements FlutterPlugin, Method
 
   private handleSetApplicationScreenBrightnessMethodCall(call: MethodCall, result: MethodResult): void {
     let brightness = parseFloat(call.argument("brightness"))
-    if (brightness == null) {
+    if (isNaN(brightness)) {
       result.error("-2", "Unexpected error on null brightness", null);
       return;
     }
+    let clamped = (brightness >= 0) ? Math.min(Math.max(brightness, 0), 1) : brightness;
     try {
-      this.mainWindow?.setWindowBrightness(brightness);
+      this.mainWindow?.setWindowBrightness(clamped);
       this.applicationScreenBrightness = this.mainWindow?.getWindowProperties().brightness;
-      this.handleApplicationScreenBrightnessChanged(brightness);
+      this.handleApplicationScreenBrightnessChanged(clamped);
       result.success(null);
     } catch (e) {
       result.error("-1", "Unable to change application screen brightness", null);

@@ -117,11 +117,12 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         }
 
         let _brightness = CGFloat(brightness.doubleValue)
-        systemScreenBrightness = _brightness
-        handleSystemScreenBrightnessChanged(_brightness)
+        let clampedBrightness = clampBrightness(_brightness)
+        systemScreenBrightness = clampedBrightness
+        handleSystemScreenBrightnessChanged(clampedBrightness)
         if (applicationScreenBrightness == nil) {
-            setScreenBrightness(targetBrightness: _brightness, animated: isAnimate)
-            handleApplicationScreenBrightnessChanged(_brightness)
+            setScreenBrightness(targetBrightness: clampedBrightness, animated: isAnimate)
+            handleApplicationScreenBrightnessChanged(clampedBrightness)
         }
         result(nil)
     }
@@ -141,10 +142,11 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         }
         
         let _brightness = CGFloat(brightness.doubleValue)
-        setScreenBrightness(targetBrightness: _brightness, animated: isAnimate)
+        let clampedBrightness = clampBrightness(_brightness)
+        setScreenBrightness(targetBrightness: clampedBrightness, animated: isAnimate)
         
-        applicationScreenBrightness = _brightness
-        handleApplicationScreenBrightnessChanged(_brightness)
+        applicationScreenBrightness = clampedBrightness
+        handleApplicationScreenBrightnessChanged(clampedBrightness)
         result(nil)
     }
     
@@ -279,6 +281,10 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
             })
             return blockOperation
         }), waitUntilFinished: false)
+    }
+
+    private func clampBrightness(_ brightness: CGFloat) -> CGFloat {
+        return min(max(brightness, 0.0), 1.0)
     }
     
     @objc private func onSystemScreenBrightnessChanged(notification: Notification) {

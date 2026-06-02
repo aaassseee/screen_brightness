@@ -114,13 +114,14 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
 
         let _brightness = Float(brightness.doubleValue)
+        let clampedBrightness = clampBrightness(_brightness)
         do {
             if (applicationScreenBrightness == nil) {
-                try setScreenBrightness(targetBrightness: _brightness)
-                handleApplicationScreenBrightnessChanged(_brightness)
+                try setScreenBrightness(targetBrightness: clampedBrightness)
+                handleApplicationScreenBrightnessChanged(clampedBrightness)
             }
-            systemScreenBrightness = _brightness
-            handleSystemScreenBrightnessChanged(_brightness)
+            systemScreenBrightness = clampedBrightness
+            handleSystemScreenBrightnessChanged(clampedBrightness)
             result(nil)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change system screen brightness", details: nil))
@@ -147,10 +148,11 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
         
         let _brightness = Float(brightness.doubleValue)
+        let clampedBrightness = clampBrightness(_brightness)
         do {
-            try setScreenBrightness(targetBrightness: _brightness)
-            applicationScreenBrightness = _brightness
-            handleApplicationScreenBrightnessChanged(_brightness)
+            try setScreenBrightness(targetBrightness: clampedBrightness)
+            applicationScreenBrightness = clampedBrightness
+            handleApplicationScreenBrightnessChanged(clampedBrightness)
             result(nil)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change application screen brightness", details: nil))
@@ -308,6 +310,10 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
             IODisplaySetFloatParameter(service, 0, kIODisplayBrightnessKey as CFString, targetBrightness)
             IOObjectRelease(service)
         }
+    }
+
+    private func clampBrightness(_ brightness: Float) -> Float {
+        return min(max(brightness, 0.0), 1.0)
     }
 
     @objc private func getSystemBrightness(_: Timer) {

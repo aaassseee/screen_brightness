@@ -199,7 +199,9 @@ namespace screen_brightness
 			return;
 		}
 
-		const long brightness_value = GetScreenBrightnessValueByPercentage(brightness);
+		const double clamped_brightness = min(1.0, max(0.0, brightness));
+
+		const long brightness_value = GetScreenBrightnessValueByPercentage(clamped_brightness);
 		try
 		{
 			system_screen_brightness_ = brightness_value;
@@ -271,7 +273,8 @@ namespace screen_brightness
 			return;
 		}
 
-		const long brightness_value = GetScreenBrightnessValueByPercentage(brightness);
+		const double clamped_brightness = min(1.0, max(0.0, brightness));
+		const long brightness_value = GetScreenBrightnessValueByPercentage(clamped_brightness);
 		try
 		{
 			SetScreenBrightness(brightness_value);

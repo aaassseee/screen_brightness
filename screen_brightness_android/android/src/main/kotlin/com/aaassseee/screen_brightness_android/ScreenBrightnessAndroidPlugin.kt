@@ -172,14 +172,15 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             return
         }
 
-        val isSet = setSystemScreenBrightness(context, brightness)
+        val clampedBrightness = clampBrightness(brightness)
+        val isSet = setSystemScreenBrightness(context, clampedBrightness)
         if (!isSet) {
             result.error("-1", "Unable to change system screen brightness", null)
             return
         }
 
-        systemScreenBrightness = brightness
-        handleSystemScreenBrightnessChanged(brightness)
+        systemScreenBrightness = clampedBrightness
+        handleSystemScreenBrightnessChanged(clampedBrightness)
         result.success(null)
     }
 
@@ -231,14 +232,15 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             return
         }
 
-        val isSet = setWindowsAttributesBrightness(brightness)
+        val useBrightness = if (brightness >= 0f) clampBrightness(brightness) else brightness
+        val isSet = setWindowsAttributesBrightness(useBrightness)
         if (!isSet) {
             result.error("-1", "Unable to change application screen brightness", null)
             return
         }
 
-        applicationScreenBrightness = brightness
-        handleApplicationScreenBrightnessChanged(brightness)
+        applicationScreenBrightness = useBrightness
+        handleApplicationScreenBrightnessChanged(useBrightness)
         result.success(null)
     }
 
@@ -425,6 +427,10 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         } catch (_: Exception) {
             false
         }
+    }
+
+    private fun clampBrightness(brightness: Float): Float {
+        return brightness.coerceIn(0f, 1f)
     }
 
     private fun canWriteSystemSetting(context: Context): Boolean {
