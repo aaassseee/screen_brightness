@@ -20,7 +20,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import java.lang.reflect.Field
 import kotlin.math.sign
-import kotlin.properties.Delegates
 import androidx.core.net.toUri
 
 /**
@@ -28,7 +27,7 @@ import androidx.core.net.toUri
  */
 class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     /**
-     * The MethodChannel that will the communication between Flutter and native Android
+     * The MethodChannel that will handle the communication between Flutter and native Android
      *
      * This local reference serves to register the plugin with the Flutter Engine and unregister it
      * when the Flutter Engine is detached from the Activity
@@ -72,14 +71,14 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
      * By system default the value should be 255.0f, however it vary in some OS, e.g. Miui.
      * Should not be changed in the future
      */
-    private var maximumScreenBrightness by Delegates.notNull<Float>()
+    private var maximumScreenBrightness: Float = 255.0f
 
     /**
      * The value which will be init when this plugin is attached to the Flutter engine
      *
      * This value refer to the brightness value between 0 and 1 when the application initialized.
      */
-    private var systemScreenBrightness by Delegates.notNull<Float>()
+    private var systemScreenBrightness: Float = 1.0f
 
     /**
      * The value which will be set when user called [handleSetApplicationScreenBrightnessMethodCall]
@@ -108,11 +107,13 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             "github.com/aaassseee/screen_brightness/application_brightness_changed"
         )
 
+        maximumScreenBrightness = getScreenMaximumBrightness(flutterPluginBinding.applicationContext)
         try {
-            maximumScreenBrightness = getScreenMaximumBrightness(flutterPluginBinding.applicationContext)
             systemScreenBrightness = getSystemScreenBrightness(flutterPluginBinding.applicationContext)
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
+            // fallback to a safe default so the plugin won't crash if the system setting is unavailable
+            systemScreenBrightness = 1.0f
         }
 
         context = flutterPluginBinding.applicationContext
