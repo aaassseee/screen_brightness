@@ -311,13 +311,15 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !canWriteSystemSetting(ctx)) {
+            // Request permission via system settings
+            // Caller should retry after user grants permission
             Intent(
                 Settings.ACTION_MANAGE_WRITE_SETTINGS, "package:${ctx.packageName}".toUri()
             ).let {
                 it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 ctx.startActivity(it)
             }
-            result.success(null)
+            result.error("-1", "Unable to change auto brightness mode", null)
             return
         }
         val mode = if (isAuto) Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC else Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
@@ -384,6 +386,8 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     private fun setSystemScreenBrightness(context: Context, brightness: Float): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!canWriteSystemSetting(context)) {
+                // Request permission via system settings
+                // Caller should retry after user grants permission
                 Intent(
                     Settings.ACTION_MANAGE_WRITE_SETTINGS, "package:${context.packageName}".toUri()
                 ).let {
