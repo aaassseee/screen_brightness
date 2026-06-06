@@ -23,6 +23,13 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         return queue
     }()
 
+    // CADisplayLink-based brightness animation (replaces Thread.sleep + BlockOperations)
+    private var brightnessDisplayLink: CADisplayLink?
+    private var brightnessAnimationStartTime: CFTimeInterval = 0
+    private var brightnessAnimationDuration: TimeInterval = 0
+    private var brightnessAnimationStartValue: CGFloat = 0
+    private var brightnessAnimationTargetValue: CGFloat = 0
+
     init(registrar: FlutterPluginRegistrar) {
         self.registrar = registrar
         super.init()
@@ -251,36 +258,40 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     }
 
     public func setScreenBrightness(targetBrightness: CGFloat, animated: Bool, duration: TimeInterval = 1.0) {
+        // Stop any existing animation and queued operations
+        brightnessDisplayLink?.invalidate()
+        brightnessDisplayLink = nil
         taskQueue.cancelAllOperations()
+
         let screen = currentScreen ?? UIScreen.main
         if !animated {
-            screen.brightness = targetBrightness
+            DispatchQueue.main.async {
+                screen.brightness = targetBrightness
+            }
             return
         }
 
-        let currentBrightness = screen.brightness
-        var framePerSecond = 60.0
-        if #available(iOS 10.3, *) {
-            framePerSecond = Double(screen.maximumFramesPerSecond)
+        // Prepare animation parameters
+        brightnessAnimationStartValue = screen.brightness
+        brightnessAnimationTargetValue = clampBrightness(targetBrightness)
+        brightnessAnimationDuration = max(duration, 0.0001)
+        brightnessAnimationStartTime = CACurrentMediaTime()
+
+        // Use CADisplayLink on the main runloop for smooth per-frame updates
+        brightnessDisplayLink = CADisplayLink(target: self, selector: #selector(handleBrightnessDisplayLink(_:)))
+        brightnessDisplayLink?.add(to: .main, forMode: .common)
+    }
+
+    @objc private func handleBrightnessDisplayLink(_ link: CADisplayLink) {
+        let elapsed = CACurrentMediaTime() - brightnessAnimationStartTime
+        let progress = min(1.0, elapsed / brightnessAnimationDuration)
+        let newBrightness = brightnessAnimationStartValue + CGFloat(progress) * (brightnessAnimationTargetValue - brightnessAnimationStartValue)
+        (currentScreen ?? UIScreen.main).brightness = newBrightness
+
+        if progress >= 1.0 {
+            link.invalidate()
+            brightnessDisplayLink = nil
         }
-        let changes = 0.01 / (framePerSecond / 60.0)
-        let step = changes * ((targetBrightness > currentBrightness) ? 1 : -1)
-
-        taskQueue.addOperations(stride(from: currentBrightness, through: targetBrightness, by: step).map({ _brightness -> Operation in
-            let blockOperation = BlockOperation()
-            unowned let _unownedOperation = blockOperation
-            blockOperation.addExecutionBlock({
-                guard !_unownedOperation.isCancelled else {
-                    return
-                }
-
-                Thread.sleep(forTimeInterval: duration * changes)
-                OperationQueue.main.addOperation({
-                    (self.currentScreen ?? UIScreen.main).brightness = _brightness
-                })
-            })
-            return blockOperation
-        }), waitUntilFinished: false)
     }
 
     private func clampBrightness(_ brightness: CGFloat) -> CGFloat {
