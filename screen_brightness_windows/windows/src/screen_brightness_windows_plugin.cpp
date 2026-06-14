@@ -139,6 +139,18 @@ namespace screen_brightness
 			return;
 		}
 
+		if (method_call.method_name() == "isAutoBrightness")
+		{
+			HandleIsAutoBrightnessMethodCall(std::move(result));
+			return;
+		}
+
+		if (method_call.method_name() == "setAutoBrightness")
+		{
+			HandleSetAutoBrightnessMethodCall(method_call, std::move(result));
+			return;
+		}
+
 		if (method_call.method_name() == "isAnimate")
 		{
 			HandleIsAnimateMethodCall(std::move(result));
@@ -187,7 +199,9 @@ namespace screen_brightness
 			return;
 		}
 
-		const long brightness_value = GetScreenBrightnessValueByPercentage(brightness);
+		const double clamped_brightness = min(1.0, max(0.0, brightness));
+
+		const long brightness_value = GetScreenBrightnessValueByPercentage(clamped_brightness);
 		try
 		{
 			system_screen_brightness_ = brightness_value;
@@ -259,7 +273,8 @@ namespace screen_brightness
 			return;
 		}
 
-		const long brightness_value = GetScreenBrightnessValueByPercentage(brightness);
+		const double clamped_brightness = min(1.0, max(0.0, brightness));
+		const long brightness_value = GetScreenBrightnessValueByPercentage(clamped_brightness);
 		try
 		{
 			SetScreenBrightness(brightness_value);
@@ -330,6 +345,19 @@ namespace screen_brightness
 		const bool is_auto_reset = std::get<bool>(args.at(flutter::EncodableValue("isAutoReset")));
 
 		is_auto_reset_ = is_auto_reset;
+		result->Success(nullptr);
+	}
+
+	void ScreenBrightnessWindowsPlugin::HandleIsAutoBrightnessMethodCall(const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	{
+		// Windows does not expose a simple API for adaptive brightness across all systems in this plugin.
+		// Unknown/unsupported on some systems: return null to indicate unknown.
+		result->Success(nullptr);
+	}
+
+	void ScreenBrightnessWindowsPlugin::HandleSetAutoBrightnessMethodCall(const flutter::MethodCall<flutter::EncodableValue>& call, const std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+	{
+		// no-op: accept the request but do not change system settings in this plugin implementation
 		result->Success(nullptr);
 	}
 

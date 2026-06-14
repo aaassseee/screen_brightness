@@ -77,6 +77,12 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         case "setAutoReset":
             handleSetAutoResetMethodCall(call: call, result: result)
 
+        case "isAutoBrightness":
+            handleIsAutoBrightnessMethodCall(result: result)
+
+        case "setAutoBrightness":
+            handleSetAutoBrightnessMethodCall(call: call, result: result)
+
         case "isAnimate":
             handleIsAnimateMethodCall(result: result)
 
@@ -108,13 +114,14 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
 
         let _brightness = Float(brightness.doubleValue)
+        let clampedBrightness = clampBrightness(_brightness)
         do {
             if (applicationScreenBrightness == nil) {
-                try setScreenBrightness(targetBrightness: _brightness)
-                handleApplicationScreenBrightnessChanged(_brightness)
+                try setScreenBrightness(targetBrightness: clampedBrightness)
+                handleApplicationScreenBrightnessChanged(clampedBrightness)
             }
-            systemScreenBrightness = _brightness
-            handleSystemScreenBrightnessChanged(_brightness)
+            systemScreenBrightness = clampedBrightness
+            handleSystemScreenBrightnessChanged(clampedBrightness)
             result(nil)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change system screen brightness", details: nil))
@@ -141,10 +148,11 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
         
         let _brightness = Float(brightness.doubleValue)
+        let clampedBrightness = clampBrightness(_brightness)
         do {
-            try setScreenBrightness(targetBrightness: _brightness)
-            applicationScreenBrightness = _brightness
-            handleApplicationScreenBrightnessChanged(_brightness)
+            try setScreenBrightness(targetBrightness: clampedBrightness)
+            applicationScreenBrightness = clampedBrightness
+            handleApplicationScreenBrightnessChanged(clampedBrightness)
             result(nil)
         } catch {
             result(FlutterError.init(code: "-1", message: "Unable to change application screen brightness", details: nil))
@@ -186,6 +194,16 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         }
         
         self.isAutoReset = isAutoReset
+        result(nil)
+    }
+
+    private func handleIsAutoBrightnessMethodCall(result: FlutterResult) {
+        // macOS does not expose automatic brightness toggle via public API in this plugin; return nil to indicate unknown support
+        result(nil)
+    }
+
+    private func handleSetAutoBrightnessMethodCall(call: FlutterMethodCall, result: FlutterResult) {
+        // no-op on macOS
         result(nil)
     }
 
@@ -292,6 +310,10 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
             IODisplaySetFloatParameter(service, 0, kIODisplayBrightnessKey as CFString, targetBrightness)
             IOObjectRelease(service)
         }
+    }
+
+    private func clampBrightness(_ brightness: Float) -> Float {
+        return min(max(brightness, 0.0), 1.0)
     }
 
     @objc private func getSystemBrightness(_: Timer) {
