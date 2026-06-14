@@ -32,4 +32,4 @@ flutter:
   plugin:
     platforms:
       windows:
-        pluginClass: ScreenBrightnessWindowsPlugin
+        pluginClass: ScreenBrightnessWindowsPluginCApi
