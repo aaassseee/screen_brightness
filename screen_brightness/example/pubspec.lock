@@ -145,14 +145,14 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.1.8"
+    version: "2.1.9"
   screen_brightness_android:
     dependency: "direct overridden"
     description:
       path: "../../screen_brightness_android"
       relative: true
     source: path
-    version: "2.1.4"
+    version: "2.1.5"
   screen_brightness_ios:
     dependency: "direct overridden"
     description:
