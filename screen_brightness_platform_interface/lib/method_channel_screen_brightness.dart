@@ -37,7 +37,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   @override
   Future<double> get system async {
     final systemBrightness = await pluginMethodChannel
-        .invokeMethod<double>(methodNameGetSystemScreenBrightness);
+        .invokeMethod<num>(methodNameGetSystemScreenBrightness);
     if (systemBrightness == null) {
       throw PlatformException(code: "-9", message: "value returns null");
     }
@@ -46,7 +46,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
       throw RangeError.range(systemBrightness, minBrightness, maxBrightness);
     }
 
-    return systemBrightness;
+    return systemBrightness.toDouble();
   }
 
   /// Set system screen brightness with double value.
@@ -118,7 +118,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   @override
   Future<double> get application async {
     final currentBrightness = await pluginMethodChannel
-        .invokeMethod<double>(methodNameGetApplicationScreenBrightness);
+        .invokeMethod<num>(methodNameGetApplicationScreenBrightness);
     if (currentBrightness == null) {
       throw PlatformException(code: "-9", message: "value returns null");
     }
@@ -127,7 +127,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
       throw RangeError.range(currentBrightness, minBrightness, maxBrightness);
     }
 
-    return currentBrightness;
+    return currentBrightness.toDouble();
   }
 
   /// Set application screen brightness with double value.
@@ -278,6 +278,7 @@ class MethodChannelScreenBrightness extends ScreenBrightnessPlatform {
   @override
   Future<bool> get canChangeSystemBrightness async {
     return await pluginMethodChannel
-        .invokeMethod(methodNameCanChangeSystemBrightness);
+            .invokeMethod(methodNameCanChangeSystemBrightness) ??
+        false;
   }
 }
