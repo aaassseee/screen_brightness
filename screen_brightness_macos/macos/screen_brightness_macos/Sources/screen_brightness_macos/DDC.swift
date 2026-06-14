@@ -3,6 +3,7 @@
 // https://github.com/MonitorControl/MonitorControl
 
 import Foundation
+import CoreGraphics
 import IOKit
 
 public class DDC {
@@ -17,17 +18,7 @@ public class DDC {
         while (service == 0) || (service != 0) {
             service = IOIteratorNext(iterator)
             if service == 0 { break }
-            var vendorID: UInt32 = 0
-            var productID: UInt32 = 0
-            var serialNumber: UInt32 = 0
-            let info = IODisplayCreateInfoDictionary(service, 0).takeRetainedValue() as NSDictionary
-            if let vendor = info[kDisplayVendorID] as? UInt32, let product = info[kDisplayProductID] as? UInt32, let serial = info[kDisplaySerialNumber] as? UInt32 {
-                vendorID = vendor
-                productID = product
-                serialNumber = serial
-            }
-            let currentDisplayID = DDC.displayIDForIODisplay(service: service)
-            if currentDisplayID == displayID {
+            if DDC.displayService(service, matches: displayID) {
                 var brightness: Float = 0
                 if DDC.readBrightness(service: service, brightness: &brightness) {
                     IOObjectRelease(service)
@@ -50,8 +41,7 @@ public class DDC {
         while (service == 0) || (service != 0) {
             service = IOIteratorNext(iterator)
             if service == 0 { break }
-            let currentDisplayID = DDC.displayIDForIODisplay(service: service)
-            if currentDisplayID == displayID {
+            if DDC.displayService(service, matches: displayID) {
                 let result = DDC.writeBrightness(service: service, brightness: brightness)
                 IOObjectRelease(service)
                 return result
@@ -61,14 +51,19 @@ public class DDC {
         return false
     }
 
-    // Helper to get displayID from io_service_t
-    private static func displayIDForIODisplay(service: io_service_t) -> CGDirectDisplayID {
-        var displayID: CGDirectDisplayID = 0
+    // Helper to match an IODisplay service to a CoreGraphics display ID
+    private static func displayService(_ service: io_service_t, matches displayID: CGDirectDisplayID) -> Bool {
         let info = IODisplayCreateInfoDictionary(service, 0).takeRetainedValue() as NSDictionary
-        if let id = info[kDisplayDirectDisplayID] as? UInt32 {
-            displayID = id
+
+        guard let vendorID = info[kDisplayVendorID] as? UInt32,
+              let productID = info[kDisplayProductID] as? UInt32,
+              let serialNumber = info[kDisplaySerialNumber] as? UInt32 else {
+            return false
         }
-        return displayID
+
+        return vendorID == CGDisplayVendorNumber(displayID)
+            && productID == CGDisplayModelNumber(displayID)
+            && serialNumber == CGDisplaySerialNumber(displayID)
     }
 
     // DDC/CI read brightness (VCP code 0x10)
