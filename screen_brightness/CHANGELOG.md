@@ -1,3 +1,14 @@
+## 2.1.9
+
+* [Android] Add AGP9 support
+
+## 2.1.8
+
+* update dependencies
+  * bump federated plugin constraints
+  * bump `flutter_lints` constraint
+  * [Example/Android] bump `compileSdk`/`targetSdk` to 36, AGP to 8.13.2, Kotlin to 2.3.21
+
 ## 2.1.7
 
 * [Android] upgrade Android SDK version AGP (8.6.1), Kotlin (1.9.22), Gradle (8.7) [#74](https://github.com/aaassseee/screen_brightness/pull/74)

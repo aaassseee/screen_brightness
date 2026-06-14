@@ -1,7 +1,8 @@
 import Flutter
 import UIKit
 
-public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
+public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDelegate {
+    var registrar: FlutterPluginRegistrar
     var methodChannel: FlutterMethodChannel?
 
     var systemScreenBrightnessChangedEventChannel: FlutterEventChannel?
@@ -22,8 +23,14 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         return queue
     }()
 
+    init(registrar: FlutterPluginRegistrar) {
+        self.registrar = registrar
+        super.init()
+        systemScreenBrightness = currentScreen?.brightness ?? UIScreen.main.brightness
+    }
+
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let instance = ScreenBrightnessIosPlugin()
+        let instance = ScreenBrightnessIosPlugin(registrar: registrar)
         instance.methodChannel = FlutterMethodChannel(name: "github.com/aaassseee/screen_brightness", binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(instance, channel: instance.methodChannel!)
 
@@ -34,11 +41,11 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         instance.applicationScreenBrightnessChangedEventChannel!.setStreamHandler(instance.applicationScreenBrightnessChangedStreamHandler)
         
         registrar.addApplicationDelegate(instance)
+        registrar.addSceneDelegate(instance)
     }
-    
-    override init() {
-        super.init()
-        systemScreenBrightness = UIScreen.main.brightness
+
+    private var currentScreen: UIScreen? {
+        return registrar.viewController?.view.window?.windowScene?.screen
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -118,7 +125,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     private func handleGetApplicationScreenBrightnessMethodCall(result: FlutterResult) {
-        result(UIScreen.main.brightness)
+        result(currentScreen?.brightness ?? UIScreen.main.brightness)
     }
     
     private func handleSetApplicationScreenBrightnessMethodCall(call: FlutterMethodCall, result: FlutterResult) {
@@ -188,7 +195,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         result(true)
     }
     
-    public func applicationWillResignActive(_ application: UIApplication) {
+    public func sceneWillResignActive(_ scene: UIScene) {
         guard isAutoReset else {
             return
         }
@@ -197,13 +204,13 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         NotificationCenter.default.addObserver(self, selector: #selector(onSystemScreenBrightnessChanged), name: UIScreen.brightnessDidChangeNotification, object: nil)
     }
     
-    public func applicationDidBecomeActive(_ application: UIApplication) {
+    public func sceneDidBecomeActive(_ scene: UIScene) {
         guard isAutoReset else {
             return
         }
         
         NotificationCenter.default.removeObserver(self, name: UIScreen.brightnessDidChangeNotification, object: nil)
-        systemScreenBrightness = UIScreen.main.brightness
+        systemScreenBrightness = currentScreen?.brightness ?? UIScreen.main.brightness
         handleSystemScreenBrightnessChanged(systemScreenBrightness!)
         if (applicationScreenBrightness == nil) {
             handleApplicationScreenBrightnessChanged(systemScreenBrightness!)
@@ -212,8 +219,8 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         onApplicationResume()
     }
     
-    public func applicationWillTerminate(_ application: UIApplication) {
-        onApplicationPause()
+    public func sceneDidDisconnect(_ scene: UIScene) {
+        onApplicationTerminate()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -227,15 +234,16 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
 
     public func setScreenBrightness(targetBrightness: CGFloat, animated: Bool, duration: TimeInterval = 1.0) {
         taskQueue.cancelAllOperations()
+        let screen = currentScreen ?? UIScreen.main
         if !animated {
-            UIScreen.main.brightness = targetBrightness
+            screen.brightness = targetBrightness
             return
         }
 
-        let currentBrightness = UIScreen.main.brightness
+        let currentBrightness = screen.brightness
         var framePerSecond = 60.0
         if #available(iOS 10.3, *) {
-            framePerSecond = Double(UIScreen.main.maximumFramesPerSecond)
+            framePerSecond = Double(screen.maximumFramesPerSecond)
         }
         let changes = 0.01 / (framePerSecond / 60.0)
         let step = changes * ((targetBrightness > currentBrightness) ? 1 : -1)
@@ -250,7 +258,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
 
                 Thread.sleep(forTimeInterval: duration * changes)
                 OperationQueue.main.addOperation({
-                    UIScreen.main.brightness = _brightness
+                    (self.currentScreen ?? UIScreen.main).brightness = _brightness
                 })
             })
             return blockOperation
@@ -283,5 +291,13 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterApplicat
         }
         
         setScreenBrightness(targetBrightness: applicationScreenBrightness, animated: isAnimate, duration: 0.5)
+    }
+    
+    func onApplicationTerminate() {
+        guard let systemScreenBrightness = systemScreenBrightness else {
+            return
+        }
+        
+        UIScreen.main.brightness = systemScreenBrightness;
     }
 }

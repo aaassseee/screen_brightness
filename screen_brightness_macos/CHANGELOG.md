@@ -1,3 +1,7 @@
+## 2.1.2
+
+* update macOS example app lifecycle template (use `@main` and support secure restorable state)
+
 ## 2.1.1
 
 * fixed compile errors [#43](https://github.com/aaassseee/screen_brightness/issues/43)
