@@ -1,3 +1,13 @@
+## 2.1.4
+
+### Fix
+
+* swift package manager warning
+
+### Internal
+
+* update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+
 ## 2.1.3
 
 * support UIScene (multi-window) lifecycle
