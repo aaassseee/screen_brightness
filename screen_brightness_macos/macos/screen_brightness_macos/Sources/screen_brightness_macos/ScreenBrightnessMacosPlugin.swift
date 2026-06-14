@@ -1,5 +1,10 @@
 import Cocoa
 import FlutterMacOS
+import CoreGraphics
+import Darwin
+// DDC support
+// Vendored DDC.swift
+
 
 enum ScreenBrightnessError: Error {
     case serviceMissing
@@ -192,7 +197,7 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     private func handleIsAnimateMethodCall(result: FlutterResult) {
         result(isAnimate)
     }
-
+    
     private func handleSetAnimateMethodCall(call: FlutterMethodCall, result: FlutterResult) {
         guard let parameters = call.arguments as? Dictionary<String, Any>, let isAnimate = parameters["isAnimate"] as? Bool else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null isAnimate", details: nil))
@@ -266,9 +271,43 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
         return result
     }
     
+    /// Try DisplayServices private framework first (works on Apple Silicon internal displays). If unavailable, fall back to IODisplay APIs.
+    private func getDisplayServicesFunctions() -> (get: ((UInt32, UnsafeMutablePointer<Float>) -> Int32)?, set: ((UInt32, Float) -> Int32)?) {
+        var getter: ((UInt32, UnsafeMutablePointer<Float>) -> Int32)? = nil
+        var setter: ((UInt32, Float) -> Int32)? = nil
+        let path = "/System/Library/PrivateFrameworks/DisplayServices.framework/DisplayServices"
+        if let handle = dlopen(path, RTLD_LAZY) {
+            if let symGet = dlsym(handle, "DisplayServicesGetBrightness") {
+                getter = unsafeBitCast(symGet, to: (@convention(c) (UInt32, UnsafeMutablePointer<Float>) -> Int32).self)
+            }
+            if let symSet = dlsym(handle, "DisplayServicesSetBrightness") {
+                setter = unsafeBitCast(symSet, to: (@convention(c) (UInt32, Float) -> Int32).self)
+            }
+            // do not dlclose(handle) - keep it for lifetime
+        }
+        return (getter, setter)
+    }
+
     private func getScreenBrightness() throws -> Float {
+        // Try using DisplayServices (preferred on Apple Silicon for built-in displays)
+        let funcs = getDisplayServicesFunctions()
+        if let getFunc = funcs.get {
+            var value: Float = 0.0
+            let main = CGMainDisplayID()
+            let err = getFunc(main, &value)
+            if err == 0 {
+                return value
+            }
+        }
+
+        // Try DDC for external displays
+        let main = CGMainDisplayID()
+        if let ddcValue = DDC.getBrightness(displayID: main) {
+            return ddcValue
+        }
+
+        // Fallback to IODisplay approach (legacy)
         var brightness: Float = 0.0
-        
         var service: io_object_t = 1
         var iterator: io_iterator_t = 0
         try getIODisplayConnectServices(iterator: &iterator)
@@ -283,6 +322,38 @@ public class ScreenBrightnessMacosPlugin: NSObject, FlutterPlugin {
     }
     
     private func setScreenBrightness(targetBrightness: Float) throws {
+        // Try using DisplayServices (preferred on Apple Silicon for built-in displays and many external displays)
+        let funcs = getDisplayServicesFunctions()
+        if let setFunc = funcs.set {
+            var displayCount: UInt32 = 0
+            CGGetActiveDisplayList(0, nil, &displayCount)
+            if displayCount > 0 {
+                let allocated = Int(displayCount)
+                var activeDisplays = [CGDirectDisplayID](repeating: 0, count: allocated)
+                CGGetActiveDisplayList(displayCount, &activeDisplays, &displayCount)
+                for d in activeDisplays {
+                    _ = setFunc(d, targetBrightness)
+                }
+                return
+            }
+        }
+
+        // Try DDC for external displays
+        var displayCount: UInt32 = 0
+        CGGetActiveDisplayList(0, nil, &displayCount)
+        if displayCount > 0 {
+            let allocated = Int(displayCount)
+            var activeDisplays = [CGDirectDisplayID](repeating: 0, count: allocated)
+            CGGetActiveDisplayList(displayCount, &activeDisplays, &displayCount)
+            for d in activeDisplays {
+                if DDC.setBrightness(displayID: d, brightness: targetBrightness) {
+                    // If DDC succeeded for at least one display, consider it done
+                    return
+                }
+            }
+        }
+
+        // Fallback to IODisplay approach (legacy)
         var service: io_object_t = 1
         var iterator: io_iterator_t = 0
         try getIODisplayConnectServices(iterator: &iterator)
