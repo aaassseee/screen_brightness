@@ -46,6 +46,103 @@ struct _ScreenBrightnessLinuxPlugin {
 G_DEFINE_TYPE(ScreenBrightnessLinuxPlugin, screen_brightness_linux_plugin, g_object_get_type()
 )
 
+// Called when a method call is received from Flutter.
+static void screen_brightness_linux_plugin_handle_method_call(
+        ScreenBrightnessLinuxPlugin *self,
+        FlMethodCall *method_call) {
+    const gchar *method = fl_method_call_get_name(method_call);
+
+    if (strcmp(method, "getSystemScreenBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_get_system_screen_brightness_method_call(self,
+                                                                                        method_call);
+        return;
+    }
+
+    if (strcmp(method, "setSystemScreenBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_set_system_screen_brightness_method_call(self,
+                                                                                        method_call);
+        return;
+    }
+
+    if (strcmp(method, "getApplicationScreenBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_get_application_screen_brightness_method_call(self,
+                                                                                             method_call);
+        return;
+    }
+
+    if (strcmp(method, "setApplicationScreenBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_set_application_screen_brightness_method_call(self,
+                                                                                             method_call);
+        return;
+    }
+
+    if (strcmp(method, "resetApplicationScreenBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_reset_application_screen_brightness_method_call(self,
+                                                                                               method_call);
+        return;
+    }
+
+    if (strcmp(method, "hasApplicationScreenBrightnessChanged") == 0) {
+        screen_brightness_linux_plugin_handle_has_application_screen_brightness_changed_method_call(
+                self, method_call);
+        return;
+    }
+
+    if (strcmp(method, "isAutoReset") == 0) {
+        screen_brightness_linux_plugin_handle_is_auto_reset_method_call(self, method_call);
+        return;
+    }
+
+    if (strcmp(method, "setAutoReset") == 0) {
+        screen_brightness_linux_plugin_handle_set_auto_reset_method_call(self, method_call);
+        return;
+    }
+
+    if (strcmp(method, "isAnimate") == 0) {
+        screen_brightness_linux_plugin_handle_is_animate_method_call(self, method_call);
+        return;
+    }
+
+    if (strcmp(method, "setAnimate") == 0) {
+        screen_brightness_linux_plugin_handle_set_animate_method_call(self, method_call);
+        return;
+    }
+
+    if (strcmp(method, "canChangeSystemBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_can_change_system_brightness_method_call(self,
+                                                                                        method_call);
+        return;
+    }
+
+    // Backward compatibility aliases
+    if (strcmp(method, "getScreenBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_get_application_screen_brightness_method_call(self,
+                                                                                             method_call);
+        return;
+    }
+
+    if (strcmp(method, "setScreenBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_set_application_screen_brightness_method_call(self,
+                                                                                             method_call);
+        return;
+    }
+
+    if (strcmp(method, "resetScreenBrightness") == 0) {
+        screen_brightness_linux_plugin_handle_reset_application_screen_brightness_method_call(self,
+                                                                                               method_call);
+        return;
+    }
+
+    if (strcmp(method, "hasChanged") == 0) {
+        screen_brightness_linux_plugin_handle_has_application_screen_brightness_changed_method_call(
+                self, method_call);
+        return;
+    }
+
+    fl_method_call_respond(method_call, FL_METHOD_RESPONSE(fl_method_not_implemented_response_new()),
+                           nullptr);
+}
+
 static void screen_brightness_linux_plugin_get_brightness(double &minimum_brightness,
                                                           double &maximum_brightness,
                                                           double &current_brightness) {
@@ -423,103 +520,6 @@ static void screen_brightness_linux_plugin_handle_set_animate_method_call(Screen
 static void screen_brightness_linux_plugin_handle_can_change_system_brightness_method_call(ScreenBrightnessLinuxPlugin *self,
                                                                                             FlMethodCall *method_call) {
     fl_method_call_respond_success(method_call, fl_value_new_bool(true), nullptr);
-}
-
-// Called when a method call is received from Flutter.
-static void screen_brightness_linux_plugin_handle_method_call(
-        ScreenBrightnessLinuxPlugin *self,
-        FlMethodCall *method_call) {
-    const gchar *method = fl_method_call_get_name(method_call);
-
-    if (strcmp(method, "getSystemScreenBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_get_system_screen_brightness_method_call(self,
-                                                                                        method_call);
-        return;
-    }
-
-    if (strcmp(method, "setSystemScreenBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_set_system_screen_brightness_method_call(self,
-                                                                                        method_call);
-        return;
-    }
-
-    if (strcmp(method, "getApplicationScreenBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_get_application_screen_brightness_method_call(self,
-                                                                                             method_call);
-        return;
-    }
-
-    if (strcmp(method, "setApplicationScreenBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_set_application_screen_brightness_method_call(self,
-                                                                                             method_call);
-        return;
-    }
-
-    if (strcmp(method, "resetApplicationScreenBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_reset_application_screen_brightness_method_call(self,
-                                                                                               method_call);
-        return;
-    }
-
-    if (strcmp(method, "hasApplicationScreenBrightnessChanged") == 0) {
-        screen_brightness_linux_plugin_handle_has_application_screen_brightness_changed_method_call(
-                self, method_call);
-        return;
-    }
-
-    if (strcmp(method, "isAutoReset") == 0) {
-        screen_brightness_linux_plugin_handle_is_auto_reset_method_call(self, method_call);
-        return;
-    }
-
-    if (strcmp(method, "setAutoReset") == 0) {
-        screen_brightness_linux_plugin_handle_set_auto_reset_method_call(self, method_call);
-        return;
-    }
-
-    if (strcmp(method, "isAnimate") == 0) {
-        screen_brightness_linux_plugin_handle_is_animate_method_call(self, method_call);
-        return;
-    }
-
-    if (strcmp(method, "setAnimate") == 0) {
-        screen_brightness_linux_plugin_handle_set_animate_method_call(self, method_call);
-        return;
-    }
-
-    if (strcmp(method, "canChangeSystemBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_can_change_system_brightness_method_call(self,
-                                                                                        method_call);
-        return;
-    }
-
-    // Backward compatibility aliases
-    if (strcmp(method, "getScreenBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_get_application_screen_brightness_method_call(self,
-                                                                                             method_call);
-        return;
-    }
-
-    if (strcmp(method, "setScreenBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_set_application_screen_brightness_method_call(self,
-                                                                                             method_call);
-        return;
-    }
-
-    if (strcmp(method, "resetScreenBrightness") == 0) {
-        screen_brightness_linux_plugin_handle_reset_application_screen_brightness_method_call(self,
-                                                                                               method_call);
-        return;
-    }
-
-    if (strcmp(method, "hasChanged") == 0) {
-        screen_brightness_linux_plugin_handle_has_application_screen_brightness_changed_method_call(
-                self, method_call);
-        return;
-    }
-
-    fl_method_call_respond(method_call, FL_METHOD_RESPONSE(fl_method_not_implemented_response_new()),
-                           nullptr);
 }
 
 static void on_toplevel_notify_is_active(GObject *object, GParamSpec *pspec, gpointer user_data) {
