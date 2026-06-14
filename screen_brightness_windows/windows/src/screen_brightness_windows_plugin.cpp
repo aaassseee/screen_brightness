@@ -1,46 +1,9 @@
 #include "../include/screen_brightness_windows/screen_brightness_windows_plugin.h"
 
-// This must be included before many other Windows headers.
-#include <Windows.h>
-
-#include <flutter/event_channel.h>
-#include <flutter/event_stream_handler_functions.h>
-#include <flutter/method_channel.h>
-#include <flutter/standard_method_codec.h>
-
-#include <map>
-#include <memory>
-#include <sstream>
-#include <highlevelmonitorconfigurationapi.h>
-
 #pragma comment(lib, "Dxva2.lib")
 
 namespace screen_brightness
 {
-	ScreenBrightnessWindowsPlugin::ScreenBrightnessWindowsPlugin(
-		flutter::PluginRegistrarWindows* registrar) : registrar_(registrar)
-	{
-		window_handler_ = registrar->GetView()->GetNativeWindow();
-		try
-		{
-			GetScreenBrightness(minimum_screen_brightness_, system_screen_brightness_, maximum_screen_brightness_);
-		}
-		catch (const std::exception& exception)
-		{
-			std::cout << exception.what() << std::endl;
-		}
-
-		window_proc_id_ = registrar->RegisterTopLevelWindowProcDelegate
-		([this](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-			{
-				return HandleWindowProc(hWnd, message, wParam, lParam);
-			});
-	}
-
-	ScreenBrightnessWindowsPlugin::~ScreenBrightnessWindowsPlugin()
-	{
-		registrar_->UnregisterTopLevelWindowProcDelegate(window_proc_id_);
-	}
 
 	// static
 	void ScreenBrightnessWindowsPlugin::RegisterWithRegistrar(
@@ -85,6 +48,31 @@ namespace screen_brightness
 		application_screen_brightness_changed_event_channel->SetStreamHandler(std::move(application_screen_brightness_changed_stream_handler_unique_pointer));
 
 		registrar->AddPlugin(std::move(plugin));
+	}
+
+	ScreenBrightnessWindowsPlugin::ScreenBrightnessWindowsPlugin(
+		flutter::PluginRegistrarWindows* registrar) : registrar_(registrar)
+	{
+		window_handler_ = registrar->GetView()->GetNativeWindow();
+		try
+		{
+			GetScreenBrightness(minimum_screen_brightness_, system_screen_brightness_, maximum_screen_brightness_);
+		}
+		catch (const std::exception& exception)
+		{
+			std::cout << exception.what() << std::endl;
+		}
+
+		window_proc_id_ = registrar->RegisterTopLevelWindowProcDelegate
+		([this](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+			{
+				return HandleWindowProc(hWnd, message, wParam, lParam);
+			});
+	}
+
+	ScreenBrightnessWindowsPlugin::~ScreenBrightnessWindowsPlugin()
+	{
+		registrar_->UnregisterTopLevelWindowProcDelegate(window_proc_id_);
 	}
 
 	void ScreenBrightnessWindowsPlugin::HandleMethodCall(
@@ -530,11 +518,4 @@ namespace screen_brightness
 			std::cout << exception.what() << std::endl;
 		}
 	}
-}
-
-void ScreenBrightnessWindowsPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar)
-{
-	screen_brightness::ScreenBrightnessWindowsPlugin::RegisterWithRegistrar(
-		flutter::PluginRegistrarManager::GetInstance()
-		->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }

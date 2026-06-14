@@ -1,3 +1,23 @@
+## 2.1.10
+
+### Fix
+
+* [screen_brightness_android](../screen_brightness_android) AGP9 support not working
+* [screen_brightness_ios](../screen_brightness_ios) swift package manager warning
+* [screen_brightness_macos](../screen_brightness_macos) swift package manager warning
+* [screen_brightness_platform_interface](../screen_brightness_platform_interface) system and currentBrightness return int makes platform interface cast error in ohos plugin
+
+### Internal
+
+* update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+* [screen_brightness_android](../screen_brightness_android) migrate Kotlin DSL
+* [screen_brightness_android](../screen_brightness_android) update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+* [screen_brightness_ios](../screen_brightness_ios) update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+* [screen_brightness_macos](../screen_brightness_macos) update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+* [screen_brightness_ohos](../screen_brightness_ohos) update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+* [screen_brightness_windows](../screen_brightness_windows) sync plugin native file with lastest flutter plugin example
+* update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+
 ## 2.1.9
 
 * [Android] Add AGP9 support

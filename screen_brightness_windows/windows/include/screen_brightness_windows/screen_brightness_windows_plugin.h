@@ -1,30 +1,22 @@
 #ifndef FLUTTER_PLUGIN_SCREEN_BRIGHTNESS_WINDOWS_PLUGIN_H_
 #define FLUTTER_PLUGIN_SCREEN_BRIGHTNESS_WINDOWS_PLUGIN_H_
 
-#include <flutter_plugin_registrar.h>
+// This must be included before many other Windows headers.
+#include <Windows.h>
 
-#include "../include/screen_brightness_windows/screen_brightness_changed_stream_handler.h"
-
+#include <flutter/method_channel.h>
+#include <flutter/event_channel.h>
+#include <flutter/event_stream_handler_functions.h>
 #include <flutter/plugin_registrar_windows.h>
+#include <flutter/standard_method_codec.h>
 
-#ifdef FLUTTER_PLUGIN_IMPL
-#define FLUTTER_PLUGIN_EXPORT __declspec(dllexport)
-#else
-#define FLUTTER_PLUGIN_EXPORT __declspec(dllimport)
-#endif
+#include <map>
+#include <memory>
+#include <sstream>
+#include <highlevelmonitorconfigurationapi.h>
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
+#include "screen_brightness_changed_stream_handler.h"
 
-	FLUTTER_PLUGIN_EXPORT void ScreenBrightnessWindowsPluginRegisterWithRegistrar(
-		FlutterDesktopPluginRegistrarRef registrar);
-
-#if defined(__cplusplus)
-}  // extern "C"
-#endif
-
-// plugin header
 namespace screen_brightness
 {
 	class ScreenBrightnessWindowsPlugin final : public flutter::Plugin
