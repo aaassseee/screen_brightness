@@ -1,3 +1,9 @@
+## 2.1.11
+
+### Fix
+
+* [screen_brightness_macos](../screen_brightness_macos) changed minimum version to macOS 10.15 to prevent build error
+
 ## 2.1.10
 
 ### Fix

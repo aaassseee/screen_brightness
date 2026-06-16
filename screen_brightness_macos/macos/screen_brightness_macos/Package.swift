@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "screen_brightness_macos",
     platforms: [
-        .macOS("10.11"),
+        .macOS("10.15"),
     ],
     products: [
         .library(name: "screen-brightness-macos", targets: ["screen_brightness_macos"])

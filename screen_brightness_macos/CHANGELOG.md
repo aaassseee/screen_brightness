@@ -1,3 +1,9 @@
+## 2.1.4
+
+### Fix
+
+* changed minimum version to macOS 10.15 to prevent build error
+
 ## 2.1.3
 
 ### Fix
