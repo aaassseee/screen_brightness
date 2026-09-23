@@ -370,6 +370,10 @@ namespace screen_brightness
 
 		case WM_DESTROY:
 		case WM_CLOSE:
+			if (!is_auto_reset_)
+			{
+				return std::nullopt;
+			}
 			OnApplicationPause();
 			break;
 
