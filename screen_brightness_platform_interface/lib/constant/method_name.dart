@@ -13,6 +13,9 @@ const methodNameHasApplicationScreenBrightnessChanged =
 const methodNameIsAutoReset = 'isAutoReset';
 const methodNameSetAutoReset = 'setAutoReset';
 
+const methodNameIsAutoBrightness = 'isAutoBrightness';
+const methodNameSetAutoBrightness = 'setAutoBrightness';
+
 const methodNameIsAnimate = 'isAnimate';
 const methodNameSetAnimate = 'setAnimate';
 
