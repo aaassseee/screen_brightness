@@ -1,3 +1,9 @@
+## 2.1.4
+
+### Internal
+
+* update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+
 ## 2.1.3
 
 * re-apply OHOS project structure migration (align with latest tooling)

@@ -1,3 +1,9 @@
+## 2.1.2
+
+### Fix
+
+* system and currentBrightness return int makes platform interface cast error in ohos plugin
+
 ## 2.1.1
 
 * update `flutter_lints` constraint to `>=6.0.0 <7.0.0`

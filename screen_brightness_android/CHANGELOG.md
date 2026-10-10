@@ -1,3 +1,14 @@
+## 2.1.6
+
+### Fix
+
+* AGP9 support not working
+
+### Internal
+
+* migrate Kotlin DSL
+* update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+
 ## 2.1.5
 
 * Added AGP9 support

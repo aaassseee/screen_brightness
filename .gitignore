@@ -9,6 +9,8 @@
 .idea/**/shelf
 .idea/editor.xml
 .idea/deploymentTargetSelector.xml
+.idea/deviceManager.xml
+.idea/php.xml
 
 # Generated files
 .idea/**/contentModel.xml

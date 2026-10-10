@@ -1,3 +1,19 @@
+## 2.1.4
+
+### Fix
+
+* changed minimum version to macOS 10.15 to prevent build error
+
+## 2.1.3
+
+### Fix
+
+* swift package manager warning
+
+### Internal
+
+* update dependency [screen_brightness_platform_interface](../screen_brightness_platform_interface) version
+
 ## 2.1.2
 
 * update macOS example app lifecycle template (use `@main` and support secure restorable state)

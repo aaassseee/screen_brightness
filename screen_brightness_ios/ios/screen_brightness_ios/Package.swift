@@ -10,11 +10,15 @@ let package = Package(
     products: [
         .library(name: "screen-brightness-ios", targets: ["screen_brightness_ios"])
     ],
-    dependencies: [],
+    dependencies: [
+        .package(name: "FlutterFramework", path: "../FlutterFramework")
+    ],
     targets: [
         .target(
             name: "screen_brightness_ios",
-            dependencies: [],
+            dependencies: [
+                .product(name: "FlutterFramework", package: "FlutterFramework")
+            ],
             resources: [
                 .process("PrivacyInfo.xcprivacy"),
             ]
