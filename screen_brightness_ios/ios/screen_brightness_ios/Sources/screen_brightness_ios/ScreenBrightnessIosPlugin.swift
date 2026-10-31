@@ -134,6 +134,12 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
             return
         }
         
+        // The system may have adjusted brightness while the app was active.
+        // Capture it only before the first override, never from our own override.
+        if applicationScreenBrightness == nil {
+            systemScreenBrightness = currentScreen?.brightness ?? UIScreen.main.brightness
+        }
+
         let _brightness = CGFloat(brightness.doubleValue)
         setScreenBrightness(targetBrightness: _brightness, animated: isAnimate)
         
@@ -143,6 +149,13 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     }
     
     private func handleResetApplicationScreenBrightnessMethodCall(result: FlutterResult) {
+        // With no override there is nothing to restore. A cached value may be
+        // stale after iOS auto-brightness changes during the foreground session.
+        guard applicationScreenBrightness != nil else {
+            result(nil)
+            return
+        }
+
         guard let brightness = systemScreenBrightness else {
             result(FlutterError.init(code: "-2", message: "Unexpected error on null brightness", details: nil))
             return
@@ -278,7 +291,8 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     }
     
     func onApplicationPause() {
-        guard let systemScreenBrightness = systemScreenBrightness else {
+        guard applicationScreenBrightness != nil,
+              let systemScreenBrightness = systemScreenBrightness else {
             return
         }
         
@@ -294,10 +308,11 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     }
     
     func onApplicationTerminate() {
-        guard let systemScreenBrightness = systemScreenBrightness else {
+        guard applicationScreenBrightness != nil,
+              let systemScreenBrightness = systemScreenBrightness else {
             return
         }
         
-        UIScreen.main.brightness = systemScreenBrightness;
+        setScreenBrightness(targetBrightness: systemScreenBrightness, animated: false)
     }
 }
