@@ -45,25 +45,16 @@ class MockPluginRegistrar: NSObject, FlutterPluginRegistrar {
     func valuePublished(byPlugin pluginKey: String) -> NSObject? { return nil }
 }
 
-// Records native writes without changing the simulator/device brightness.
-class RecordingScreenBrightnessIosPlugin: ScreenBrightnessIosPlugin {
-    var brightnessWrites: [CGFloat] = []
-
-    override func setScreenBrightness(targetBrightness: CGFloat, animated: Bool, duration: TimeInterval = 1.0) {
-        brightnessWrites.append(targetBrightness)
-    }
-}
-
 // MARK: - Tests
 
 class ScreenBrightnessIosPluginTests: XCTestCase {
-    var plugin: RecordingScreenBrightnessIosPlugin!
+    var plugin: ScreenBrightnessIosPlugin!
     var mockRegistrar: MockPluginRegistrar!
 
     override func setUp() {
         super.setUp()
         mockRegistrar = MockPluginRegistrar()
-        plugin = RecordingScreenBrightnessIosPlugin(registrar: mockRegistrar)
+        plugin = ScreenBrightnessIosPlugin(registrar: mockRegistrar)
     }
 
     override func tearDown() {
@@ -287,6 +278,35 @@ class ScreenBrightnessIosPluginTests: XCTestCase {
         plugin.handle(call, result: result)
 
         waitForExpectations(timeout: 1.0)
+    }
+}
+
+// MARK: - Brightness restoration regression tests
+
+// Records native writes without changing the simulator/device brightness.
+class RecordingScreenBrightnessIosPlugin: ScreenBrightnessIosPlugin {
+    var brightnessWrites: [CGFloat] = []
+
+    override func setScreenBrightness(targetBrightness: CGFloat, animated: Bool, duration: TimeInterval = 1.0) {
+        brightnessWrites.append(targetBrightness)
+    }
+}
+
+class ScreenBrightnessIosPluginRestorationTests: XCTestCase {
+    var plugin: RecordingScreenBrightnessIosPlugin!
+    var mockRegistrar: MockPluginRegistrar!
+
+    override func setUp() {
+        super.setUp()
+        mockRegistrar = MockPluginRegistrar()
+        plugin = RecordingScreenBrightnessIosPlugin(registrar: mockRegistrar)
+    }
+
+    override func tearDown() {
+        plugin.detachFromEngine(for: mockRegistrar)
+        plugin = nil
+        mockRegistrar = nil
+        super.tearDown()
     }
 
     func testPauseWithoutOverrideDoesNotWriteStaleBrightness() {
