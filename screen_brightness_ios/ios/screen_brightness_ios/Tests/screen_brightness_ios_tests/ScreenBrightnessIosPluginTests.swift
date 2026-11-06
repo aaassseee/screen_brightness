@@ -418,6 +418,23 @@ class ScreenBrightnessIosPluginRestorationTests: XCTestCase {
         XCTAssertEqual(plugin.brightnessWrites, [0.2, 0.6, 0.8])
     }
 
+    func testResumeWithoutOverridePreservesPendingResetTarget() {
+        plugin.simulatedScreenBrightness = 0.6
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.2
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+        plugin.onApplicationResume()
+        plugin.handle(FlutterMethodCall(methodName: "setApplicationScreenBrightness", arguments: ["brightness": 0.8])) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertEqual(plugin.systemScreenBrightness, 0.2)
+        XCTAssertEqual(plugin.brightnessWrites, [0.2, 0.8])
+    }
+
     func testPauseAndResumeRestoreSystemThenApplicationBrightness() {
         plugin.applicationScreenBrightness = 1.0
         plugin.systemScreenBrightness = 0.3

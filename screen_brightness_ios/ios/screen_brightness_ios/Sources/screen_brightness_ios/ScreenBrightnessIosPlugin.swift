@@ -332,11 +332,11 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     }
     
     func onApplicationResume() {
-        pendingSystemScreenBrightnessRestoration = nil
         guard let applicationScreenBrightness = applicationScreenBrightness else {
             return
         }
         
+        pendingSystemScreenBrightnessRestoration = nil
         setScreenBrightness(targetBrightness: applicationScreenBrightness, animated: isAnimate, duration: 0.5)
     }
     
@@ -363,8 +363,6 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     }
 
     private func systemBrightnessForApplicationOverrideStart() -> CGFloat {
-        defer { pendingSystemScreenBrightnessRestoration = nil }
-
         if let pending = pendingSystemScreenBrightnessRestoration {
             return pending.target
         }
