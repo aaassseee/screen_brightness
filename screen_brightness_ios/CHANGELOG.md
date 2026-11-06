@@ -1,10 +1,3 @@
-## Unreleased
-
-### Fix
-
-* Preserve iOS auto-brightness changes when no application brightness override is active.
-* Capture the current brightness before the first application override so resetting restores the latest system brightness.
-
 ## 2.1.4
 
 ### Fix

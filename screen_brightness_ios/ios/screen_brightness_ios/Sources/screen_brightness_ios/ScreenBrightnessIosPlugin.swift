@@ -13,6 +13,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     
     var systemScreenBrightness: CGFloat?
     var applicationScreenBrightness: CGFloat?
+    private var pendingSystemScreenBrightnessRestoration: (target: CGFloat, expiresAt: TimeInterval)?
     
     var isAutoReset: Bool = true
     var isAnimate: Bool = true
@@ -26,7 +27,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     init(registrar: FlutterPluginRegistrar) {
         self.registrar = registrar
         super.init()
-        systemScreenBrightness = currentScreen?.brightness ?? UIScreen.main.brightness
+        systemScreenBrightness = currentScreenBrightness
     }
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -46,6 +47,10 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
 
     private var currentScreen: UIScreen? {
         return registrar.viewController?.view.window?.windowScene?.screen
+    }
+
+    var currentScreenBrightness: CGFloat {
+        return currentScreen?.brightness ?? UIScreen.main.brightness
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -111,6 +116,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         }
 
         let _brightness = CGFloat(brightness.doubleValue)
+        pendingSystemScreenBrightnessRestoration = nil
         systemScreenBrightness = _brightness
         handleSystemScreenBrightnessChanged(_brightness)
         if (applicationScreenBrightness == nil) {
@@ -125,7 +131,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     }
     
     private func handleGetApplicationScreenBrightnessMethodCall(result: FlutterResult) {
-        result(currentScreen?.brightness ?? UIScreen.main.brightness)
+        result(currentScreenBrightness)
     }
     
     private func handleSetApplicationScreenBrightnessMethodCall(call: FlutterMethodCall, result: FlutterResult) {
@@ -137,7 +143,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         // The system may have adjusted brightness while the app was active.
         // Capture it only before the first override, never from our own override.
         if applicationScreenBrightness == nil {
-            systemScreenBrightness = currentScreen?.brightness ?? UIScreen.main.brightness
+            systemScreenBrightness = systemBrightnessForApplicationOverrideStart()
         }
 
         let _brightness = CGFloat(brightness.doubleValue)
@@ -149,9 +155,10 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     }
     
     private func handleResetApplicationScreenBrightnessMethodCall(result: FlutterResult) {
-        // With no override there is nothing to restore. A cached value may be
-        // stale after iOS auto-brightness changes during the foreground session.
+        // With no override there is nothing to write. Preserve the stream event
+        // so reset remains observable without restoring a potentially stale value.
         guard applicationScreenBrightness != nil else {
+            handleApplicationScreenBrightnessChanged(currentScreenBrightness)
             result(nil)
             return
         }
@@ -161,6 +168,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
             return
         }
         
+        recordSystemBrightnessRestoration(targetBrightness: brightness, duration: 1.0)
         setScreenBrightness(targetBrightness: brightness, animated: isAnimate)
         
         applicationScreenBrightness = nil
@@ -223,7 +231,10 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         }
         
         NotificationCenter.default.removeObserver(self, name: UIScreen.brightnessDidChangeNotification, object: nil)
-        systemScreenBrightness = currentScreen?.brightness ?? UIScreen.main.brightness
+        pendingSystemScreenBrightnessRestoration = nil
+        // This is intentionally refreshed even while an override exists: changes
+        // made in the background become the baseline for the next lifecycle restore.
+        systemScreenBrightness = currentScreenBrightness
         handleSystemScreenBrightnessChanged(systemScreenBrightness!)
         if (applicationScreenBrightness == nil) {
             handleApplicationScreenBrightnessChanged(systemScreenBrightness!)
@@ -235,6 +246,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
     public func sceneDidDisconnect(_ scene: UIScene) {
         onApplicationTerminate()
         NotificationCenter.default.removeObserver(self)
+        pendingSystemScreenBrightnessRestoration = nil
     }
     
     public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
@@ -296,10 +308,12 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
             return
         }
         
+        recordSystemBrightnessRestoration(targetBrightness: systemScreenBrightness, duration: 0.5)
         setScreenBrightness(targetBrightness: systemScreenBrightness, animated: isAnimate, duration: 0.5)
     }
     
     func onApplicationResume() {
+        pendingSystemScreenBrightnessRestoration = nil
         guard let applicationScreenBrightness = applicationScreenBrightness else {
             return
         }
@@ -313,6 +327,30 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
             return
         }
         
+        pendingSystemScreenBrightnessRestoration = nil
         setScreenBrightness(targetBrightness: systemScreenBrightness, animated: false)
+    }
+
+    private func recordSystemBrightnessRestoration(targetBrightness: CGFloat, duration: TimeInterval) {
+        guard isAnimate else {
+            pendingSystemScreenBrightnessRestoration = nil
+            return
+        }
+
+        pendingSystemScreenBrightnessRestoration = (
+            target: targetBrightness,
+            expiresAt: ProcessInfo.processInfo.systemUptime + duration
+        )
+    }
+
+    private func systemBrightnessForApplicationOverrideStart() -> CGFloat {
+        defer { pendingSystemScreenBrightnessRestoration = nil }
+
+        if let pending = pendingSystemScreenBrightnessRestoration,
+           ProcessInfo.processInfo.systemUptime <= pending.expiresAt {
+            return pending.target
+        }
+
+        return currentScreenBrightness
     }
 }
