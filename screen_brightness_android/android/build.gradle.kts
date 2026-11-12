@@ -26,7 +26,10 @@ plugins {
 }
 
 val agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore('.').toInt()
-if (agpMajor < 9) {
+val builtInKotlinEnabled = providers.gradleProperty("android.builtInKotlin")
+    .map { it.toBoolean() }
+    .getOrElse(true)
+if (agpMajor < 9 || !builtInKotlinEnabled) {
     apply(plugin = "org.jetbrains.kotlin.android")
 }
 
