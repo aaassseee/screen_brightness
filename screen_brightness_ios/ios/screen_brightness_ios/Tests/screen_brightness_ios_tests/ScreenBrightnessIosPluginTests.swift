@@ -295,6 +295,10 @@ class RecordingScreenBrightnessIosPlugin: ScreenBrightnessIosPlugin {
     override func setScreenBrightness(targetBrightness: CGFloat, animated: Bool, duration: TimeInterval = 1.0) {
         brightnessWrites.append(targetBrightness)
     }
+
+    func performNonAnimatedWrite(targetBrightness: CGFloat) {
+        super.setScreenBrightness(targetBrightness: targetBrightness, animated: false)
+    }
 }
 
 class ScreenBrightnessIosPluginRestorationTests: XCTestCase {
@@ -416,6 +420,24 @@ class ScreenBrightnessIosPluginRestorationTests: XCTestCase {
 
         XCTAssertEqual(plugin.systemScreenBrightness, 0.6)
         XCTAssertEqual(plugin.brightnessWrites, [0.2, 0.6, 0.8])
+    }
+
+    func testNonAnimatedWriteClearsPendingRestoration() {
+        plugin.simulatedScreenBrightness = 0.6
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.2
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+        // Exercise the real setter without changing the simulator's brightness.
+        plugin.performNonAnimatedWrite(targetBrightness: UIScreen.main.brightness)
+        plugin.handle(FlutterMethodCall(methodName: "setApplicationScreenBrightness", arguments: ["brightness": 0.8])) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertEqual(plugin.systemScreenBrightness, 0.6)
+        XCTAssertEqual(plugin.brightnessWrites, [0.2, 0.8])
     }
 
     func testResumeWithoutOverridePreservesPendingResetTarget() {

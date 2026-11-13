@@ -267,6 +267,7 @@ public class ScreenBrightnessIosPlugin: NSObject, FlutterPlugin, FlutterSceneLif
         let restorationID = pendingSystemScreenBrightnessRestoration?.id
         let screen = currentScreen ?? UIScreen.main
         if !animated {
+            pendingSystemScreenBrightnessRestoration = nil
             screen.brightness = targetBrightness
             return
         }
