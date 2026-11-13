@@ -28,6 +28,7 @@ void main() {
   group('plugin test', () {
     double? systemBrightness;
     double? applicationBrightness;
+    bool? isAutoBrightness = true;
     bool isAutoReset = true;
     bool isAnimate = true;
     bool canChangeSystemBrightness = true;
@@ -71,11 +72,19 @@ void main() {
             isAutoReset = call.arguments['isAutoReset'];
             return null;
 
+          case methodNameIsAutoBrightness:
+            return isAutoBrightness;
+
+          case methodNameSetAutoBrightness:
+            isAutoBrightness = call.arguments['isAutoBrightness'];
+            return null;
+
           case methodNameIsAnimate:
             return isAnimate;
 
           case methodNameSetAnimate:
             isAnimate = call.arguments['isAnimate'];
+            return null;
 
           case methodNameCanChangeSystemBrightness:
             return canChangeSystemBrightness;
@@ -282,6 +291,16 @@ void main() {
       expect(await methodChannelScreenBrightness.isAnimate, true);
     });
 
+    test('is auto brightness', () async {
+      expect(await methodChannelScreenBrightness.isAutoBrightness, true);
+
+      await methodChannelScreenBrightness.setAutoBrightness(false);
+      expect(await methodChannelScreenBrightness.isAutoBrightness, false);
+
+      await methodChannelScreenBrightness.setAutoBrightness(true);
+      expect(await methodChannelScreenBrightness.isAutoBrightness, true);
+    });
+
     test('can change system brightness', () async {
       expect(
           await methodChannelScreenBrightness.canChangeSystemBrightness, true);
@@ -347,6 +366,14 @@ void main() {
 
     test('unimplemented set animate', () {
       expect(() => platform.setAnimate(true), throwsUnimplementedError);
+    });
+
+    test('unimplemented is auto brightness', () {
+      expect(() => platform.isAutoBrightness, throwsUnimplementedError);
+    });
+
+    test('unimplemented set auto brightness', () {
+      expect(() => platform.setAutoBrightness(true), throwsUnimplementedError);
     });
 
     test('unimplemented can change system brightness', () {

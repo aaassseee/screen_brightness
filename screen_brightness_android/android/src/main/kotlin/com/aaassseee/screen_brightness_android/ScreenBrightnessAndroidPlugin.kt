@@ -20,7 +20,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import java.lang.reflect.Field
 import kotlin.math.sign
-import kotlin.properties.Delegates
 import androidx.core.net.toUri
 
 /**
@@ -28,7 +27,7 @@ import androidx.core.net.toUri
  */
 class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     /**
-     * The MethodChannel that will the communication between Flutter and native Android
+     * The MethodChannel that will handle the communication between Flutter and native Android
      *
      * This local reference serves to register the plugin with the Flutter Engine and unregister it
      * when the Flutter Engine is detached from the Activity
@@ -72,14 +71,14 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
      * By system default the value should be 255.0f, however it vary in some OS, e.g. Miui.
      * Should not be changed in the future
      */
-    private var maximumScreenBrightness by Delegates.notNull<Float>()
+    private var maximumScreenBrightness: Float = 255.0f
 
     /**
      * The value which will be init when this plugin is attached to the Flutter engine
      *
      * This value refer to the brightness value between 0 and 1 when the application initialized.
      */
-    private var systemScreenBrightness by Delegates.notNull<Float>()
+    private var systemScreenBrightness: Float = 1.0f
 
     /**
      * The value which will be set when user called [handleSetApplicationScreenBrightnessMethodCall]
@@ -108,11 +107,13 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             "github.com/aaassseee/screen_brightness/application_brightness_changed"
         )
 
+        maximumScreenBrightness = getScreenMaximumBrightness(flutterPluginBinding.applicationContext)
         try {
-            maximumScreenBrightness = getScreenMaximumBrightness(flutterPluginBinding.applicationContext)
             systemScreenBrightness = getSystemScreenBrightness(flutterPluginBinding.applicationContext)
         } catch (e: Settings.SettingNotFoundException) {
             e.printStackTrace()
+            // fallback to a safe default so the plugin won't crash if the system setting is unavailable
+            systemScreenBrightness = 1.0f
         }
 
         context = flutterPluginBinding.applicationContext
@@ -143,6 +144,8 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             "hasApplicationScreenBrightnessChanged" -> handleHasApplicationScreenBrightnessChangedMethodCall(result)
             "isAutoReset" -> handleIsAutoResetMethodCall(result)
             "setAutoReset" -> handleSetAutoResetMethodCall(call, result)
+            "isAutoBrightness" -> handleIsAutoBrightnessMethodCall(result)
+            "setAutoBrightness" -> handleSetAutoBrightnessMethodCall(call, result)
             "isAnimate" -> handleIsAnimateMethodCall(result)
             "setAnimate" -> handleSetAnimateMethodCall(call, result)
             "canChangeSystemBrightness" -> handleCanChangeSystemBrightness(result)
@@ -169,14 +172,15 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             return
         }
 
-        val isSet = setSystemScreenBrightness(context, brightness)
+        val clampedBrightness = clampBrightness(brightness)
+        val isSet = setSystemScreenBrightness(context, clampedBrightness)
         if (!isSet) {
             result.error("-1", "Unable to change system screen brightness", null)
             return
         }
 
-        systemScreenBrightness = brightness
-        handleSystemScreenBrightnessChanged(brightness)
+        systemScreenBrightness = clampedBrightness
+        handleSystemScreenBrightnessChanged(clampedBrightness)
         result.success(null)
     }
 
@@ -228,14 +232,15 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
             return
         }
 
-        val isSet = setWindowsAttributesBrightness(brightness)
+        val useBrightness = if (brightness >= 0f) clampBrightness(brightness) else brightness
+        val isSet = setWindowsAttributesBrightness(useBrightness)
         if (!isSet) {
             result.error("-1", "Unable to change application screen brightness", null)
             return
         }
 
-        applicationScreenBrightness = brightness
-        handleApplicationScreenBrightnessChanged(brightness)
+        applicationScreenBrightness = useBrightness
+        handleApplicationScreenBrightnessChanged(useBrightness)
         result.success(null)
     }
 
@@ -277,6 +282,52 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
         }
 
         this.isAutoReset = isAutoReset
+        result.success(null)
+    }
+
+    private fun handleIsAutoBrightnessMethodCall(result: MethodChannel.Result) {
+        val ctx = context
+        if (ctx == null) {
+            result.error("-10", "Unexpected error on activity binding", null)
+            return
+        }
+        try {
+            val mode = Settings.System.getInt(ctx.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE)
+            result.success(mode == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+        } catch (e: Settings.SettingNotFoundException) {
+            result.error("-2", "Unexpected error on reading auto brightness", null)
+        }
+    }
+
+    private fun handleSetAutoBrightnessMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        val isAuto: Boolean? = call.argument("isAutoBrightness") as? Boolean
+        val ctx = context
+        if (isAuto == null) {
+            result.error("-2", "Unexpected error on null isAutoBrightness", null)
+            return
+        }
+        if (ctx == null) {
+            result.error("-10", "Unexpected error on activity binding", null)
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !canWriteSystemSetting(ctx)) {
+            // Request permission via system settings
+            // Caller should retry after user grants permission
+            Intent(
+                Settings.ACTION_MANAGE_WRITE_SETTINGS, "package:${ctx.packageName}".toUri()
+            ).let {
+                it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                ctx.startActivity(it)
+            }
+            result.error("-1", "Unable to change auto brightness mode", null)
+            return
+        }
+        val mode = if (isAuto) Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC else Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+        val isSet = Settings.System.putInt(ctx.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, mode)
+        if (!isSet) {
+            result.error("-1", "Unable to change auto brightness mode", null)
+            return
+        }
         result.success(null)
     }
 
@@ -335,6 +386,8 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     private fun setSystemScreenBrightness(context: Context, brightness: Float): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!canWriteSystemSetting(context)) {
+                // Request permission via system settings
+                // Caller should retry after user grants permission
                 Intent(
                     Settings.ACTION_MANAGE_WRITE_SETTINGS, "package:${context.packageName}".toUri()
                 ).let {
@@ -369,14 +422,19 @@ class ScreenBrightnessAndroidPlugin : FlutterPlugin, MethodCallHandler, Activity
     }
 
     private fun setWindowsAttributesBrightness(brightness: Float): Boolean {
+        val act = activity ?: return false
         return try {
-            val layoutParams: WindowManager.LayoutParams = activity!!.window.attributes
+            val layoutParams: WindowManager.LayoutParams = act.window.attributes
             layoutParams.screenBrightness = brightness
-            activity!!.window.attributes = layoutParams
+            act.window.attributes = layoutParams
             true
         } catch (_: Exception) {
             false
         }
+    }
+
+    private fun clampBrightness(brightness: Float): Float {
+        return brightness.coerceIn(0f, 1f)
     }
 
     private fun canWriteSystemSetting(context: Context): Boolean {

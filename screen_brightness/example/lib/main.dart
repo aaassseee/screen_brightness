@@ -337,6 +337,7 @@ class _SettingPageState extends State<SettingPage> {
   bool isAutoReset = true;
   bool isAnimate = true;
   bool canChangeSystemBrightness = true;
+  bool? isAutoBrightness;
 
   @override
   void initState() {
@@ -344,6 +345,7 @@ class _SettingPageState extends State<SettingPage> {
     getIsAutoResetSetting();
     getIsAnimateSetting();
     getCanChangeSystemBrightness();
+    getIsAutoBrightnessSetting();
   }
 
   Future<void> getIsAutoResetSetting() async {
@@ -365,6 +367,13 @@ class _SettingPageState extends State<SettingPage> {
         await ScreenBrightness.instance.canChangeSystemBrightness;
     setState(() {
       this.canChangeSystemBrightness = canChangeSystemBrightness;
+    });
+  }
+
+  Future<void> getIsAutoBrightnessSetting() async {
+    final isAutoBrightness = await ScreenBrightness.instance.isAutoBrightness;
+    setState(() {
+      this.isAutoBrightness = isAutoBrightness;
     });
   }
 
@@ -395,6 +404,18 @@ class _SettingPageState extends State<SettingPage> {
                 await getIsAnimateSetting();
               },
             ),
+          ),
+          ListTile(
+            title: const Text('Auto Brightness'),
+            trailing: isAutoBrightness == null
+                ? const Text('Unknown')
+                : Switch(
+                    value: isAutoBrightness!,
+                    onChanged: (value) async {
+                      await ScreenBrightness.instance.setAutoBrightness(value);
+                      await getIsAutoBrightnessSetting();
+                    },
+                  ),
           ),
           ListTile(
             title: const Text('Can change system brightness'),

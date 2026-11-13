@@ -30,6 +30,8 @@ dependency_overrides:
     path: ../../screen_brightness_macos
   screen_brightness_windows:
     path: ../../screen_brightness_windows
+  screen_brightness_ohos:
+    path: ../../screen_brightness_ohos
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
