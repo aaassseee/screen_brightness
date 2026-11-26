@@ -1,3 +1,21 @@
+## 2.1.12
+
+### Fix
+
+* [screen_brightness_android](../screen_brightness_android) AGP9 with built-in Kotlin disabled not working
+* [screen_brightness_android](../screen_brightness_android) bump compileOptions and jvmTarget to Java 17
+* [screen_brightness_ios](../screen_brightness_ios) preserve system brightness when there is no application brightness override
+* [screen_brightness_ios](../screen_brightness_ios) retain restoration target when resuming without an application override
+* [screen_brightness_ios](../screen_brightness_ios) track brightness restoration until animation completes
+* [screen_brightness_ios](../screen_brightness_ios) clear pending brightness restoration on non-animated writes
+
+### Internal
+
+* [screen_brightness_ios](../screen_brightness_ios) add native plugin tests for brightness restoration
+* [screen_brightness_ios](../screen_brightness_ios) bump example deployment target to iOS 15.0
+* update dependency [screen_brightness_android](../screen_brightness_android) version
+* update dependency [screen_brightness_ios](../screen_brightness_ios) version
+
 ## 2.1.11
 
 ### Fix
