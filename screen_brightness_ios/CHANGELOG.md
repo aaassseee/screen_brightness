@@ -1,3 +1,17 @@
+## 2.1.5
+
+### Fix
+
+* preserve system brightness when an application override is not set
+* retain the restoration target when the app resumes without an application override
+* track brightness restoration until the animation completes
+* clear pending brightness restoration on non-animated writes
+
+### Internal
+
+* add native plugin tests for brightness restoration
+* bump example deployment target to iOS 15.0 and refresh example dependencies
+
 ## 2.1.4
 
 ### Fix
