@@ -1,3 +1,5 @@
+// Retain compatibility with Flutter SDKs before Material moved to material_ui.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 

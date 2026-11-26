@@ -8,7 +8,8 @@ import UIKit
 class MockBinaryMessenger: NSObject, FlutterBinaryMessenger {
     func send(onChannel channel: String, message: Data?) {}
     func send(onChannel channel: String, message: Data?, binaryReply: FlutterBinaryReply?) {}
-    func setMessageHandlerOnChannel(_ channel: String, binaryMessageHandler: FlutterBinaryMessageHandler?) {}
+    func setMessageHandlerOnChannel(_ channel: String, binaryMessageHandler: FlutterBinaryMessageHandler?) -> FlutterBinaryMessengerConnection { return 0 }
+    func cleanUpConnection(_ connection: FlutterBinaryMessengerConnection) {}
 }
 
 class MockTextureRegistry: NSObject, FlutterTextureRegistry {
@@ -38,6 +39,10 @@ class MockPluginRegistrar: NSObject, FlutterPluginRegistrar {
     func addMethodCallDelegate(_ delegate: FlutterPlugin, channel: FlutterMethodChannel) {}
 
     func addApplicationDelegate(_ delegate: FlutterPlugin) {}
+    func addSceneDelegate(_ delegate: FlutterSceneLifeCycleDelegate) {}
+    func lookupKey(forAsset asset: String) -> String { return asset }
+    func lookupKey(forAsset asset: String, fromPackage package: String) -> String { return asset }
+    func valuePublished(byPlugin pluginKey: String) -> NSObject? { return nil }
 }
 
 // MARK: - Tests
@@ -273,5 +278,225 @@ class ScreenBrightnessIosPluginTests: XCTestCase {
         plugin.handle(call, result: result)
 
         waitForExpectations(timeout: 1.0)
+    }
+}
+
+// MARK: - Brightness restoration regression tests
+
+// Records native writes without changing the simulator/device brightness.
+class RecordingScreenBrightnessIosPlugin: ScreenBrightnessIosPlugin {
+    var brightnessWrites: [CGFloat] = []
+    var simulatedScreenBrightness: CGFloat?
+
+    override var currentScreenBrightness: CGFloat {
+        return simulatedScreenBrightness ?? super.currentScreenBrightness
+    }
+
+    override func setScreenBrightness(targetBrightness: CGFloat, animated: Bool, duration: TimeInterval = 1.0) {
+        brightnessWrites.append(targetBrightness)
+    }
+
+    func performNonAnimatedWrite(targetBrightness: CGFloat) {
+        super.setScreenBrightness(targetBrightness: targetBrightness, animated: false)
+    }
+}
+
+class ScreenBrightnessIosPluginRestorationTests: XCTestCase {
+    var plugin: RecordingScreenBrightnessIosPlugin!
+    var mockRegistrar: MockPluginRegistrar!
+
+    override func setUp() {
+        super.setUp()
+        mockRegistrar = MockPluginRegistrar()
+        plugin = RecordingScreenBrightnessIosPlugin(registrar: mockRegistrar)
+    }
+
+    override func tearDown() {
+        plugin.detachFromEngine(for: mockRegistrar)
+        plugin = nil
+        mockRegistrar = nil
+        super.tearDown()
+    }
+
+    func testPauseWithoutOverrideDoesNotWriteStaleBrightness() {
+        plugin.systemScreenBrightness = 0.1
+
+        plugin.onApplicationPause()
+
+        XCTAssertTrue(plugin.brightnessWrites.isEmpty)
+    }
+
+    func testDisconnectWithoutOverrideDoesNotWriteStaleBrightness() {
+        plugin.systemScreenBrightness = 0.1
+
+        plugin.onApplicationTerminate()
+
+        XCTAssertTrue(plugin.brightnessWrites.isEmpty)
+    }
+
+    func testResetWithoutOverrideDoesNotWriteStaleBrightness() {
+        plugin.systemScreenBrightness = 0.1
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertTrue(plugin.brightnessWrites.isEmpty)
+    }
+
+    func testResetWithoutOverrideStillEmitsCurrentBrightness() {
+        plugin.simulatedScreenBrightness = 0.6
+        var receivedBrightness: Double?
+        _ = plugin.applicationScreenBrightnessChangedStreamHandler.onListen(withArguments: nil) {
+            receivedBrightness = $0 as? Double
+        }
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+
+        guard let receivedBrightness = receivedBrightness else {
+            XCTFail("Expected reset to emit the current brightness")
+            return
+        }
+        XCTAssertEqual(receivedBrightness, 0.6, accuracy: 0.001)
+        XCTAssertTrue(plugin.brightnessWrites.isEmpty)
+    }
+
+    func testFirstOverrideCapturesCurrentBrightnessInsteadOfStaleCache() {
+        plugin.simulatedScreenBrightness = 0.6
+        plugin.systemScreenBrightness = 0.1
+
+        plugin.handle(FlutterMethodCall(methodName: "setApplicationScreenBrightness", arguments: ["brightness": 1.0])) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertEqual(plugin.systemScreenBrightness, 0.6)
+        XCTAssertEqual(plugin.brightnessWrites, [1.0])
+    }
+
+    func testChangingOverridePreservesOriginalBrightness() {
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.3
+
+        plugin.handle(FlutterMethodCall(methodName: "setApplicationScreenBrightness", arguments: ["brightness": 0.8])) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertEqual(plugin.systemScreenBrightness, 0.3)
+        XCTAssertEqual(plugin.brightnessWrites, [0.8])
+    }
+
+    func testOverrideSetDuringResetAnimationUsesRestoreTarget() {
+        plugin.simulatedScreenBrightness = 0.6
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.2
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+        plugin.handle(FlutterMethodCall(methodName: "setApplicationScreenBrightness", arguments: ["brightness": 0.8])) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertEqual(plugin.systemScreenBrightness, 0.2)
+        XCTAssertEqual(plugin.brightnessWrites, [0.2, 0.8])
+    }
+
+    func testExplicitSystemBrightnessChangeSupersedesPendingRestoration() {
+        plugin.simulatedScreenBrightness = 0.6
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.2
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+        plugin.handle(FlutterMethodCall(methodName: "setSystemScreenBrightness", arguments: ["brightness": 0.6])) {
+            XCTAssertNil($0)
+        }
+        plugin.handle(FlutterMethodCall(methodName: "setApplicationScreenBrightness", arguments: ["brightness": 0.8])) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertEqual(plugin.systemScreenBrightness, 0.6)
+        XCTAssertEqual(plugin.brightnessWrites, [0.2, 0.6, 0.8])
+    }
+
+    func testNonAnimatedWriteClearsPendingRestoration() {
+        plugin.simulatedScreenBrightness = 0.6
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.2
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+        // Exercise the real setter without changing the simulator's brightness.
+        plugin.performNonAnimatedWrite(targetBrightness: UIScreen.main.brightness)
+        plugin.handle(FlutterMethodCall(methodName: "setApplicationScreenBrightness", arguments: ["brightness": 0.8])) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertEqual(plugin.systemScreenBrightness, 0.6)
+        XCTAssertEqual(plugin.brightnessWrites, [0.2, 0.8])
+    }
+
+    func testResumeWithoutOverridePreservesPendingResetTarget() {
+        plugin.simulatedScreenBrightness = 0.6
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.2
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+        plugin.onApplicationResume()
+        plugin.handle(FlutterMethodCall(methodName: "setApplicationScreenBrightness", arguments: ["brightness": 0.8])) {
+            XCTAssertNil($0)
+        }
+
+        XCTAssertEqual(plugin.systemScreenBrightness, 0.2)
+        XCTAssertEqual(plugin.brightnessWrites, [0.2, 0.8])
+    }
+
+    func testPauseAndResumeRestoreSystemThenApplicationBrightness() {
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.3
+
+        plugin.onApplicationPause()
+        plugin.onApplicationResume()
+
+        XCTAssertEqual(plugin.brightnessWrites, [0.3, 1.0])
+        XCTAssertEqual(plugin.applicationScreenBrightness, 1.0)
+    }
+
+    func testResumeWithoutOverrideDoesNotWriteBrightness() {
+        XCTAssertNil(plugin.applicationScreenBrightness)
+
+        plugin.onApplicationResume()
+
+        XCTAssertTrue(plugin.brightnessWrites.isEmpty)
+    }
+
+    func testDisconnectWithOverrideRestoresSystemBrightness() {
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.3
+
+        plugin.onApplicationTerminate()
+
+        XCTAssertEqual(plugin.brightnessWrites, [0.3])
+    }
+
+    func testResetRestoresBaselineAndStopsSubsequentLifecycleWrites() {
+        plugin.applicationScreenBrightness = 1.0
+        plugin.systemScreenBrightness = 0.3
+
+        plugin.handle(FlutterMethodCall(methodName: "resetApplicationScreenBrightness", arguments: nil)) {
+            XCTAssertNil($0)
+        }
+        plugin.onApplicationPause()
+        plugin.onApplicationResume()
+        plugin.onApplicationTerminate()
+
+        XCTAssertNil(plugin.applicationScreenBrightness)
+        XCTAssertEqual(plugin.brightnessWrites, [0.3])
     }
 }

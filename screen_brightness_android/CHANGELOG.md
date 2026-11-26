@@ -1,3 +1,10 @@
+## 2.1.7
+
+### Fix
+
+* AGP9 support not working when built-in Kotlin is disabled
+* bump compileOptions and jvmTarget to Java 17
+
 ## 2.1.6
 
 ### Fix
